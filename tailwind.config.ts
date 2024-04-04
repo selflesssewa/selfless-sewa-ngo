@@ -1,0 +1,62 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+
+  theme: {
+    spacing: {
+      0: "0.2rem",
+      1: "0.4rem",
+      2: "0.8rem",
+      3: "1.6rem",
+      4: "2.4rem",
+      5: "3.2rem",
+      6: "4.0rem",
+      7: "4.8rem",
+      8: "5.6rem",
+      9: "6.4rem",
+      10: "7.2rem",
+      11: "8.0rem",
+      12: "8.8rem",
+      13: "9.6rem",
+      14: "10.4rem",
+      15: "11.2rem",
+      16: "12.0rem",
+      17: "12.8rem",
+      18: "13.6rem",
+      19: "14.4rem",
+      20: "15.2rem",
+      21: "16.0rem",
+    },
+    fontSize: {
+      "body-sm": ["0.82rem", "1.5"],
+      "body-md": ["1.2rem", "1.5"],
+      "body-lg": ["1.28rem", "1.5"],
+      "title-sm": ["1.6rem", "1.5"],
+      "title-md": ["2rem", "1.5"],
+      "title-lg": ["2.4rem", "1.5"],
+      "headline-sm": ["3.2rem", "1.5"],
+      "headline-md": ["4rem", "1.5"],
+      "headline-lg": ["4.8rem", "1.5"],
+      "display-sm": ["6.4rem", "1.2"],
+      "display-md": ["7.2rem", "1.2"],
+      "display-lg": ["9.6rem", "1.2"],
+    },
+    colors: {
+      white: "#FFF",
+      blue: "#1D366F",
+      "blue-60": "rgba(29, 54, 111, 0.6)",
+      green: "#08C076",
+      "green-50": "rgba(8, 192, 118, 0.5)",
+    },
+
+    extend: {},
+  },
+  plugins: [],
+};
+export default config;

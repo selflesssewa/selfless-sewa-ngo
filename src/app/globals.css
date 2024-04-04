@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  html {
+    font-size: 62.5%;
+    user-select: none;
+  }
+
+  body {
+    font-size: 1.6rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+    @apply tracking-wide
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings: 'WONK' 0, 'SOFT' 1, 'opsz' 1;
+    @apply tracking-normal
+  }
+}
