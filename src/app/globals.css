@@ -23,7 +23,23 @@
 
   .font-display {
     font-family: var(--font-display);
-    font-variation-settings: 'WONK' 0, 'SOFT' 1, 'opsz' 1;
+    font-variation-settings: 'WONK' 0, 'SOFT' 50, 'opsz' 1;
     @apply tracking-normal
+  }
+}
+
+@layer utilities {
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 }
