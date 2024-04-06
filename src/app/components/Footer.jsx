@@ -7,10 +7,9 @@ const Footer = () => {
     return (
         <footer className="bg-blue-60 backdrop-blur-sm">
             <Container className="py-4 max-w-full">
-                <div className="flex flex-wrap items-start justify-between gap-6 gap-y-5">
-                    <div>
-
-                        <Link href="/" className="flex gap-2 items-center grow">
+                <div className="flex max-lg:flex-col lg:items-start gap-8 justify-between gap-y-5">
+                    <div className="basis-1/3">
+                        <Link href="/" className="flex gap-2 items-center">
                             <div className="w-5">
                                 <img
                                     className="w-full h-auto"
@@ -24,8 +23,8 @@ const Footer = () => {
                             </p>
                         </Link>
                     </div>
-                    <div>
-                        <div className="flex flex-wrap justify-between grow gap-6 gap-y-5 [&_ul]:pe-5 [&_ul]:flex [&_ul]:gap-2 [&_ul]:flex-col">
+                    <div className="grow">
+                        <div className="grid grid-cols-[repeat(auto-fit,minmax(20ch,1fr))] gap-8 gap-y-4 [&_ul]:flex [&_ul]:gap-2 [&_ul]:flex-col">
                             <div>
                                 <p className="text-title-md font-medium mb-2">Contact</p>
                                 <ul className="font-light tracking-wider">

@@ -49,7 +49,7 @@ const config: Config = {
     },
     colors: {
       transparent: "none",
-      black: "#1c0000",
+      black: "#04001C",
       white: "#FFF",
       "white-70": "rgba(255, 255, 255, 0.7)",
       blue: "#1D366F",
@@ -63,7 +63,6 @@ const config: Config = {
       saundarya: "#9AFF89",
       "jeev-kalyan": "#86E9FF",
     },
-
     extend: {},
   },
   plugins: [],
