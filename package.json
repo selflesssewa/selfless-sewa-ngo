@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@icons-pack/react-simple-icons": "^9.4.0",
     "next": "14.1.4",
     "react": "^18",
     "react-dom": "^18",
     "react-material-symbols": "^4.4.0",
+    "sharp": "^0.33.3",
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {

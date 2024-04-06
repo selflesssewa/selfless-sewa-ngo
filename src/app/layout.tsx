@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { DM_Sans, Fraunces, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
+import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
 
@@ -16,10 +17,17 @@ const displayFont = Fraunces({
   axes: ["opsz", "WONK", "SOFT"],
   variable: "--font-display",
 });
+const hindiFont = Karma({
+  subsets: ["devanagari"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-hindi",
+});
 
 export const metadata: Metadata = {
   title: "Selfless Sewa NGO",
   description: "Service Above Self",
+  keywords: ["Non-governmental organization", "Selfless Sewa"],
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
@@ -29,10 +37,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={twMerge(bodyFont.variable, displayFont.variable, "text-white font-body")}>
-        <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat h-vh fixed inset-[0px] -z-10" />
+      <body className={twMerge(bodyFont.variable, displayFont.variable, hindiFont.variable, "text-white font-body")}>
+        <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat inset-[0px] fixed -z-10" />
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -7,7 +7,7 @@ const Navbar = () => {
     <header className="bg-blue-60 backdrop-blur-xl sticky top-[0px] z-10">
       <Container className="max-w-full">
         <nav className="flex justify-between py-2">
-          <Link href="/" className="flex gap-3 items-center">
+          <Link href="/" className="flex gap-2 items-center">
             <div className="w-5">
               <img
                 className="w-full h-auto"

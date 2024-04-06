@@ -26,6 +26,11 @@
     font-variation-settings: 'WONK' 0, 'SOFT' 50, 'opsz' 1;
     @apply tracking-normal
   }
+
+  .font-hindi {
+    font-family: var(--font-hindi);
+    @apply tracking-normal
+  }
 }
 
 @layer utilities {
