@@ -19,18 +19,22 @@ const Project = () => {
           >
             <span className="col-start-2 italic font-display tracking-wider">Project</span>
             <div className="p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-md shadow-blue-30">
-              <MaterialSymbol
-                icon={p.icon}
-                size={40}
-                weight={400}
-                className={twMerge("rounded-full max-md:hidden p-3 text-black/70", projectBgColor[p.id])}
-              />
-              <MaterialSymbol
-                icon={p.icon}
-                size={24}
-                weight={500}
-                className={twMerge("rounded-full md:hidden p-2 text-black/70", projectBgColor[p.id])}
-              />
+              <div className="max-md:hidden">
+                <MaterialSymbol
+                  icon={p.icon}
+                  size={40}
+                  weight={400}
+                  className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
+                />
+              </div>
+              <div className="md:hidden">
+                <MaterialSymbol
+                  icon={p.icon}
+                  size={24}
+                  weight={400}
+                  className={twMerge("rounded-full p-2 text-black/70", projectBgColor[p.id])}
+                />
+              </div>
             </div>
             <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight">{p.title}</h3>
             <p className="font-hindi text-headline-sm font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
@@ -38,7 +42,7 @@ const Project = () => {
               {p.body}
             </p>
             <Link
-              href="#"
+              href="#donate"
               className="p-1 md:mt-4 mt-5 md:col-start-2 max-md:col-span-2 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl bg-blue-60 rounded-[8px]"
             >
               <div className="p-1 px-3 bg-white/10 rounded-[4px]">Donate</div>

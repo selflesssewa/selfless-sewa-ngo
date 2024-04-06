@@ -78,7 +78,7 @@ export default function Home() {
               <MaterialSymbol color="gold" icon="award_star" />
               Registered under The Indian Trusts Act, 1882
             </p>
-            <h1 className="font-display text-headline-md md:text-display-sm text-balance font-normal tracking-tight">
+            <h1 className="font-display text-headline-md md:text-headline-lg lg:text-display-sm text-balance font-normal tracking-tight">
               Join our commitment to making a positive difference in the world.
             </h1>
           </div>
@@ -162,18 +162,22 @@ export default function Home() {
               >
                 <span className="col-start-2 italic font-display tracking-wider">Project</span>
                 <div className="p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-md shadow-blue-30">
-                  <MaterialSymbol
-                    icon={p.icon}
-                    size={40}
-                    weight={400}
-                    className={twMerge("rounded-full max-md:hidden p-3 text-black/70", projectBgColor[p.id])}
-                  />
-                  <MaterialSymbol
-                    icon={p.icon}
-                    size={24}
-                    weight={500}
-                    className={twMerge("rounded-full md:hidden p-2 text-black/70", projectBgColor[p.id])}
-                  />
+                  <div className="max-md:hidden">
+                    <MaterialSymbol
+                      icon={p.icon}
+                      size={40}
+                      weight={400}
+                      className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
+                    />
+                  </div>
+                  <div className="md:hidden">
+                    <MaterialSymbol
+                      icon={p.icon}
+                      size={24}
+                      weight={400}
+                      className={twMerge("rounded-full p-2 text-black/70", projectBgColor[p.id])}
+                    />
+                  </div>
                 </div>
                 <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight">{p.title}</h3>
                 <p className="font-hindi text-headline-sm font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
@@ -198,7 +202,7 @@ export default function Home() {
             imgAltText=""
             footer={
               <Link
-                href="/team"
+                href="#donate"
                 className="flex p-1 self-start mt-8 rounded-[0.8rem] bg-green-50 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
               >
                 <div className="px-3 py-2 rounded-[0.4rem] bg-green/50 flex items-center">

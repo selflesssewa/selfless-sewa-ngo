@@ -32,7 +32,7 @@ const Navbar = () => {
             </li>
             <li>
               <Link
-                href="/team"
+                href="#donate"
                 className="flex p-1 rounded-[0.8rem] bg-green-50 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 self-center backdrop-blur-2xl"
               >
                 <div className="px-2 py-1 rounded-[0.4rem] bg-green/50 flex gap-1 items-center">
