@@ -24,7 +24,7 @@ export const projects = [
     hindiTitle: "सक्षम",
     icon: "auto_stories",
     description: "Empowering individuals through education and skill development for a brighter future.",
-    body: "In Project aat(Saksham), we are committed to breaking the cycle of inequality by providing access to quality education and skill development opportunities. Through our various initiatives, we aim to equip individuals with the knowledge, skills including gross & motor skills and confidence they need to build a better future for themselves and their communities. Our programs range from formal education support, such as scholarships and tutoring, to vocational training in trades like carpentry, sewing, and computer literacy. We believe that education is the key to unlocking potential and creating lasting change, and we are dedicated to ensuring that everyone has the opportunity to thrive.",
+    body: "In Project सक्षम (Saksham), we are committed to breaking the cycle of inequality by providing access to quality education and skill development opportunities. Through our various initiatives, we aim to equip individuals with the knowledge, skills including gross & motor skills and confidence they need to build a better future for themselves and their communities. Our programs range from formal education support, such as scholarships and tutoring, to vocational training in trades like carpentry, sewing, and computer literacy. We believe that education is the key to unlocking potential and creating lasting change, and we are dedicated to ensuring that everyone has the opportunity to thrive.",
   },
   {
     id: "chikitsa",
@@ -86,7 +86,7 @@ export default function Home() {
             href="#donate"
             className="flex p-1 rounded-[0.8rem] flex-shrink-0 bg-green-50 backdrop-blur-lg hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-150 ease-in"
           >
-            <div className="px-4 py-2 rounded-[0.4rem] bg-green/50 flex gap-2 items-center">
+            <div className="px-4 py-2 max-sm:py-0 max-sm:ps-2 rounded-[0.4rem] bg-green/50 flex gap-2 items-center">
               <MaterialSymbol icon="volunteer_activism" weight={300} size={48} />
               <div className="flex flex-col items-start">
                 <span className="font-medium text-title-lg tracking-normal">Make a Donation</span>
