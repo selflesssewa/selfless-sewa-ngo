@@ -64,7 +64,16 @@ const config: Config = {
       "jeev-kalyan": "#86E9FF",
       "light-text-selection": "rgba(255, 255, 255, 0.3)",
     },
-    extend: {},
+    extend: {
+      keyframes: {
+        slider: {
+          "100%": { transform: "translateX(calc(-50% - 1.6rem))" },
+        },
+      },
+      animation: {
+        slider: "slider var(--slider-duration, 50s) linear infinite",
+      },
+    },
   },
   plugins: [],
 };

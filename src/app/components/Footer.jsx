@@ -1,5 +1,6 @@
 import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons"
 import Link from "next/link"
+import Image from "next/image";
 import { MaterialSymbol } from "react-material-symbols"
 import Container from "./Container"
 
@@ -11,11 +12,13 @@ const Footer = () => {
                     <div className="basis-1/3">
                         <Link href="/" className="flex gap-2 items-center">
                             <div className="w-5">
-                                <img
+                                <Image
                                     className="w-full h-auto"
                                     alt="Selfless Sewa NGO Logomark"
                                     id="logo"
-                                    src={"selfless-sewa-logo.svg"}
+                                    src={"/selfless-sewa-logo.svg"}
+                                    width={5}
+                                    height={5}
                                 />
                             </div>
                             <p id="word-mark" className="font-display font-semibold text-title-md text-nowrap">

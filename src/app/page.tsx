@@ -71,19 +71,19 @@ export const projectBgColor = {
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <section className="pt-10 flex flex-col gap-8 mb-17">
-        <Container className="flex items-end max-md:flex-col max-md:items-start gap-3 justify-start">
+      <section className="pt-4 md:pt-6 lg:pt-10 flex flex-col gap-8 mb-17">
+        <Container className="flex items-end max-lg:flex-col max-lg:items-start gap-3 justify-start">
           <div className="flex flex-col items-start gap-2">
             <p className="text-body-lg tracking-wider flex items-center gap-1 bg-white/10 border-white/15 backdrop-blur-sm border-2 px-2 rounded-[8px]">
               <MaterialSymbol color="gold" icon="award_star" />
               Registered under The Indian Trusts Act, 1882
             </p>
-            <h1 className="font-display text-headline-md md:text-headline-lg lg:text-display-sm text-balance font-normal tracking-tight">
+            <h1 className="font-display text-headline-md origin-bottom-left md:text-headline-lg lg:text-display-sm text-balance font-normal tracking-tight">
               Join our commitment to making a positive difference in the world.
             </h1>
           </div>
           <Link
-            href="/team"
+            href="#donate"
             className="flex p-1 rounded-[0.8rem] flex-shrink-0 bg-green-50 backdrop-blur-lg hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-150 ease-in"
           >
             <div className="px-4 py-2 rounded-[0.4rem] bg-green/50 flex gap-2 items-center">

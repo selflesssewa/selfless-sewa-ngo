@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
+import Image from "next/image";
 
 const Navbar = () => {
   return (
@@ -9,11 +10,13 @@ const Navbar = () => {
         <nav className="flex justify-between py-2">
           <Link href="/" className="flex gap-2 items-center">
             <div className="w-5">
-              <img
+              <Image
                 className="w-full h-auto"
                 alt="Selfless Sewa NGO Logomark"
                 id="logo"
-                src={"selfless-sewa-logo.svg"}
+                src={"/selfless-sewa-logo.svg"}
+                width={5}
+                height={5}
               />
             </div>
             <p id="word-mark" className="font-display font-semibold text-title-md py-1 text-nowrap">
