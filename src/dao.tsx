@@ -1,4 +1,4 @@
-import { Asset, AssetLink, EntryLink, ResolvedLink, createClient } from "contentful";
+import { createClient, type Asset } from "contentful";
 import { getEnvVariable } from "./helper";
 
 const contentful = createClient({
@@ -19,7 +19,7 @@ export async function getCoreTeam(): Promise<TTeamCardData> {
     const member: TSewak = {
       name: el.fields.name as string,
       role: el.fields.department as string,
-      imgUrl: `https:` + el.fields.profileImage?.fields.file.url,
+      imgUrl: `https:` + (el.fields.profileImage as Asset).fields.file?.url,
     };
 
     if (member.role === "Founder") {
