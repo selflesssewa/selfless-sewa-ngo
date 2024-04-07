@@ -194,7 +194,7 @@ export default function Home() {
         </Container>
       </section>
       <section>
-        <Container className="mb-16 py-8 flex items-center min-h-[80vh]">
+        <Container className="mb-14 py-8 flex items-center min-h-[80vh]">
           <CallToActionCard
             title="Make a positive change"
             body="With compassion and empathy at our core, we strive to make a positive difference in people's lives. This dedication is evident in our volunteer-driven initiatives and collaborative partnerships, aimed at providing education and healthcare to under-served communities. Together, Lets serve before ourselves."

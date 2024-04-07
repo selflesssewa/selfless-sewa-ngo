@@ -62,6 +62,7 @@ const config: Config = {
       aahar: "#FFB388",
       saundarya: "#9AFF89",
       "jeev-kalyan": "#86E9FF",
+      "light-text-selection": "rgba(255, 255, 255, 0.3)",
     },
     extend: {},
   },

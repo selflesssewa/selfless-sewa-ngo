@@ -76,8 +76,8 @@ const Team = async () => {
         </Container>
       </section>
       <section>
-        <Container className="flex flex-col my-12 md:my-21">
-          <div className="bg-white-70 self-center text-black p-5 md:px-7 mb-8 md:py-6  backdrop-blur-lg rounded-[24px]">
+        <Container className="flex flex-col">
+          <div className="bg-white-70 self-center text-black p-5 md:px-7 mb-12 mt-6 md:py-6  backdrop-blur-lg rounded-[24px]">
             <h2 className="text-headline-sm mb-3 tracking-normal">Our Sewaks</h2>
             <p className="max-w-[45ch] text-pretty">
               At Selfless Sewa NGO, every volunteer (sewak) embodies the spirit of “Sewa”. Whether our founder, core
@@ -86,8 +86,28 @@ const Team = async () => {
               of Sewa.
             </p>
           </div>
-          add founder
-          <ul className="grid max-sm:grid-cols-1 max-md:grid-cols-2 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 md:gap-5">
+          <h2 className="tracking-wider text-center mt-7">Our Founder</h2>
+          <div className="flex max-sm:flex-col p-1 my-8 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px] grow">
+            <div className="relative basis-2/5 aspect-square rounded-[4px] overflow-clip">
+              <Image
+                fill
+                className="object-cover w-full h-full -scale-x-100"
+                src={sewaks.founder.imgUrl}
+                alt={sewaks.founder.name}
+              />
+            </div>
+            <div className="grow bg-white-70 text-black backdrop-blur-lg rounded-[4px] p-3 px-4">
+              <p className="text-title-lg font-medium" title={sewaks.founder.name}>
+                {sewaks.founder.name}
+              </p>
+              <h2 className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={sewaks.founder.role}>
+                {sewaks.founder.role}
+              </h2>
+              <p className="mt-3">{sewaks.founder.bio}</p>
+            </div>
+          </div>
+          <h2 className="tracking-wider text-center mt-7">Our Core Team</h2>
+          <ul className="grid max-sm:grid-cols-1 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 md:gap-5">
             {sewaks.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
@@ -105,14 +125,14 @@ const Team = async () => {
         </Container>
       </section>
       <section>
-        <Container className="mb-16 py-8 flex items-center min-h-[80vh]">
+        <Container className="py-8 flex items-center min-h-[80vh]">
           <CallToActionCard
             title="Join the team"
-            body="At Selfless Sewa NGO, every volunteer (sewak) embodies the spirit of “Sewa”. Whether our founder, core team, or dedicated volunteers, we all serve selflessly. Our founder leads as the Founder Sewak, and our core team are Core Sewak, setting the standard for service. Together, we live our values through every act of Sewa."
+            body="Join our community of Selfless सेवकs of Selfless Sewa NGO & make an impact by serving those in need & spread kindness and compassion. Your dedication and willingness to serve will make a difference in the lives of others. Join us in our journey of Selfless Sewa! Register now and be the change you want to see in the world."
             imgSrc="/images/IMG_1582.jpeg"
             imgAltText=""
             footer={
-              <div className="mt-8 ">
+              <div className="mt-8">
                 <p className="text-black text-body-lg font-medium mb-1">Ready to become a Sewak?</p>
                 <div className="flex gap-3">
                   <Link
@@ -124,12 +144,17 @@ const Team = async () => {
                       <MaterialSymbol icon="arrow_outward" />
                     </div>
                   </Link>
-                  <button className="text-black">See Rules</button>
+                  <Link href="/team#rules" className="flex items-center text-black">
+                    See Rules
+                  </Link>
                 </div>
               </div>
             }
           />
         </Container>
+      </section>
+      <section id="rules" className="scroll-mt-[12vh]">
+        rules
       </section>
     </main>
   );

@@ -30,14 +30,17 @@ const Footer = () => {
                                 <ul className="font-light tracking-wider">
                                     <li className="flex items-center gap-2">
                                         <SiWhatsapp size={18} />
-                                        +91 782 708 6428
+                                        <span className="select-text selection:bg-light-text-selection">
+                                            +91 782 708 6428
+                                        </span>
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <MaterialSymbol icon="alternate_email" size={20} className="-mx-0" weight={300} />
-                                        selflesssewango@gmail.com</li>
+                                        <span className="select-text selection:bg-light-text-selection">selflesssewango@gmail.com</span>
+                                    </li>
                                     <li className="flex items-center gap-2">
                                         <SiInstagram size={18} />
-                                        <Link href='#'>@selflesssewa</Link>
+                                        <Link href='#instagram'>@selflesssewa</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -45,13 +48,13 @@ const Footer = () => {
                                 <p className="text-title-md font-medium mb-2">Volunteer</p>
                                 <ul className="font-light tracking-wider">
                                     <li>
-                                        <Link href="#">Become a Sewak</Link>
+                                        <Link href="#apply">Become a Sewak</Link>
                                     </li>
                                     <li>
-                                        <Link href="#">Departments</Link>
+                                        <Link href="/team#departments">Departments</Link>
                                     </li>
                                     <li>
-                                        <Link href="#">Rules</Link>
+                                        <Link href="/team#rules">Rules</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -59,17 +62,17 @@ const Footer = () => {
                                 <p className="text-title-md font-medium mb-2">About</p>
                                 <ul className="font-light tracking-wider">
                                     <li>
-                                        <Link href="#">Team</Link>
+                                        <Link href="/team">Team</Link>
                                     </li>
                                     <li>
-                                        <Link href="#">Projects</Link>
+                                        <Link href="/projects">Projects</Link>
                                     </li>
                                 </ul>
                             </div>
                             <div>
                                 <p className="text-title-md font-medium mb-2">Collab</p>
                                 <ul className="font-light tracking-wider">
-                                    <li>prselflesssewango@gmail.com</li>
+                                    <li className="select-text selection:bg-light-text-selection">prselflesssewango@gmail.com</li>
                                 </ul>
                             </div>
                         </div>
