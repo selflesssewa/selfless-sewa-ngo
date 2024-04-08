@@ -10,3 +10,8 @@ type TTeamCardData = {
   founder: TFounder;
   team: TSewak[];
 };
+
+type TRules = {
+  volunteerRules: string[];
+  certificateCriteria: string[];
+};

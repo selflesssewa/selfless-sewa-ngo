@@ -15,8 +15,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* animation-duration: 0; */
-    /* -webkit-animation-duration: 0; */
+
+    @apply text-title-sm
   }
 
   .font-body {

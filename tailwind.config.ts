@@ -37,9 +37,9 @@ const config: Config = {
       "body-sm": ["0.82rem", "1.5"],
       "body-md": ["1.2rem", "1.5"],
       "body-lg": ["1.28rem", "1.5"],
-      "title-sm": ["1.6rem", "1.5"],
-      "title-md": ["2rem", "1.5"],
-      "title-lg": ["2.4rem", "1.5"],
+      "title-sm": ["1.6rem", "1.4"],
+      "title-md": ["2rem", "1.4"],
+      "title-lg": ["2.4rem", "1.4"],
       "headline-sm": ["3.2rem", "1.2"],
       "headline-md": ["4rem", "1.2"],
       "headline-lg": ["4.8rem", "1.2"],
@@ -63,6 +63,7 @@ const config: Config = {
       saundarya: "#9AFF89",
       "jeev-kalyan": "#86E9FF",
       "light-text-selection": "rgba(255, 255, 255, 0.3)",
+      "dark-text-selection": "rgba(29, 54, 111, 0.3)",
     },
     extend: {
       keyframes: {

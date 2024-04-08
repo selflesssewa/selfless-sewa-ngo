@@ -3,55 +3,7 @@ import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import CallToActionCard from "../components/CallToActionCard";
 import Container from "../components/Container";
-import { getCoreTeam } from "@/dao";
-
-const teamBeliefs = [
-  `At Selfless Sewa, our mantra of "Lead by Example" is our guiding light. It’s about walking the talk and setting the bar high ineverything we do. We don't just preach; we practice what we believe in—excellence, service, and dedication.`,
-  `By leading with integrity and passion, we inspire others to follow suit and join us in our mission of service and empowerment. Our actions speak volumes, showing that making a difference is not just a slogan but a way of life.`,
-];
-
-// const sewaks = [
-//   {
-//     name: "Siddhi Sonthalia",
-//     role: "Chief Of Coordination",
-//     img: "Siddhi Sonthalia.jpg",
-//   },
-//   {
-//     name: "Jaanvi Gupta",
-//     role: "Human Resources & Management",
-//     img: "Jaanvi Gupta.jpg",
-//   },
-//   {
-//     name: "Mahak Goyal",
-//     role: "Research & Planning",
-//     img: "Mahak Goyal.jpg",
-//   },
-//   {
-//     name: "Dhavi Manchanda",
-//     role: "Social Media & Content",
-//     img: "Dhavi Manchanda.jpg",
-//   },
-//   {
-//     name: "Sadhika Singh",
-//     role: "Public Research & Outreach",
-//     img: "Sadhika Singh.webp",
-//   },
-//   {
-//     name: "Anjali Baisla",
-//     role: "Operations & Logistics",
-//     img: "Anjali Baisla.jpg",
-//   },
-//   {
-//     name: "Shivam Mundhra",
-//     role: "Operations & Logistics",
-//     img: "Shivam Mundhra.jpg",
-//   },
-//   {
-//     name: "Srishti Bhatt",
-//     role: "Operations & Logistics",
-//     img: "Srishti Bhatt.jpg",
-//   },
-// ] as const;
+import { getCoreTeam, teamBeliefs } from "@/dao";
 
 const Team = async () => {
   const sewaks = await getCoreTeam();
@@ -144,7 +96,7 @@ const Team = async () => {
                       <MaterialSymbol icon="arrow_outward" />
                     </div>
                   </Link>
-                  <Link href="/team#rules" className="flex items-center text-black">
+                  <Link href="/volunteer#rules" className="flex items-center text-black">
                     See Rules
                   </Link>
                 </div>
@@ -152,9 +104,6 @@ const Team = async () => {
             }
           />
         </Container>
-      </section>
-      <section id="rules" className="scroll-mt-[12vh]">
-        rules
       </section>
     </main>
   );
