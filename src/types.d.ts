@@ -15,3 +15,9 @@ type TRules = {
   volunteerRules: string[];
   certificateCriteria: string[];
 };
+
+type THomeImages = {
+  sliderImgUrls: string[];
+  missionImgUrls: string[];
+  visionImgUrls: string[];
+};

@@ -54,7 +54,7 @@ const Footer = () => {
                                         <Link href="#apply">Become a Sewak</Link>
                                     </li>
                                     <li>
-                                        <Link href="/team#departments">Departments</Link>
+                                        <Link href="/volunteer#departments">Departments</Link>
                                     </li>
                                     <li>
                                         <Link href="/volunteer#rules">Rules</Link>

@@ -1,10 +1,27 @@
-import { createClient, type Asset } from "contentful";
+import { createClient, type Asset, type ChainModifiers } from "contentful";
 import { getEnvVariable } from "./helper";
+import { assert } from "console";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
   space: getEnvVariable("CONTENTFUL_SPACE_ID"),
 });
+
+export async function getHomeImages(): Promise<THomeImages> {
+  const entries = await contentful.getEntries({
+    content_type: "misc",
+    select: ["fields.sliderImages", "fields.missionImages", "fields.visionImages"],
+    limit: 1,
+  });
+
+  const data = entries.items[0].fields;
+
+  const sliderImgUrls = (data.sliderImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
+  const missionImgUrls = (data.missionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
+  const visionImgUrls = (data.visionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
+
+  return { sliderImgUrls, missionImgUrls, visionImgUrls };
+}
 
 export async function getRules(): Promise<TRules> {
   const entries = await contentful.getEntries({

@@ -37,7 +37,7 @@ const config: Config = {
       "body-sm": ["0.82rem", "1.5"],
       "body-md": ["1.2rem", "1.5"],
       "body-lg": ["1.28rem", "1.5"],
-      "title-sm": ["1.6rem", "1.4"],
+      "title-sm": ["1.6rem", "1.5"],
       "title-md": ["2rem", "1.4"],
       "title-lg": ["2.4rem", "1.4"],
       "headline-sm": ["3.2rem", "1.2"],

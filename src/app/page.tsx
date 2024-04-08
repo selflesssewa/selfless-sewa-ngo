@@ -5,6 +5,8 @@ import HeroSlider from "./components/HeroSlider";
 import Image from "next/image";
 import CallToActionCard from "./components/CallToActionCard";
 import { twMerge } from "tailwind-merge";
+import { getHomeImages } from "@/dao";
+import { ImageResponse } from "next/server";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -68,7 +70,9 @@ export const projectBgColor = {
   "jeev-kalyan": "bg-jeev-kalyan",
 } as const;
 
-export default function Home() {
+export default async function Home() {
+  const { sliderImgUrls, missionImgUrls, visionImgUrls } = await getHomeImages();
+
   return (
     <main className="min-h-screen">
       <section className="pt-4 md:pt-6 lg:pt-10 flex flex-col gap-8 mb-17">
@@ -95,7 +99,7 @@ export default function Home() {
             </div>
           </Link>
         </Container>
-        <HeroSlider />
+        <HeroSlider images={sliderImgUrls} />
       </section>
       <section>
         <Container className="flex items-center flex-col mb-12  md:mb-17">
@@ -121,13 +125,13 @@ export default function Home() {
           </div>
           <div className="grow max-md:h-[50vh] relative">
             <div className="absolute max-md:h-[60%] md:w-[60%] h-[100%] md:top-[40%] left-[50%] max-md:w-[calc(100%+1.2rem)] md:left-[0px] md:-translate-y-1/2 max-md:-translate-x-1/2  shadow-2xl shadow-blue-60 rounded-[16px] overflow-clip">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={missionImgUrls[0]} alt="" fill />
             </div>
             <div className="absolute md:w-[30%] w-[30%] h-[70%] max-md:h-[30%] md:bottom-[calc(45%+1.6rem)] max-md:top-[calc(60%+1.6rem)] right-[calc(60%+1.6rem)] md:left-[calc(60%+1.6rem)] rounded-[16px] overflow-clip shadow-2xl shadow-blue-60">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={missionImgUrls[1]} alt="" fill />
             </div>
             <div className="absolute md:w-[35%] h-[60%] w-[55%] max-md:h-[50%] left-[40%] top-[calc(60%+1.6rem)] md:top-[55%] md:left-[calc(60%+1.6rem)] rounded-[16px] overflow-clip shadow-2xl shadow-blue-60">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={missionImgUrls[2]} alt="" fill />
             </div>
           </div>
         </div>
@@ -136,13 +140,13 @@ export default function Home() {
         <div className="bg-white-70 max-md:flex-col flex items-stretch backdrop-blur-lg text-black rounded-[24px]">
           <div className="grow max-md:h-[50vh] relative">
             <div className="absolute max-md:h-[60%] md:w-[60%]  h-[100%] md:top-[40%] max-md:w-[calc(100%+1.2rem)] max-md:left-[50%] md:right-[0px] md:-translate-y-1/2 max-md:-translate-x-1/2 shadow-2xl shadow-blue-60 rounded-[16px] overflow-clip">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={visionImgUrls[0]} alt="" fill />
             </div>
             <div className="absolute md:w-[30%] h-[80%] max-md:h-[40%] max-md:w-[45%] md:bottom-[calc(45%+1.6rem)] max-md:top-[calc(60%+1.6rem)] right-[calc(45%+1.6rem)] md:right-[calc(60%+1.6rem)] rounded-[16px] overflow-clip shadow-2xl shadow-blue-60">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={visionImgUrls[1]} alt="" fill />
             </div>
             <div className="absolute md:w-[35%] h-[60%] w-[40%] max-md:h-[30%] max-md:left-[55%] top-[calc(60%+1.6rem)] md:top-[55%] md:right-[calc(60%+1.6rem)] rounded-[16px] overflow-clip shadow-2xl shadow-blue-60">
-              <Image className="object-cover" src="/images/IMG_1118.jpeg" alt="" fill />
+              <Image className="object-cover" src={visionImgUrls[2]} alt="" fill />
             </div>
           </div>
           <div className="md:w-[50%] p-5 pt-6  md:pe-9 md:ps-6 md:py-7 max-md:-order-1">
