@@ -13,30 +13,10 @@ const Volunteer = async () => {
       </section>
       <section id="rules" className="scroll-mt-[16vh]">
         <Container className="flex items-center flex-col my-12 md:my-17">
-          <div className="bg-white-70 text-black overflow-hidden backdrop-blur-lg pb-3 rounded-[24px]">
-            <h2 className="text-headline-sm p-4 pb-3 tracking-normal bg-white-70">Volunteering Rules</h2>
-            <ul className="select-text selection:bg-dark-text-selection flex flex-col divide-y-[1px] max-w-prose divide-blue-30">
-              {rules.volunteerRules.map((rule, idx) => (
-                <li className="p-3 px-4 flex gap-3 items-baseline tracking-wider">
-                  <span className="font-bold">{idx + 1}</span>
-                  {rule}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <List title="Volunteering Rules" list={rules.volunteerRules} />
         </Container>
         <Container className="flex items-center flex-col my-12 md:my-17">
-          <div className="bg-white-70 text-black overflow-hidden backdrop-blur-lg pb-3 rounded-[24px]">
-            <h2 className="text-headline-sm p-4 pb-3 tracking-normal bg-white-70">Certification Criteria</h2>
-            <ul className="select-text selection:bg-dark-text-selection flex flex-col divide-y-[1px] max-w-prose divide-blue-30">
-              {rules.certificateCriteria.map((rule, idx) => (
-                <li className="p-3 px-4 flex gap-3 items-baseline tracking-wider">
-                  <span className="font-bold">{idx + 1}</span>
-                  {rule}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <List title="Certification Criteria" list={rules.certificateCriteria} />
         </Container>
         <Container className="grid place-items-center my-20">
           <Link
@@ -55,3 +35,19 @@ const Volunteer = async () => {
 };
 
 export default Volunteer;
+
+const List = ({ title, list }: { title: string; list: string[] }) => {
+  return (
+    <div className="bg-white-70 text-black overflow-hidden backdrop-blur-lg pb-3 rounded-[24px]">
+      <h2 className="text-headline-sm p-4 pb-3 tracking-normal bg-white-70">{title}</h2>
+      <ul className="select-text selection:bg-dark-text-selection flex flex-col divide-y-[1px] max-w-prose divide-blue-30">
+        {list.map((rule, idx) => (
+          <li className="p-3 px-4 flex gap-3 items-baseline tracking-wider">
+            <span className="font-bold">{idx + 1}</span>
+            {rule}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
