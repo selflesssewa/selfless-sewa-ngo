@@ -7,7 +7,7 @@ import Container from "./Container"
 const Footer = () => {
     return (
         <footer className="bg-blue-60 backdrop-blur-sm">
-            <Container className="py-4 max-w-full">
+            <Container className="py-5 max-w-full">
                 <div className="flex max-lg:flex-col lg:items-start gap-8 justify-between gap-y-5">
                     <div className="basis-1/3">
                         <Link href="/" className="flex gap-2 items-center">

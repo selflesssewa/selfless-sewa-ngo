@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { MaterialSymbol } from "react-material-symbols";
-import Container from "./Container";
 import Image from "next/image";
-import { twMerge } from "tailwind-merge";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { MaterialSymbol } from "react-material-symbols";
+import { twMerge } from "tailwind-merge";
+import Container from "./Container";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,9 +26,9 @@ const Navbar = () => {
   }, []);
 
   return (
-    <header className="bg-blue-60 backdrop-blur-xl sticky top-[0px] z-10">
-      <Container className="max-w-full ">
-        <nav className="flex justify-between py-2">
+    <header className="sticky top-[0px] z-10">
+      <nav>
+        <Container className="flex justify-between py-2 max-w-full bg-blue-60 backdrop-blur-xl">
           <Link href="/" className="flex gap-2 items-center">
             <div className="w-5">
               <Image
@@ -72,32 +72,32 @@ const Navbar = () => {
                   setIsOpen(s => !s);
                 }}
               >
-                <MaterialSymbol icon="menu" size={24} weight={300} />
+                <MaterialSymbol icon={isOpen ? "close" : "menu"} size={24} weight={300} />
               </button>
             </li>
           </ul>
-        </nav>
-        <nav
-          className={twMerge(
-            "fixed z-20 w-full left-[0px] font-medium tracking-wider bg-blue",
-            isOpen ? "visible" : "hidden"
-          )}
-        >
-          <Container className="py-2 max-w-full">
-            <ul className="[&_a]:py-1 [&_a]:block duration-500 hover:[&_li]:underline  underline-offset-2 flex flex-col">
-              <li>
-                <Link href="/projects">Projects</Link>
-              </li>
-              <li>
-                <Link href="/volunteer">Volunteer</Link>
-              </li>
-              <li>
-                <Link href="/team">Team</Link>
-              </li>
-            </ul>
-          </Container>
-        </nav>
-      </Container>
+        </Container>
+      </nav>
+      <nav
+        className={twMerge(
+          "fixed w-full left-[0px] tracking-wider bg-blue-60 border-t border-blue-60 backdrop-blur-xl",
+          isOpen ? "visible" : "hidden"
+        )}
+      >
+        <Container className="py-2 max-w-full">
+          <ul className="[&_a]:py-1 [&_a]:block duration-500 hover:[&_li]:underline underline-offset-2 flex flex-col">
+            <li>
+              <Link href="/projects">Projects</Link>
+            </li>
+            <li>
+              <Link href="/volunteer">Volunteer</Link>
+            </li>
+            <li>
+              <Link href="/team">Team</Link>
+            </li>
+          </ul>
+        </Container>
+      </nav>
     </header>
   );
 };
