@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
 import { twMerge } from "tailwind-merge";
 
-const HeroSlider = ({ images }: { images: THomeImages["sliderImgUrls"] }) => {
+const HeroSlider = ({ images }: { images: THomeContent["sliderImgUrls"] }) => {
   const [slider, { width }] = useMeasure();
   const [duration, setDuration] = useState(0);
 
