@@ -1,26 +1,40 @@
-import { createClient, type Asset, type ChainModifiers } from "contentful";
+import { type EntryFieldTypes, createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
-import { assert } from "console";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
   space: getEnvVariable("CONTENTFUL_SPACE_ID"),
 });
 
-export async function getHomeImages(): Promise<THomeImages> {
+type TLoc = {
+  lat: number;
+  lon: number;
+};
+
+export async function getHomeContent(): Promise<THomeContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.sliderImages", "fields.missionImages", "fields.visionImages"],
+    select: ["fields.sliderImages", "fields.missionImages", "fields.visionImages", "fields.locations"],
     limit: 1,
   });
 
   const data = entries.items[0].fields;
 
+  const locations = (data.locations as Entry[]).map(({ fields }) => {
+    return {
+      label: fields.label,
+      lon: (fields.coord as TLoc).lon,
+      lat: (fields.coord as TLoc).lat,
+      offsetX: fields.offsetX,
+      offsetY: fields.offsetY,
+    } as TLocation;
+  });
+
   const sliderImgUrls = (data.sliderImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
   const missionImgUrls = (data.missionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
   const visionImgUrls = (data.visionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
 
-  return { sliderImgUrls, missionImgUrls, visionImgUrls };
+  return { locations, sliderImgUrls, missionImgUrls, visionImgUrls };
 }
 
 export async function getRules(): Promise<TRules> {

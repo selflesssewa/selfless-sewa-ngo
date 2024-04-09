@@ -16,7 +16,16 @@ type TRules = {
   certificateCriteria: string[];
 };
 
-type THomeImages = {
+type TLocation = {
+  label: string;
+  lon: number;
+  lat: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+type THomeContent = {
+  locations: TLocation[];
   sliderImgUrls: string[];
   missionImgUrls: string[];
   visionImgUrls: string[];

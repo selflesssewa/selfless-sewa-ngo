@@ -1,4 +1,4 @@
-import { getHomeImages } from "@/dao";
+import { getHomeContent } from "@/dao";
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
@@ -71,7 +71,7 @@ export const projectBgColor = {
 } as const;
 
 export default async function Home() {
-  const { sliderImgUrls, missionImgUrls, visionImgUrls } = await getHomeImages();
+  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations } = await getHomeContent();
 
   return (
     <main className="min-h-screen">
@@ -198,7 +198,7 @@ export default async function Home() {
         </Container>
       </section>
       <section>
-        <Map />
+        <Map points={locations} />
       </section>
       <section>
         <Container className="mb-14 py-8 flex items-center min-h-[80vh]">
