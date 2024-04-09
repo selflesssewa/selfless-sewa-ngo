@@ -1,12 +1,12 @@
+import { getHomeImages } from "@/dao";
+import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
+import { twMerge } from "tailwind-merge";
+import CallToActionCard from "./components/CallToActionCard";
+import Map from "./components/Map";
 import Container from "./components/Container";
 import HeroSlider from "./components/HeroSlider";
-import Image from "next/image";
-import CallToActionCard from "./components/CallToActionCard";
-import { twMerge } from "tailwind-merge";
-import { getHomeImages } from "@/dao";
-import { ImageResponse } from "next/server";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -196,6 +196,9 @@ export default async function Home() {
             ))}
           </div>
         </Container>
+      </section>
+      <section>
+        <Map />
       </section>
       <section>
         <Container className="mb-14 py-8 flex items-center min-h-[80vh]">
