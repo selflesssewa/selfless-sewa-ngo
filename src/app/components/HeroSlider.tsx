@@ -10,7 +10,7 @@ const HeroSlider = ({ images }: { images: THomeContent["sliderImgUrls"] }) => {
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    setDuration(width / 200);
+    setDuration(width / 70);
   }, [width]);
 
   return (

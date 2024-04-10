@@ -13,7 +13,6 @@ const Navbar = () => {
   const pathname = usePathname();
 
   useEffect(() => {
-    console.log(pathname);
     setIsOpen(false);
   }, [pathname]);
 

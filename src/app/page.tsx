@@ -78,7 +78,7 @@ export default async function Home() {
       <section className="pt-4 md:pt-6 lg:pt-10 flex flex-col gap-8 mb-17">
         <Container className="flex items-end max-lg:flex-col max-lg:items-start gap-3 justify-start">
           <div className="flex flex-col items-start gap-2">
-            <p className="text-body-lg tracking-wider flex items-center gap-1 bg-white/10 border-white/15 backdrop-blur-sm border-2 px-2 rounded-[8px]">
+            <p className="text-body-lg tracking-wider flex items-center gap-1 bg-white/10 border-white/15 backdrop-blur-sm border px-1 rounded-[4px]">
               <MaterialSymbol color="gold" icon="award_star" />
               Registered under The Indian Trusts Act, 1882
             </p>
