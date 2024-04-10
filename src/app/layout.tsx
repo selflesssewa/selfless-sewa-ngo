@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={twMerge(bodyFont.variable, displayFont.variable, hindiFont.variable, "text-white font-body")}>
-        <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat left-[0px] top-[0px] w-full h-full fixed -z-10" />
+        <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat left-[0px] top-[0px] w-full h-lvh fixed -z-10" />
         <Navbar />
         {children}
         <Footer />
