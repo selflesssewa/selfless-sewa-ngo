@@ -1,10 +1,10 @@
-import { getRules } from "@/dao";
+import { getVolunteerPageContent } from "@/dao";
 import Container from "../components/Container";
 import { MaterialSymbol } from "react-material-symbols";
 import Link from "next/link";
 
 const Volunteer = async () => {
-  const rules = await getRules();
+  const data = await getVolunteerPageContent();
 
   return (
     <main className="min-h-screen">
@@ -13,14 +13,15 @@ const Volunteer = async () => {
       </section>
       <section id="rules" className="scroll-mt-[16vh]">
         <Container className="flex items-center flex-col my-12 md:my-17">
-          <List title="Volunteering Rules" list={rules.volunteerRules} />
+          <List title="Volunteering Rules" list={data.volunteerRules} />
         </Container>
         <Container className="flex items-center flex-col my-12 md:my-17">
-          <List title="Certification Criteria" list={rules.certificateCriteria} />
+          <List title="Certification Criteria" list={data.certificateCriteria} />
         </Container>
         <Container className="grid place-items-center my-20">
           <Link
-            href="#apply"
+            href={data.volunteerFormLink}
+            target="_blank"
             className="flex p-1 rounded-[0.8rem] bg-blue-30 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
           >
             <div className="px-3 py-2 rounded-[0.4rem] bg-blue-60 gap-1 flex items-center">

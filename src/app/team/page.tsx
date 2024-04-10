@@ -3,10 +3,10 @@ import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import CallToActionCard from "../components/CallToActionCard";
 import Container from "../components/Container";
-import { getCoreTeam, teamBeliefs } from "@/dao";
+import { getTeamPageContent, teamBeliefs } from "@/dao";
 
 const Team = async () => {
-  const sewaks = await getCoreTeam();
+  const data = await getTeamPageContent();
 
   return (
     <main className="min-h-screen">
@@ -44,23 +44,23 @@ const Team = async () => {
               <Image
                 fill
                 className="object-cover w-full h-full -scale-x-100"
-                src={sewaks.founder.imgUrl}
-                alt={sewaks.founder.name}
+                src={data.founder.imgUrl}
+                alt={data.founder.name}
               />
             </div>
             <div className="grow bg-white-70 text-black backdrop-blur-lg rounded-[4px] p-3 px-4">
-              <p className="text-title-lg font-medium" title={sewaks.founder.name}>
-                {sewaks.founder.name}
+              <p className="text-title-lg font-medium" title={data.founder.name}>
+                {data.founder.name}
               </p>
-              <h2 className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={sewaks.founder.role}>
-                {sewaks.founder.role}
+              <h2 className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
+                {data.founder.role}
               </h2>
-              <p className="mt-3">{sewaks.founder.bio}</p>
+              <p className="mt-3">{data.founder.bio}</p>
             </div>
           </div>
           <h2 className="tracking-wider text-center mt-7">Our Core Team</h2>
           <ul className="grid max-sm:grid-cols-1 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 md:gap-5">
-            {sewaks.team.map((sewak, idx) => (
+            {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
                   <Image fill className="object-cover w-full h-full" src={sewak.imgUrl} alt={sewak.name} />
@@ -88,7 +88,8 @@ const Team = async () => {
                 <p className="text-black text-body-lg font-medium mb-1">Ready to become a Sewak?</p>
                 <div className="flex gap-3">
                   <Link
-                    href="#apply"
+                    href={data.volunteerFormLink}
+                    target="_blank"
                     className="flex p-1 rounded-[0.8rem] bg-blue-30 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
                   >
                     <div className="px-3 py-2 rounded-[0.4rem] bg-blue-60 gap-1 flex items-center">

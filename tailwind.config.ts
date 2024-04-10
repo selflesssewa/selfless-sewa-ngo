@@ -60,7 +60,7 @@ const config: Config = {
       saksham: "#FFE194",
       chikitsa: "#FECCED",
       aahar: "#FFB388",
-      saundarya: "#9AFF89",
+      saundarya: "#9AEE89",
       "jeev-kalyan": "#86E9FF",
       "light-text-selection": "rgba(255, 255, 255, 0.3)",
       "dark-text-selection": "rgba(29, 54, 111, 0.3)",
@@ -75,6 +75,9 @@ const config: Config = {
         slider: "slider var(--slider-duration, 50s) linear infinite",
       },
     },
+  },
+  future: {
+    hoverOnlyWhenSupported: true
   },
   plugins: [],
 };

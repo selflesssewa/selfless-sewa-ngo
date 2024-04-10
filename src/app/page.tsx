@@ -1,4 +1,4 @@
-import { getHomeContent } from "@/dao";
+import { getHomePageContent } from "@/dao";
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
@@ -71,7 +71,7 @@ export const projectBgColor = {
 } as const;
 
 export default async function Home() {
-  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations } = await getHomeContent();
+  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations, donationFormLink } = await getHomePageContent();
 
   return (
     <main className="min-h-screen">
@@ -87,7 +87,8 @@ export default async function Home() {
             </h1>
           </div>
           <Link
-            href="#donate"
+            href={donationFormLink}
+            target="_blank"
             className="flex p-1 rounded-[0.8rem] flex-shrink-0 bg-green-50 backdrop-blur-lg hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-150 ease-in"
           >
             <div className="px-4 py-2 max-sm:py-0 max-sm:ps-2 rounded-[0.4rem] bg-green/50 flex gap-2 items-center">
@@ -209,7 +210,8 @@ export default async function Home() {
             imgAltText=""
             footer={
               <Link
-                href="#donate"
+                href={donationFormLink}
+                target="_blank"
                 className="flex p-1 self-start mt-8 rounded-[0.8rem] bg-green-50 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
               >
                 <div className="px-3 py-2 rounded-[0.4rem] bg-green/50 flex items-center">

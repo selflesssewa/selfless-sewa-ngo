@@ -1,4 +1,4 @@
-import { type EntryFieldTypes, createClient, type Asset, type Entry } from "contentful";
+import { createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
 
 const contentful = createClient({
@@ -6,15 +6,51 @@ const contentful = createClient({
   space: getEnvVariable("CONTENTFUL_SPACE_ID"),
 });
 
+export async function getLayoutContent(): Promise<TLayoutContent> {
+  const entries = await contentful.getEntries({
+    content_type: "misc",
+    select: [
+      "fields.contactNo",
+      "fields.contactEmailId",
+      "fields.collabEmailId",
+      "fields.socials",
+      "fields.volunteerFormLink",
+      "fields.donationFormLink",
+    ],
+    limit: 1,
+  });
+
+  const data = entries.items[0].fields;
+
+  const socials = (data.socials as Entry[]).map(entry => {
+    return { handle: entry.fields.handle, url: entry.fields.url } as TSocial;
+  });
+
+  return {
+    donationFormLink: data.donationFormLink as string,
+    volunteerFormLink: data.volunteerFormLink as string,
+    contactNo: data.contactNo as string,
+    contactEmailId: data.contactEmailId as string,
+    collabEmailId: data.collabEmailId as string,
+    socials,
+  };
+}
+
 type TLoc = {
   lat: number;
   lon: number;
 };
 
-export async function getHomeContent(): Promise<THomeContent> {
+export async function getHomePageContent(): Promise<THomePageContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.sliderImages", "fields.missionImages", "fields.visionImages", "fields.locations"],
+    select: [
+      "fields.sliderImages",
+      "fields.missionImages",
+      "fields.visionImages",
+      "fields.locations",
+      "fields.donationFormLink",
+    ],
     limit: 1,
   });
 
@@ -34,22 +70,26 @@ export async function getHomeContent(): Promise<THomeContent> {
   const missionImgUrls = (data.missionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
   const visionImgUrls = (data.visionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
 
-  return { locations, sliderImgUrls, missionImgUrls, visionImgUrls };
+  return { locations, sliderImgUrls, missionImgUrls, visionImgUrls, donationFormLink: data.donationFormLink as string };
 }
 
-export async function getRules(): Promise<TRules> {
+export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.volunteerRules", "fields.certificateCriteria"],
+    select: ["fields.volunteerRules", "fields.certificateCriteria", "fields.volunteerFormLink"],
     limit: 1,
   });
 
   const data = entries.items[0].fields;
 
-  return { volunteerRules: data.volunteerRules as string[], certificateCriteria: data.certificateCriteria as string[] };
+  return {
+    volunteerRules: data.volunteerRules as string[],
+    certificateCriteria: data.certificateCriteria as string[],
+    volunteerFormLink: data.volunteerFormLink as string,
+  };
 }
 
-export async function getCoreTeam(): Promise<TTeamCardData> {
+export async function getTeamPageContent(): Promise<TTeamPageContent> {
   const entries = await contentful.getEntries({
     content_type: "sewak",
     select: ["fields"],
@@ -72,7 +112,15 @@ export async function getCoreTeam(): Promise<TTeamCardData> {
     }
   });
 
-  return { team, founder: founder as TFounder };
+  const linkEntries = await contentful.getEntries({
+    content_type: "misc",
+    select: ["fields.volunteerFormLink"],
+    limit: 1,
+  });
+
+  const data = linkEntries.items[0].fields;
+
+  return { team, founder: founder as TFounder, volunteerFormLink: data.volunteerFormLink as string };
 }
 
 export const teamBeliefs = [

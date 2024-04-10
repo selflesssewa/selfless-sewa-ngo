@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MaterialSymbol } from "react-material-symbols";
+import { twMerge } from "tailwind-merge";
 
 export default function CopyButton({ value }: { value: string }) {
   const [tapped, setTapped] = useState(false);
@@ -23,8 +24,12 @@ export default function CopyButton({ value }: { value: string }) {
   }, [tapped]);
 
   return (
-    <button className="relative flex items-center -m-0 p-0" onClick={handleClick} title="copy">
-      <MaterialSymbol icon={tapped ? "check_circle" : "copy_all"} weight={300} size={20} />
+    <button
+      className={twMerge("relative flex items-center -m-0 p-0", tapped && "pointer-events-none")}
+      onClick={handleClick}
+      title="copy"
+    >
+      <MaterialSymbol icon={tapped ? "check_circle" : "copy_all"} weight={200} size={20} />
       {tapped && (
         <span className="absolute text-body-md tracking-widest p-0 px-2 bg-blue-60 bottom-full left-1/2 mb-0 -translate-x-1/2 rounded-[4px]">
           copied

@@ -8,7 +8,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "./Container";
 
-const Navbar = () => {
+const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -55,7 +55,8 @@ const Navbar = () => {
             </li>
             <li>
               <Link
-                href="#donate"
+                href={donationFormLink}
+                target="_blank"
                 className="flex p-1 rounded-[0.8rem] bg-green-50 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 self-center backdrop-blur-2xl"
               >
                 <div className="px-2 py-1 rounded-[0.4rem] bg-green/50 flex gap-1 items-center">
@@ -68,7 +69,7 @@ const Navbar = () => {
               <button
                 className="flex items-center self-stretch"
                 onClick={() => {
-                  setIsOpen(s => !s);
+                  setIsOpen(state => !state);
                 }}
               >
                 <MaterialSymbol icon={isOpen ? "close" : "menu"} size={24} weight={300} />

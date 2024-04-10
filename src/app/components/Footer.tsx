@@ -1,12 +1,11 @@
-
 import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
 import Link from "next/link";
 import Image from "next/image";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
-import CopyButton from './CopyButton'
+import CopyButton from "./CopyButton";
 
-const Footer = () => {
+const Footer = ({ data }: { data: TLayoutContent }) => {
   return (
     <footer className="bg-blue-60 backdrop-blur-sm">
       <Container className="py-5 max-w-full">
@@ -29,35 +28,44 @@ const Footer = () => {
             </Link>
           </div>
           <div className="grow">
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(22ch,1fr))] gap-8 gap-y-4 [&_ul]:flex [&_ul]:gap-2 [&_ul]:flex-col [&_ul]:items-start">
+            <div
+              className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 [&_ul]:flex
+             [&_ul]:gap-2 max-md:[&_ul]:gap-1 [&_ul]:flex-col [&_ul]:items-start"
+            >
               <div>
-                <p className="text-title-md font-medium mb-2">Contact</p>
-                <ul className="font-light tracking-wider">
+                <p className="text-title-md mb-2">Contact</p>
+                <ul className="font-extralight tracking-wider">
                   <li className="flex items-center gap-2">
-                    <SiWhatsapp size={18} />
-                    <span className="select-text selection:bg-light-text-selection">+91 782 708 6428</span>
-                    <CopyButton value="+91 782 708 6428" />
+                    {
+                      //@ts-ignore
+                      <SiWhatsapp size={18} />
+                    }
+                    <span className="select-text selection:bg-light-text-selection">{data.contactNo}</span>
+                    <CopyButton value={data.contactNo} />
                   </li>
                   <li className="flex gap-1">
-                    <Link className="flex items-center gap-2" href="mailto:selflesssewango@gmail.com">
-                      <MaterialSymbol icon="alternate_email" size={20} className="-mx-0" weight={300} />
-                      <span className="select-text selection:bg-light-text-selection">selflesssewango@gmail.com</span>
+                    <Link className="flex items-center gap-2" href={`mailto:${data.contactEmailId}`}>
+                      <MaterialSymbol icon="alternate_email" size={22} className="-mx-0" weight={300} />
+                      <span className="select-text selection:bg-light-text-selection">{data.contactEmailId}</span>
                     </Link>
-                    <CopyButton value="selflesssewango@gmail.com" />
+                    <CopyButton value={data.contactEmailId} />
                   </li>
                   <li className="flex items-center gap-2">
-                    <SiInstagram size={18} />
-                    <Link href="#instagram">@selflesssewa</Link>
+                    {
+                      //@ts-ignore
+                      <SiInstagram size={18} />
+                    }
+                    <Link href={data.socials[0].url}>{data.socials[0].handle}</Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">Volunteer</p>
-                <ul className="font-light tracking-wider">
+                <p className="text-title-md mb-2">Volunteer</p>
+                <ul className="font-extralight tracking-wider">
                   <li>
-                    <Link href="#apply" className="flex items-center gap-1">
+                    <Link href={data.volunteerFormLink} target="_blank" className="flex items-center gap-1">
                       Become a Sewak
-                      <MaterialSymbol icon="arrow_outward" size={20} weight={300} />
+                      <MaterialSymbol icon="arrow_outward" size={16} weight={200} />
                     </Link>
                   </li>
                   <li>
@@ -69,8 +77,8 @@ const Footer = () => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">About</p>
-                <ul className="font-light tracking-wider">
+                <p className="text-title-md mb-2">About</p>
+                <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href="/team">Team</Link>
                   </li>
@@ -80,16 +88,16 @@ const Footer = () => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">Collab</p>
-                <ul className="font-light tracking-wider">
+                <p className="text-title-md mb-2">Collab</p>
+                <ul className="font-extralight tracking-wider">
                   <li className="flex gap-1">
-                    <Link href="mailto:prselflesssewango@gmail.com">prselflesssewango@gmail.com</Link>
-                    <CopyButton value="prselflesssewango@gmail.com" />
+                    <Link href={`mailto:${data.collabEmailId}`}>{data.collabEmailId}</Link>
+                    <CopyButton value={data.collabEmailId} />
                   </li>
                 </ul>
               </div>
             </div>
-            <p className="text-body-md font-light mt-6 opacity-90 tracking-wider">copyright info</p>
+            <p className="text-body-md mt-6 opacity-90 tracking-wider">copyright info</p>
           </div>
         </div>
       </Container>

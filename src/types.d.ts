@@ -6,12 +6,28 @@ type TSewak = {
 
 type TFounder = TSewak & { bio: string };
 
-type TTeamCardData = {
+type TTeamPageContent = {
+  volunteerFormLink: string;
   founder: TFounder;
   team: TSewak[];
 };
 
-type TRules = {
+type TSocial = {
+  handle: string;
+  url: string;
+};
+
+type TLayoutContent = {
+  contactNo: string;
+  contactEmailId: string;
+  collabEmailId: string;
+  donationFormLink: string;
+  volunteerFormLink: string;
+  socials: TSocial[];
+};
+
+type TVolunteerPageContent = {
+  volunteerFormLink: string;
   volunteerRules: string[];
   certificateCriteria: string[];
 };
@@ -24,7 +40,8 @@ type TLocation = {
   offsetY: number;
 };
 
-type THomeContent = {
+type THomePageContent = {
+  donationFormLink: string;
   locations: TLocation[];
   sliderImgUrls: string[];
   missionImgUrls: string[];

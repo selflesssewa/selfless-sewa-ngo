@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
+import { getLayoutContent } from "@/dao";
 
 const bodyFont = DM_Sans({
   subsets: ["latin"],
@@ -27,21 +28,52 @@ export const metadata: Metadata = {
   title: "Selfless Sewa NGO",
   description: "Service Above Self",
   keywords: ["Non-governmental organization", "Selfless Sewa"],
-  icons: { icon: "/favicon.ico" },
+  icons: [
+    {
+      rel: "icon",
+      url: "/favicon-16x16.png",
+      sizes: "16x16",
+    },
+    {
+      rel: "icon",
+      url: "/favicon-32x32.png",
+      sizes: "32x32",
+    },
+  ],
+  category: "Non-governmental organization",
+  openGraph: {
+    siteName: "Selfless Sewa NGO",
+    title: "Selfless Sewa",
+    description: "Service Above Self",
+    url: "https://selflesssewango.com",
+    type: "website",
+  },
+  twitter: {
+    title: "Selfless Sewa",
+    description: "Service Above Self",
+    card: "summary_large_image",
+    creator: "@SaMulla7",
+  },
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  themeColor: "#1D366F",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const data = await getLayoutContent();
+
   return (
     <html lang="en">
       <body className={twMerge(bodyFont.variable, displayFont.variable, hindiFont.variable, "text-white font-body")}>
         <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat left-[0px] top-[0px] w-full h-lvh fixed -z-10" />
-        <Navbar />
+        <Navbar donationFormLink={data.donationFormLink} />
         {children}
-        <Footer />
+        <Footer data={data} />
       </body>
     </html>
   );
