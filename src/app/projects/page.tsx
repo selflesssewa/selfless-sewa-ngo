@@ -18,7 +18,7 @@ const Project = () => {
             key={p.id}
           >
             <span className="col-start-2 italic font-display tracking-wider">Project</span>
-            <div className="p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-md shadow-blue-30">
+            <div className="max-md:p-0 p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-md shadow-blue-30">
               <div className="max-md:hidden">
                 <MaterialSymbol
                   icon={p.icon}
