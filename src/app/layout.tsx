@@ -1,15 +1,18 @@
+import { getLayoutContent } from "@/dao";
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Fraunces, Karma } from "next/font/google";
+import { Fraunces, Instrument_Sans, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
-import { getLayoutContent } from "@/dao";
 
-const bodyFont = DM_Sans({
+// DM Sans
+const bodyFont = Instrument_Sans({
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
+  // weight: ["200", "300", "400", "500", "600", "700"],
   variable: "--font-body",
 });
 const displayFont = Fraunces({

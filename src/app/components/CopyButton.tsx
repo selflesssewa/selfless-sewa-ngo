@@ -29,7 +29,7 @@ export default function CopyButton({ value }: { value: string }) {
       onClick={handleClick}
       title="copy"
     >
-      <MaterialSymbol icon={tapped ? "check_circle" : "copy_all"} weight={200} size={20} />
+      <MaterialSymbol icon={tapped ? "check_circle" : "copy_all"} weight={300} size={20} />
       {tapped && (
         <span className="absolute text-body-md tracking-widest p-0 px-2 bg-blue-60 bottom-full left-1/2 mb-0 -translate-x-1/2 rounded-[4px]">
           copied

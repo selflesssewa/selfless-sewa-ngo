@@ -25,9 +25,9 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
   }, []);
 
   return (
-    <header className="sticky top-[0px] z-10">
+    <header className="sticky top-[0px] z-50">
       <nav>
-        <Container className="flex justify-between py-2 max-w-full bg-blue-60 backdrop-blur-xl">
+        <Container className="flex justify-between py-2 max-w-full gap-1 bg-blue-60 backdrop-blur-xl">
           <Link href="/" className="flex gap-2 items-center">
             <div className="w-5">
               <Image
@@ -35,15 +35,15 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
                 alt="Selfless Sewa NGO Logomark"
                 id="logo"
                 src={"/selfless-sewa-logo.svg"}
-                width={5}
-                height={5}
+                width={12}
+                height={12}
               />
             </div>
-            <p id="word-mark" className="font-display font-semibold text-title-md text-nowrap">
-              Selfless Sewa
+            <p id="word-mark" className="font-display font-medium text-title-md">
+              Selfless Sewa NGO
             </p>
           </Link>
-          <ul className="flex text-body-lg tracking-wider items-stretch [&_a]:flex [&_a]:items-center gap-4 max-md:gap-3">
+          <ul className="flex text-body-lg tracking-wider items-stretch [&_a]:flex [&_a]:items-center gap-4 max-md:gap-2">
             <li className="max-md:hidden flex">
               <Link href="/projects">Projects</Link>
             </li>
@@ -53,7 +53,7 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
             <li className="max-md:hidden flex">
               <Link href="/team">Team</Link>
             </li>
-            <li>
+            <li className="flex">
               <Link
                 href={donationFormLink}
                 target="_blank"

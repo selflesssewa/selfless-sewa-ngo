@@ -11,19 +11,19 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
       <Container className="py-5 max-w-full">
         <div className="flex max-lg:flex-col lg:items-start gap-8 justify-between gap-y-5">
           <div className="basis-1/4">
-            <Link href="/" className="flex gap-2 items-center">
-              <div className="w-5">
+            <Link href="/" className="flex flex-col gap-2 items-start">
+              <div className="w-13">
                 <Image
                   className="w-full h-auto"
                   alt="Selfless Sewa NGO Logomark"
                   id="logo"
                   src={"/selfless-sewa-logo.svg"}
-                  width={5}
-                  height={5}
+                  width={20}
+                  height={20}
                 />
               </div>
               <p id="word-mark" className="font-display font-semibold text-title-md text-nowrap">
-                Selfless Sewa
+                Selfless Sewa NGO
               </p>
             </Link>
           </div>
@@ -33,7 +33,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
              [&_ul]:gap-2 max-md:[&_ul]:gap-1 [&_ul]:flex-col [&_ul]:items-start"
             >
               <div>
-                <p className="text-title-md mb-2">Contact</p>
+                <p className="text-title-md font-medium mb-2">Contact</p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex items-center gap-2">
                     {
@@ -55,17 +55,19 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                       //@ts-ignore
                       <SiInstagram size={18} />
                     }
-                    <Link href={data.socials[0].url}>{data.socials[0].handle}</Link>
+                    <Link href={data.socials[0].url} target="_blank">
+                      {data.socials[0].handle}
+                    </Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <p className="text-title-md mb-2">Volunteer</p>
+                <p className="text-title-md font-medium mb-2">Volunteer</p>
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href={data.volunteerFormLink} target="_blank" className="flex items-center gap-1">
                       Become a Sewak
-                      <MaterialSymbol icon="arrow_outward" size={16} weight={200} />
+                      <MaterialSymbol icon="arrow_outward" size={16} weight={300} />
                     </Link>
                   </li>
                   <li>
@@ -77,7 +79,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md mb-2">About</p>
+                <p className="text-title-md font-medium mb-2">About</p>
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href="/team">Team</Link>
@@ -88,7 +90,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md mb-2">Collab</p>
+                <p className="text-title-md font-medium mb-2">Collab</p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex gap-1">
                     <Link href={`mailto:${data.collabEmailId}`}>{data.collabEmailId}</Link>
