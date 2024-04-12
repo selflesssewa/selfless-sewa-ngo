@@ -12,7 +12,7 @@ const CallToActionCard = ({ title, body, imgSrc, imgAltText, footer }: Props) =>
   return (
     <div className="grid auto-cols-fr lg:grid-cols-2 gap-2 bg-blue-30 backdrop-blur-xl p-2 rounded-[16px]">
       <div className="bg-white-70 flex flex-col px-3 py-4 md:p-5 rounded-[8px]">
-        <h2 className="text-balance text-black text-headline-sm mb-3 tracking-normal">{title}</h2>
+        <h2 className="text-pretty text-black text-headline-sm mb-3 tracking-normal">{title}</h2>
         <p className="text-black text-pretty">{body}</p>
         {footer}
       </div>

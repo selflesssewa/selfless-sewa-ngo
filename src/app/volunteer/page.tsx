@@ -43,7 +43,7 @@ const List = ({ title, list }: { title: string; list: string[] }) => {
       <h2 className="text-headline-sm p-4 pb-3 tracking-normal bg-white-70">{title}</h2>
       <ul className="select-text selection:bg-dark-text-selection flex flex-col divide-y-[1px] max-w-prose divide-blue-30">
         {list.map((rule, idx) => (
-          <li className="p-3 px-4 flex gap-3 items-baseline max-md:text-balance" key={idx}>
+          <li className="p-3 px-4 flex gap-3 items-baseline" key={idx}>
             <span className="font-bold underline underline-offset-2 text-blue-60">{idx + 1}</span>
             {rule}
           </li>

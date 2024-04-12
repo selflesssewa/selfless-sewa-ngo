@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@contentful/rich-text-html-renderer": "^16.3.5",
+    "@contentful/rich-text-types": "^16.3.5",
     "@icons-pack/react-simple-icons": "^9.4.0",
     "@types/react-simple-maps": "^3.0.4",
     "contentful": "^10.8.7",

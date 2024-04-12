@@ -40,7 +40,7 @@ const Team = async () => {
           </div>
           <h2 className="tracking-wider text-center mt-7">Our Founder</h2>
           <div className="flex max-sm:flex-col p-1 my-8 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px] grow">
-            <div className="relative basis-2/5 aspect-square rounded-[4px] overflow-clip">
+            <div className="relative sm:basis-2/5 aspect-square rounded-[4px] overflow-clip">
               <Image
                 fill
                 className="object-cover w-full h-full -scale-x-100"
@@ -48,14 +48,14 @@ const Team = async () => {
                 alt={data.founder.name}
               />
             </div>
-            <div className="grow bg-white-70 text-black backdrop-blur-lg rounded-[4px] p-3 px-4">
+            <div className=" bg-white-70 sm:basis-3/5 text-black backdrop-blur-lg rounded-[4px] p-3 px-4">
               <p className="text-title-lg font-medium" title={data.founder.name}>
                 {data.founder.name}
               </p>
               <h2 className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
                 {data.founder.role}
               </h2>
-              <p className="mt-3">{data.founder.bio}</p>
+              <div className="mt-3 text-balance max-w-prose" dangerouslySetInnerHTML={{ __html: data.founder.bio }} />
             </div>
           </div>
           <h2 className="tracking-wider text-center mt-7">Our Core Team</h2>

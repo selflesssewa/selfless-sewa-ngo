@@ -1,5 +1,7 @@
 import { createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
+import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
+import { Document } from "@contentful/rich-text-types";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -92,8 +94,8 @@ export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> 
 export async function getTeamPageContent(): Promise<TTeamPageContent> {
   const entries = await contentful.getEntries({
     content_type: "sewak",
-    select: ["fields"],
     order: ["fields.department", "fields.name"],
+    select: ["fields"],
   });
 
   const team: TSewak[] = [];
@@ -105,8 +107,15 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
       imgUrl: `https:` + (el.fields.profileImage as Asset).fields.file?.url,
     };
 
-    if (member.role === "Founder") {
-      founder = { ...member, bio: el.fields.bio as string };
+    if (member.role === "Founder Trustee") {
+      founder = {
+        ...member,
+        bio: documentToHtmlString(el.fields.bio as Document, {
+          renderNode: {
+            ["paragraph"]: (node, next) => `<p>${next(node.content).replace(/\n/g, `</br>`)}</p>`,
+          },
+        }),
+      };
     } else {
       team.push(member);
     }

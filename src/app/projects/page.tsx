@@ -8,9 +8,22 @@ const Project = () => {
   return (
     <main className="min-h-screen">
       <section>
-        <Container className="py-14">project intro</Container>
+        <Container className="my-4">
+          <h1 className="md:ms-16 tracking-normal text-headline-sm mb-4 mt-7">Our Projects</h1>
+          <p className="md:ms-16 max-w-[55ch] md:text-title-md font-light mb-3">
+            Selfless Sewa, where we believe in making a meaningful impact through our diverse range of projects. Our
+            initiatives are dedicated to fostering positive change in society by addressing crucial issues such as
+            quality education, healthcare accessibility, menstrual hygiene, animal welfare, food donation, and
+            cleanliness.
+            <br />
+            <br />
+            Through our dedicated efforts and unwavering commitment, we strive to create a world where every individual
+            has the opportunity to thrive and live a dignified life. We're on our journey towards building a brighter,
+            more compassionate future for all.
+          </p>
+        </Container>
       </section>
-      <Container className=" md:py-17 py-14 max-md:ps-4 flex flex-col md:gap-16 gap-12">
+      <Container className=" md:my-17 my-14 max-md:ps-4 flex flex-col md:gap-16 gap-12">
         {projects.map(p => (
           <section
             id={p.id}
@@ -18,7 +31,7 @@ const Project = () => {
             key={p.id}
           >
             <span className="col-start-2 italic font-display tracking-wider">Project</span>
-            <div className="max-md:p-0 p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-md shadow-blue-30">
+            <div className="max-md:p-0 p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-2xl shadow-blue-30">
               <div className="max-md:hidden">
                 <MaterialSymbol
                   icon={p.icon}
