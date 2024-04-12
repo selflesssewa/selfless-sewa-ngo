@@ -18,8 +18,8 @@ const Project = () => {
             <br />
             <br />
             Through our dedicated efforts and unwavering commitment, we strive to create a world where every individual
-            has the opportunity to thrive and live a dignified life. We're on our journey towards building a brighter,
-            more compassionate future for all.
+            has the opportunity to thrive and live a dignified life. We&apos;re on our journey towards building a
+            brighter, more compassionate future for all.
           </p>
         </Container>
       </section>
