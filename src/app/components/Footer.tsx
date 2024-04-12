@@ -1,10 +1,9 @@
 import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
 import CopyButton from "./CopyButton";
-import { Mate } from "next/font/google";
 
 const Footer = ({ data }: { data: TLayoutContent }) => {
   return (
