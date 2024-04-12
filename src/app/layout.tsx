@@ -1,5 +1,5 @@
 import { getLayoutContent } from "@/dao";
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import { Fraunces, Instrument_Sans, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
@@ -52,14 +52,14 @@ export async function generateMetadata() {
       description: "Service Above Self",
       url: "https://selflesssewango.com",
       type: "website",
-      images: ["/favicon-512x512.png"],
+      images: ["/android-chrome-512x512.png"],
     },
     twitter: {
       title: "Selfless Sewa",
       description: "Service Above Self",
       card: "summary_large_image",
       creator: "@SaMulla7",
-      images: ["/favicon-512x512.png"],
+      images: ["/android-chrome-512x512.png"],
     },
   };
 }
