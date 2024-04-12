@@ -17,7 +17,7 @@ const CallToActionCard = ({ title, body, imgSrc, imgAltText, footer }: Props) =>
         {footer}
       </div>
       <div className="relative rounded-[8px] overflow-clip max-lg:aspect-[4/3] max-lg:-order-1">
-        <Image src={imgSrc} alt={imgAltText} fill className="object-cover" />
+        <Image src={imgSrc} alt={imgAltText} fill className="object-cover" sizes="700x800" />
       </div>
     </div>
   );

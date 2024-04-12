@@ -26,37 +26,41 @@ const hindiFont = Karma({
   variable: "--font-hindi",
 });
 
-export const metadata: Metadata = {
-  title: "Selfless Sewa NGO",
-  description: "Service Above Self",
-  keywords: ["Non-governmental organization", "Selfless Sewa"],
-  icons: [
-    {
-      rel: "icon",
-      url: "/favicon-16x16.png",
-      sizes: "16x16",
-    },
-    {
-      rel: "icon",
-      url: "/favicon-32x32.png",
-      sizes: "32x32",
-    },
-  ],
-  category: "Non-governmental organization",
-  openGraph: {
-    siteName: "Selfless Sewa NGO",
-    title: "Selfless Sewa",
+export async function generateMetadata() {
+  return {
+    title: "Selfless Sewa NGO",
     description: "Service Above Self",
-    url: "https://selflesssewango.com",
-    type: "website",
-  },
-  twitter: {
-    title: "Selfless Sewa",
-    description: "Service Above Self",
-    card: "summary_large_image",
-    creator: "@SaMulla7",
-  },
-};
+    keywords: ["Non-governmental organization", "Selfless Sewa"],
+    icons: [
+      {
+        rel: "icon",
+        url: "/favicon-16x16.png",
+        sizes: "16x16",
+      },
+      {
+        rel: "icon",
+        url: "/favicon-32x32.png",
+        sizes: "32x32",
+      },
+    ],
+    category: "Non-governmental organization",
+    openGraph: {
+      siteName: "Selfless Sewa NGO",
+      title: "Selfless Sewa",
+      description: "Service Above Self",
+      url: "https://selflesssewango.com",
+      type: "website",
+      images: ["/favicon-32x32.png"],
+    },
+    twitter: {
+      title: "Selfless Sewa",
+      description: "Service Above Self",
+      card: "summary_large_image",
+      creator: "@SaMulla7",
+      images: ["/favicon-32x32.png"],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#1D366F",

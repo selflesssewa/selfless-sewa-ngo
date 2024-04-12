@@ -43,6 +43,7 @@ const Team = async () => {
             <div className="relative sm:basis-2/5 aspect-square rounded-[4px] overflow-clip">
               <Image
                 fill
+                sizes="500x500"
                 className="object-cover w-full h-full -scale-x-100"
                 src={data.founder.imgUrl}
                 alt={data.founder.name}
@@ -63,7 +64,13 @@ const Team = async () => {
             {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
-                  <Image fill className="object-cover w-full h-full" src={sewak.imgUrl} alt={sewak.name} />
+                  <Image
+                    fill
+                    sizes="300x300"
+                    className="object-cover w-full h-full"
+                    src={sewak.imgUrl}
+                    alt={sewak.name}
+                  />
                 </div>
                 <div className="bg-white-70 text-black backdrop-blur-lg rounded-[4px] ps-[1.2rem] p-2 font-medium">
                   <p title={sewak.name}>{sewak.name}</p>
