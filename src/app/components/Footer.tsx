@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
 import CopyButton from "./CopyButton";
+import { Mate } from "next/font/google";
 
 const Footer = ({ data }: { data: TLayoutContent }) => {
   return (
@@ -99,7 +100,10 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
             </div>
-            <p className="text-body-md mt-6 opacity-90 tracking-wider">copyright info</p>
+            <p className="text-body-md mt-6 opacity-90 tracking-wider">
+              <MaterialSymbol icon="copyright" size={16} weight={200} className="translate-y-1" />
+              &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO. All&nbsp;rights&nbsp;reserved.
+            </p>
           </div>
         </div>
       </Container>

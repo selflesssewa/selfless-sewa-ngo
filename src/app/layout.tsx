@@ -13,6 +13,7 @@ const bodyFont = Instrument_Sans({
   style: ["normal", "italic"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-body",
+  display: "swap",
 });
 const displayFont = Fraunces({
   subsets: ["latin", "latin-ext"],
