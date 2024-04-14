@@ -1,7 +1,40 @@
 import { getVolunteerPageContent } from "@/dao";
 import Container from "../components/Container";
-import { MaterialSymbol } from "react-material-symbols";
+import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
 import Link from "next/link";
+
+const departments = [
+  {
+    icon: "groups",
+    name: "Human Resources & Management",
+    description: "Cultivating talent & fostering supportive workplace culture.",
+  },
+  {
+    icon: "package_2",
+    name: "Operations & Logistics",
+    description: "Efficiently delivering aid where it's needed.",
+  },
+  {
+    icon: "calculate",
+    name: "Finance & Budgeting",
+    description: "Managing funds wisely to maximize impact.",
+  },
+  {
+    icon: "news",
+    name: "Social Media & Content",
+    description: "Spreading our message far and wide.",
+  },
+  {
+    icon: "edit_calendar",
+    name: "Research & Planning",
+    description: "Guiding our actions with solid data & a plan of action.",
+  },
+  {
+    icon: "hub",
+    name: "Public Relations & Outreach",
+    description: "Connecting with communities to drive change.",
+  },
+] as const;
 
 const Volunteer = async () => {
   const data = await getVolunteerPageContent();
@@ -9,7 +42,30 @@ const Volunteer = async () => {
   return (
     <main className="min-h-screen">
       <section id="departments" className="scroll-mt-[16vh]">
-        <Container className="flex items-center flex-col my-12  md:my-17">deps</Container>
+        <Container className="flex items-center flex-col my-12 md:my-17">
+          <h2 className="tracking-normal text-headline-sm max-md:mb-7 mb-12">Our Departments</h2>
+          <ul className="grid auto-cols-fr max-md:gap-2 gap-4  max-sm:grid-cols-2 grid-cols-3">
+            {departments.map(department => (
+              <li
+                className="relative bg-blue-60 max-w-[32rem] max-sm:aspect-[3/5] aspect-[3/4] backdrop-blur-lg rounded-[24px] overflow-clip"
+                key={department.name}
+              >
+                <div className="max-sm:px-3 p-4 z-10">
+                  <h2 className="md:text-title-md text-balance mb-1">{department.name}</h2>
+                  <p className="font-light text-body-md max-sm:tracking-wider sm:text-body-lg">
+                    {department.description}
+                  </p>
+                </div>
+                <div className="absolute  text-blue-60 max-sm:-left-5 max-lg:-left-7 -left-12 max-sm:-bottom-4 max-lg:-bottom-6 -bottom-3 -z-10">
+                  <MaterialSymbol
+                    className="[font-variation-settings:'opsz'_48,_'wght'_300] max-sm:text-[180px] max-lg:text-[200px] text-[320px]"
+                    icon={department.icon as SymbolCodepoints}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </Container>
       </section>
       <section id="rules" className="scroll-mt-[16vh]">
         <Container className="flex items-center flex-col my-12 md:my-17">
@@ -18,7 +74,7 @@ const Volunteer = async () => {
         <Container className="flex items-center flex-col my-12 md:my-17">
           <List title="Certification Criteria" list={data.certificateCriteria} />
         </Container>
-        <Container className="grid place-items-center my-20">
+        <Container className="grid place-items-center my-18">
           <Link
             href={data.volunteerFormLink}
             target="_blank"
