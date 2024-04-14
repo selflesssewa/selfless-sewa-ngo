@@ -7,24 +7,23 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
 
-// DM Sans
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
   display: "swap",
+  variable: "--font-body",
 });
 const displayFont = Fraunces({
-  subsets: ["latin", "latin-ext"],
+  variable: "--font-display",
+  subsets: ["latin"],
   style: ["italic", "normal"],
   axes: ["opsz", "WONK", "SOFT"],
-  variable: "--font-display",
 });
 const hindiFont = Karma({
-  subsets: ["devanagari"],
-  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-hindi",
+  subsets: ["devanagari"],
+  weight: ["500"],
 });
 
 export async function generateMetadata() {

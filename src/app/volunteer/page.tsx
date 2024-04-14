@@ -47,7 +47,7 @@ const Volunteer = async () => {
           <ul className="grid auto-cols-fr max-md:gap-2 gap-4  max-sm:grid-cols-2 grid-cols-3">
             {departments.map(department => (
               <li
-                className="relative bg-blue-60 max-w-[32rem] max-sm:aspect-[3/5] aspect-[3/4] backdrop-blur-lg max-sm:rounded-[16px] rounded-[24px] overflow-clip"
+                className="relative bg-blue-60 max-w-[32rem] max-sm:aspect-[2/3] aspect-[3/4] backdrop-blur-lg max-sm:rounded-[16px] rounded-[24px] overflow-clip"
                 key={department.name}
               >
                 <div className="max-sm:p-3 p-4 z-10">
@@ -56,9 +56,9 @@ const Volunteer = async () => {
                     {department.description}
                   </p>
                 </div>
-                <div className="absolute  text-blue-60 max-sm:-left-6 max-lg:-left-7 -left-12 max-sm:bottom-0 max-lg:-bottom-6 -bottom-3 -z-10">
+                <div className="absolute text-blue-60 max-sm:-left-6 max-lg:-left-7 -left-12 max-sm:-bottom-2 max-lg:-bottom-6 -bottom-3 -z-10">
                   <MaterialSymbol
-                    className="[font-variation-settings:'opsz'_48,_'wght'_300] max-sm:text-[180px] max-lg:text-[200px] text-[320px]"
+                    className="[font-variation-settings:'opsz'_24,_'wght'_300] max-sm:text-[180px] max-lg:text-[200px] text-[320px]"
                     icon={department.icon as SymbolCodepoints}
                   />
                 </div>
