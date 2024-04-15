@@ -79,7 +79,7 @@ const Team = async () => {
             </div>
           </div>
           <h2 className="tracking-wider text-center mt-14">Core Team</h2>
-          <ul className="grid max-sm:grid-cols-1 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-3 md:gap-5">
+          <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-2 sm:gap-3 md:gap-5">
             {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
@@ -92,7 +92,7 @@ const Team = async () => {
                   />
                 </div>
                 <div className="bg-white-70 text-black backdrop-blur-lg rounded-[4px] ps-[1.2rem] p-2 font-medium">
-                  <p className="whitespace-nowrap overflow-hidden" title={sewak.name}>
+                  <p className="text-ellipsis whitespace-nowrap overflow-hidden" title={sewak.name}>
                     {sewak.name}
                   </p>
                   <p className="text-body-lg text-ellipsis whitespace-nowrap overflow-hidden" title={sewak.role}>
