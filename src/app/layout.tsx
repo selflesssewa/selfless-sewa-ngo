@@ -46,8 +46,7 @@ export async function generateMetadata() {
     ],
     category: "Non-governmental organization",
     openGraph: {
-      siteName: "Selfless Sewa NGO",
-      title: "Selfless Sewa",
+      title: "Selfless Sewa NGO",
       description: "Service Above Self",
       url: "https://selflesssewango.com",
       type: "website",
