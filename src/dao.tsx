@@ -99,8 +99,8 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
   });
 
   const team: TSewak[] = [];
-  let founder: TFounder | undefined;
-  let chief: TSewak | undefined;
+  let founder: TSewakWithBio | undefined;
+
   entries.items.forEach(el => {
     const member: TSewak = {
       name: el.fields.name as string,
@@ -108,17 +108,15 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
       imgUrl: `https:` + (el.fields.profileImage as Asset).fields.file?.url,
     };
 
+    const parseBio = (doc: Document) =>
+      documentToHtmlString(doc, {
+        renderNode: {
+          ["paragraph"]: (node, next) => `<p>${next(node.content).replace(/\n/g, `</br>`)}</p>`,
+        },
+      });
+
     if (member.role === "Founder Trustee") {
-      founder = {
-        ...member,
-        bio: documentToHtmlString(el.fields.bio as Document, {
-          renderNode: {
-            ["paragraph"]: (node, next) => `<p>${next(node.content).replace(/\n/g, `</br>`)}</p>`,
-          },
-        }),
-      };
-    } else if (member.role === "Chief of Core") {
-      chief = { ...member };
+      founder = { ...member, bio: parseBio(el.fields.bio as Document) };
     } else {
       team.push(member);
     }
@@ -134,8 +132,7 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
   return {
     team,
-    founder: founder as TFounder,
-    chief: chief as TSewak,
+    founder: founder as TSewakWithBio,
     volunteerFormLink: data.volunteerFormLink as string,
   };
 }
