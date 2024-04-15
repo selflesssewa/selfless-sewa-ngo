@@ -1,5 +1,5 @@
 import { getLayoutContent } from "@/dao";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Instrument_Sans, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
@@ -7,24 +7,23 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
 
-// DM Sans
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-body",
   display: "swap",
+  variable: "--font-body",
 });
 const displayFont = Fraunces({
-  subsets: ["latin", "latin-ext"],
+  variable: "--font-display",
+  subsets: ["latin"],
   style: ["italic", "normal"],
   axes: ["opsz", "WONK", "SOFT"],
-  variable: "--font-display",
 });
 const hindiFont = Karma({
-  subsets: ["devanagari"],
-  weight: ["300", "400", "500", "600", "700"],
   variable: "--font-hindi",
+  subsets: ["devanagari"],
+  weight: ["500"],
 });
 
 export async function generateMetadata() {
@@ -47,21 +46,20 @@ export async function generateMetadata() {
     ],
     category: "Non-governmental organization",
     openGraph: {
-      siteName: "Selfless Sewa NGO",
-      title: "Selfless Sewa",
+      title: "Selfless Sewa NGO",
       description: "Service Above Self",
       url: "https://selflesssewango.com",
       type: "website",
       images: ["/android-chrome-512x512.png"],
     },
     twitter: {
-      title: "Selfless Sewa",
+      title: "Selfless Sewa NGO",
       description: "Service Above Self",
-      card: "summary_large_image",
+      card: "summary",
       creator: "@SaMulla7",
       images: ["/android-chrome-512x512.png"],
     },
-  };
+  } as Metadata;
 }
 
 export const viewport: Viewport = {

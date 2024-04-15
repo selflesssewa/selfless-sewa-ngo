@@ -86,7 +86,7 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
           )}
         >
           <Container className="py-2 max-w-full">
-            <ul className="[&_a]:py-1 [&_a]:block duration-500 hover:[&_li]:underline underline-offset-2 flex flex-col">
+            <ul className="[&_a]:py-2 [&_a]:block duration-500 hover:[&_li]:underline underline-offset-2 flex flex-col">
               <li>
                 <Link href="/projects" onClick={() => setIsOpen(false)}>
                   Projects
