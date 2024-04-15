@@ -209,7 +209,10 @@ export default async function Home() {
         </Container>
       </section>
       <section>
-        <Map points={locations} />
+        <Container className="my-8">
+          <h2 className="tracking-wider text-center mb-5">Our Weekly On-field Drives</h2>
+          <Map points={locations} />
+        </Container>
       </section>
       <section>
         <Container className="mb-14 py-8 flex items-center min-h-[80vh]">

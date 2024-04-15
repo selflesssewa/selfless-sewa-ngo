@@ -1,5 +1,5 @@
 import { getLayoutContent } from "@/dao";
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Instrument_Sans, Karma } from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
@@ -54,13 +54,13 @@ export async function generateMetadata() {
       images: ["/android-chrome-512x512.png"],
     },
     twitter: {
-      title: "Selfless Sewa",
+      title: "Selfless Sewa NGO",
       description: "Service Above Self",
-      card: "summary_large_image",
+      card: "summary",
       creator: "@SaMulla7",
       images: ["/android-chrome-512x512.png"],
     },
-  };
+  } as Metadata;
 }
 
 export const viewport: Viewport = {
