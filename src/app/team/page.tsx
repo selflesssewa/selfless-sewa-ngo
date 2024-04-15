@@ -79,7 +79,7 @@ const Team = async () => {
             </div>
           </div>
           <h2 className="tracking-wider text-center mt-14">Core Team</h2>
-          <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-2 sm:gap-3 md:gap-5">
+          <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-3 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
             {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
