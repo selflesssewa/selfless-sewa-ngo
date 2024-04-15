@@ -4,12 +4,11 @@ type TSewak = {
   imgUrl: string;
 };
 
-type TFounder = TSewak & { bio: string };
+type TSewakWithBio = TSewak & { bio: string };
 
 type TTeamPageContent = {
   volunteerFormLink: string;
-  founder: TFounder;
-  chief: TSewak;
+  founder: TSewakWithBio;
   team: TSewak[];
 };
 

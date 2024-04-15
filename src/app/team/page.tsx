@@ -39,7 +39,7 @@ const Team = async () => {
             </p>
           </div>
           <h1 className="tracking-wider text-center my-7">Our Team</h1>
-          <div className="flex max-sm:flex-col p-2 my-4 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] grow">
+          <div className="flex max-sm:flex-col p-2 my-4 mb-14 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] grow">
             <div className="relative sm:basis-2/5 aspect-square rounded-[4px] overflow-clip">
               <Image
                 fill
@@ -59,27 +59,8 @@ const Team = async () => {
               <div className="mt-3 text-balance max-w-prose" dangerouslySetInnerHTML={{ __html: data.founder.bio }} />
             </div>
           </div>
-          <div className="flex flex-col p-2 my-4 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] sm:max-w-[28rem] sm:min-w-[28rem] sm:self-center">
-            <div className="relative aspect-square rounded-[4px] overflow-clip">
-              <Image
-                fill
-                sizes="500x500"
-                className="object-cover w-full h-full"
-                src={data.chief.imgUrl}
-                alt={data.chief.name}
-              />
-            </div>
-            <div className=" bg-white-70 text-black backdrop-blur-lg rounded-[4px] p-2 px-3">
-              <p className="text-title-lg font-medium" title={data.chief.name}>
-                {data.chief.name}
-              </p>
-              <p className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.chief.role}>
-                {data.chief.role}
-              </p>
-            </div>
-          </div>
-          <h2 className="tracking-wider text-center mt-14">Core Team</h2>
-          <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-3 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
+          <h2 className="tracking-wider text-center">Core Team</h2>
+          <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-3 my-8 grid-cols-[repeat(auto-fill,minmax(24rem,1fr))] gap-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
             {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
