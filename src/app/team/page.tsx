@@ -38,8 +38,8 @@ const Team = async () => {
               of Sewa.
             </p>
           </div>
-          <h2 className="tracking-wider text-center mt-7">Our Founder</h2>
-          <div className="flex max-sm:flex-col p-1 my-8 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px] grow">
+          <h1 className="tracking-wider text-center my-7">Our Team</h1>
+          <div className="flex max-sm:flex-col p-2 my-4 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] grow">
             <div className="relative sm:basis-2/5 aspect-square rounded-[4px] overflow-clip">
               <Image
                 fill
@@ -49,18 +49,37 @@ const Team = async () => {
                 alt={data.founder.name}
               />
             </div>
-            <div className=" bg-white-70 sm:basis-3/5 text-black backdrop-blur-lg rounded-[4px] p-3 px-4">
+            <div className=" bg-white-70 sm:basis-3/5 text-black backdrop-blur-lg rounded-[4px] p-3 max-sm:pb-4 px-4">
               <p className="text-title-lg font-medium" title={data.founder.name}>
                 {data.founder.name}
               </p>
-              <h2 className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
+              <p className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
                 {data.founder.role}
-              </h2>
+              </p>
               <div className="mt-3 text-balance max-w-prose" dangerouslySetInnerHTML={{ __html: data.founder.bio }} />
             </div>
           </div>
-          <h2 className="tracking-wider text-center mt-7">Our Core Team</h2>
-          <ul className="grid max-sm:grid-cols-1 max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 md:gap-5">
+          <div className="flex flex-col p-2 my-4 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] sm:max-w-[28rem] sm:min-w-[28rem] sm:self-center">
+            <div className="relative aspect-square rounded-[4px] overflow-clip">
+              <Image
+                fill
+                sizes="500x500"
+                className="object-cover w-full h-full"
+                src={data.chief.imgUrl}
+                alt={data.chief.name}
+              />
+            </div>
+            <div className=" bg-white-70 text-black backdrop-blur-lg rounded-[4px] p-2 px-3">
+              <p className="text-title-lg font-medium" title={data.chief.name}>
+                {data.chief.name}
+              </p>
+              <p className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.chief.role}>
+                {data.chief.role}
+              </p>
+            </div>
+          </div>
+          <h2 className="tracking-wider text-center mt-14">Core Team</h2>
+          <ul className="grid max-md:grid-cols-2 my-8 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-3 md:gap-5">
             {data.team.map((sewak, idx) => (
               <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
                 <div className="relative grow aspect-square rounded-[4px] overflow-clip">
@@ -73,7 +92,9 @@ const Team = async () => {
                   />
                 </div>
                 <div className="bg-white-70 text-black backdrop-blur-lg rounded-[4px] ps-[1.2rem] p-2 font-medium">
-                  <p title={sewak.name}>{sewak.name}</p>
+                  <p className="whitespace-nowrap overflow-hidden" title={sewak.name}>
+                    {sewak.name}
+                  </p>
                   <p className="text-body-lg text-ellipsis whitespace-nowrap overflow-hidden" title={sewak.role}>
                     {sewak.role}
                   </p>

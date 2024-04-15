@@ -9,6 +9,7 @@ type TFounder = TSewak & { bio: string };
 type TTeamPageContent = {
   volunteerFormLink: string;
   founder: TFounder;
+  chief: TSewak;
   team: TSewak[];
 };
 

@@ -100,6 +100,7 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
   const team: TSewak[] = [];
   let founder: TFounder | undefined;
+  let chief: TSewak | undefined;
   entries.items.forEach(el => {
     const member: TSewak = {
       name: el.fields.name as string,
@@ -116,6 +117,8 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
           },
         }),
       };
+    } else if (member.role === "Chief of Core") {
+      chief = { ...member };
     } else {
       team.push(member);
     }
@@ -129,7 +132,12 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
   const data = linkEntries.items[0].fields;
 
-  return { team, founder: founder as TFounder, volunteerFormLink: data.volunteerFormLink as string };
+  return {
+    team,
+    founder: founder as TFounder,
+    chief: chief as TSewak,
+    volunteerFormLink: data.volunteerFormLink as string,
+  };
 }
 
 export const teamBeliefs = [
