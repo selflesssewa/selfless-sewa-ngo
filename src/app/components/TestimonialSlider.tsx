@@ -64,11 +64,12 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
       }, time);
     }
 
+    const wrapper = wrapperRef.current;
     return () => {
       clearTimeout(slideTimeoutId.current);
-      wrapperRef.current?.removeEventListener("scrollend", scrollEndCallback);
+      wrapper?.removeEventListener("scrollend", scrollEndCallback);
     };
-  }, [activeSlideIndex, isStopped, trigger]);
+  }, [activeSlideIndex, isStopped, trigger, testimonials.length, contentLens]);
 
   return (
     <div className="flex gap-4 flex-col">
