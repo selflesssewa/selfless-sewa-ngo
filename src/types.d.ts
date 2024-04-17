@@ -43,7 +43,14 @@ type TLocation = {
 type THomePageContent = {
   donationFormLink: string;
   locations: TLocation[];
+  testimonials: TTestimonial[];
   sliderImgUrls: string[];
   missionImgUrls: string[];
   visionImgUrls: string[];
+};
+
+type TTestimonial = {
+  name: string;
+  role: string;
+  content: React.ReactNode;
 };

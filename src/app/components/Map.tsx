@@ -13,7 +13,7 @@ export default function Map({ points }: { points: TLocation[] }) {
       height={1000}
       width={1000}
       projectionConfig={{
-        rotate: [-82, -22, 0],
+        rotate: [-80, -22, 0],
         scale: 1600,
       }}
     >

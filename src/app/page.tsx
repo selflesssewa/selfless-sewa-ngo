@@ -7,6 +7,7 @@ import CallToActionCard from "./components/CallToActionCard";
 import Map from "./components/Map";
 import Container from "./components/Container";
 import HeroSlider from "./components/HeroSlider";
+import TestimonialSlider from "./components/TestimonialSlider";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -71,7 +72,8 @@ export const projectBgColor = {
 } as const;
 
 export default async function Home() {
-  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations, donationFormLink } = await getHomePageContent();
+  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations, testimonials, donationFormLink } =
+    await getHomePageContent();
 
   return (
     <main className="min-h-screen">
@@ -195,7 +197,7 @@ export default async function Home() {
                   </div>
                 </div>
                 <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight">{p.title}</h3>
-                <p className="font-hindi text-headline-sm font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
+                <p className="font-hindi text-headline-lg font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
                 <p className="col-start-2 md:text-title-md font-light mt-2">{p.description}</p>
                 <Link
                   href={"/projects#" + p.id}
@@ -212,6 +214,11 @@ export default async function Home() {
         <Container className="my-8">
           <h2 className="tracking-wider text-center mb-5">Our Weekly On-field Drives</h2>
           <Map points={locations} />
+        </Container>
+      </section>
+      <section>
+        <Container className="max-md:p-[0px] my-12">
+          <TestimonialSlider testimonials={testimonials} />
         </Container>
       </section>
       <section>
