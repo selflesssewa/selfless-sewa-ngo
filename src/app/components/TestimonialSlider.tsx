@@ -21,7 +21,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
 
   useEffect(() => {
     if (inView) {
-      setTrigger("auto");
+      //   setTrigger("auto");
       setIsStopped(false);
     }
   }, [inView]);
@@ -67,9 +67,9 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
     const wrapper = wrapperRef.current;
     return () => {
       clearTimeout(slideTimeoutId.current);
-      wrapper?.removeEventListener("scrollend", scrollEndCallback);
+      wrapper.removeEventListener("scrollend", scrollEndCallback);
     };
-  }, [activeSlideIndex, isStopped, trigger, testimonials.length, contentLens]);
+  }, [activeSlideIndex, isStopped, trigger, contentLens, testimonials.length]);
 
   return (
     <div className="flex gap-4 flex-col">
@@ -84,16 +84,17 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
           className="relative md:testimonial-mask flex snap-x snap-mandatory max-md:gap-2 gap-3 overflow-x-scroll no-scrollbar"
           onScroll={ev => {
             ev.preventDefault();
+
             if (trigger == "auto" || trigger == "tap") return;
             setIsStopped(true);
             setTrigger("swipe");
 
             const idx = Array.from(ev.currentTarget.querySelectorAll("li")).findIndex(li => {
-              const padding = 0;
+              const padding = 40;
               return (
-                ev.currentTarget.scrollLeft + padding < li.offsetLeft + li.clientWidth / 2 &&
-                li.offsetLeft + li.clientWidth / 2 <
-                  ev.currentTarget.scrollLeft + ev.currentTarget.clientWidth - padding
+                li.offsetLeft + li.clientWidth / 2 - padding > ev.currentTarget.scrollLeft &&
+                li.offsetLeft + li.clientWidth / 2 - padding <
+                  ev.currentTarget.scrollLeft + ev.currentTarget.clientWidth
               );
             });
             setActiveSlideIndex(idx);
