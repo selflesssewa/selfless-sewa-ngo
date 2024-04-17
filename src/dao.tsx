@@ -1,10 +1,7 @@
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, Document, Text } from "@contentful/rich-text-types";
 import { createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { BLOCKS, Block, Document, Text, TopLevelBlock } from "@contentful/rich-text-types";
-import { notDeepEqual } from "assert";
-import test from "node:test";
-import { block } from "sharp";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -78,7 +75,7 @@ export async function getHomePageContent(): Promise<THomePageContent> {
         [BLOCKS.PARAGRAPH]: (node, children) => {
           const length = node.content.reduce((length, block) => (length += (block as Text).value.length), 0);
           return (
-            <p data-length={length} className="text-balance">
+            <p data-length={length} className="max-sm:text-body-lg text-pretty">
               {children}
             </p>
           );
