@@ -4,7 +4,7 @@ type TSewak = {
   imgUrl: string;
 };
 
-type TSewakWithBio = TSewak & { bio: string };
+type TSewakWithBio = TSewak & { bio: React.ReactNode };
 
 type TTeamPageContent = {
   volunteerFormLink: string;

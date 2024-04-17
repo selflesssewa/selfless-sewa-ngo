@@ -1,7 +1,8 @@
 import { createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
-import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
-import { Document } from "@contentful/rich-text-types";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, Block, Document } from "@contentful/rich-text-types";
+import { notDeepEqual } from "assert";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -109,9 +110,14 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
     };
 
     const parseBio = (doc: Document) =>
-      documentToHtmlString(doc, {
+      documentToReactComponents(doc, {
         renderNode: {
-          ["paragraph"]: (node, next) => `<p>${next(node.content).replace(/\n/g, `</br>`)}</p>`,
+          [BLOCKS.PARAGRAPH]: (_, children) => <p>{children}</p>,
+        },
+        renderText: text => {
+          return text.split("\n").reduce((children, textSegment, index) => {
+            return [...children, index > 0 && <br key={index} />, textSegment] as string[];
+          }, [] as string[]);
         },
       });
 

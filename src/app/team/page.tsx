@@ -56,7 +56,7 @@ const Team = async () => {
               <p className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
                 {data.founder.role}
               </p>
-              <div className="mt-3 text-balance max-w-prose" dangerouslySetInnerHTML={{ __html: data.founder.bio }} />
+              <div className="mt-3 text-balance max-w-prose">{data.founder.bio}</div>
             </div>
           </div>
           <h2 className="tracking-wider text-center">Core Team</h2>
