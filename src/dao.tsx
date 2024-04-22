@@ -75,7 +75,7 @@ export async function getHomePageContent(): Promise<THomePageContent> {
         [BLOCKS.PARAGRAPH]: (node, children) => {
           const length = node.content.reduce((length, block) => (length += (block as Text).value.length), 0);
           return (
-            <p data-length={length} className="max-sm:text-body-lg text-pretty">
+            <p data-length={length} className="tracking-wider">
               {children}
             </p>
           );

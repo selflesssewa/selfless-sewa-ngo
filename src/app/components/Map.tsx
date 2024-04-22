@@ -21,6 +21,7 @@ export default function Map({ points }: { points: TLocation[] }) {
         {({ geographies }) =>
           geographies.map(geo => (
             <Geography
+              tabIndex={-1}
               className="fill-blue-30 stroke-blue-60 backdrop-blur-xl stroke-[0.035rem] pointer-events-none"
               key={geo.rsmKey}
               geography={geo}

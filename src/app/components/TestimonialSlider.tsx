@@ -19,9 +19,18 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
     clearTimeout(slideTimeoutId.current);
   };
 
+  function scrollToSlide(id: number) {
+    const slide = slidesRef.current[id];
+    if (!slide) return;
+    wrapperRef.current?.scrollTo({
+      left: slide.offsetLeft,
+      behavior: "smooth",
+    });
+    setTrigger("auto");
+  }
+
   useEffect(() => {
     if (inView) {
-      //   setTrigger("auto");
       setIsStopped(false);
     }
   }, [inView]);
@@ -29,7 +38,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
   useEffect(() => {
     const nodes = wrapperRef.current?.querySelectorAll<HTMLParagraphElement>("[data-length]");
     if (nodes) {
-      const lens = Array.from(nodes).map(el => Number(el.dataset.length ?? 350) * 8);
+      const lens = Array.from(nodes).map(el => Number(el.dataset.length ?? 350) * 15);
       setContentLens(lens);
     }
 
@@ -42,32 +51,21 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
   useEffect(() => {
     if (!wrapperRef.current) return;
 
-    const scrollEndCallback = () => {
+    wrapperRef.current.addEventListener("scrollend", () => {
       setTrigger(undefined);
-    };
-    wrapperRef.current.addEventListener("scrollend", scrollEndCallback);
-
-    if (trigger == "auto" || trigger == "tap") {
-      const slide = slidesRef.current[activeSlideIndex];
-      if (!slide) return;
-      wrapperRef.current.scrollTo({
-        left: slide.offsetLeft,
-        behavior: "smooth",
-      });
-    }
+    });
 
     if (!isStopped) {
       const time = contentLens[activeSlideIndex];
       slideTimeoutId.current = setTimeout(() => {
-        setTrigger("auto");
-        setActiveSlideIndex((activeSlideIndex + 1) % testimonials.length);
+        const nextIdx = (activeSlideIndex + 1) % testimonials.length;
+        scrollToSlide(nextIdx);
+        setActiveSlideIndex(nextIdx);
       }, time);
     }
 
-    const wrapper = wrapperRef.current;
     return () => {
       clearTimeout(slideTimeoutId.current);
-      wrapper.removeEventListener("scrollend", scrollEndCallback);
     };
   }, [activeSlideIndex, isStopped, trigger, contentLens, testimonials.length]);
 
@@ -78,10 +76,13 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
           Hear From Our Sewaks
         </h2>
       </div>
-      <div ref={ref} className="overflow-hidden">
+      <div ref={ref}>
         <ul
           ref={wrapperRef}
-          className="relative md:testimonial-mask flex snap-x snap-mandatory max-md:gap-2 gap-3 overflow-x-scroll no-scrollbar"
+          style={{
+            scrollSnapStop: "always",
+          }}
+          className="no-scrollbar overflow-x-scroll relative md:testimonial-mask flex snap-x snap-mandatory max-md:gap-2 gap-3 pb-6 -mb-6"
           onScroll={ev => {
             ev.preventDefault();
 
@@ -103,11 +104,11 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
           {testimonials.map(({ content, name, role }, idx) => (
             <li
               key={idx}
-              className="snap-center flex shrink-0 scroll-smooth items-stretch max-md:w-[90%]  w-[84%] max-w-prose first:ms-[50vw] last:me-[50vw]"
+              className="snap-center flex shrink-0 items-stretch max-md:w-[90%] w-[84%] max-w-prose first:ms-[50vw] last:me-[50vw]"
             >
               <div
                 className={twMerge(
-                  "p-1 rounded-[16px] bg-blue-30 duration-700 origin-center w-full backdrop-blur-xl",
+                  "p-1 rounded-[16px] bg-blue-30 shadow-xl shadow-blue-60 duration-500 origin-center w-full backdrop-blur-xl",
                   activeSlideIndex == idx ? "scale-100" : "scale-90",
                   activeSlideIndex > idx && "origin-right",
                   idx > activeSlideIndex && "origin-left"
@@ -115,29 +116,32 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
               >
                 <div
                   className={twMerge(
-                    "max-md:p-4 p-6 px-5 rounded-[12px] h-full",
+                    "max-md:p-4 p-5 flex flex-col gap-5 rounded-[12px] h-full",
                     activeSlideIndex == idx ? "bg-blue" : "bg-blue-30"
                   )}
                 >
-                  <p className="text-headline-sm mb-1">{name}</p>
-                  <p className="mb-5 opacity-90">{role}</p>
                   {content}
+                  <div className="mt-auto">
+                    <p className="text-title-lg">{name}</p>
+                    <p className="opacity-90">{role}</p>
+                  </div>
                 </div>
               </div>
             </li>
           ))}
         </ul>
-        <div className="flex gap-2 justify-center mt-4 p-1">
+        <div className="flex gap-2 justify-center mt-4 items-center">
           {testimonials.map((_, idx) => (
             <button
               key={idx}
               onClick={() => {
                 setTrigger("tap");
                 stopAnimation();
+                scrollToSlide(idx);
                 setActiveSlideIndex(idx);
               }}
               className={twMerge(
-                "cursor-pointer overflow-hidden rounded-md duration-200 ease-in-out w-3 h-2 bg-blue-60",
+                "cursor-pointer overflow-hidden z-10 rounded-md duration-200 ease-in-out w-[1.2rem] h-2 bg-blue-60",
                 activeSlideIndex == idx && "bg-blue w-6"
               )}
             >
