@@ -81,7 +81,7 @@ const Volunteer = async () => {
             className="flex p-1 rounded-[0.8rem] bg-blue-30 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
           >
             <div className="px-3 py-2 rounded-[0.4rem] bg-blue-60 gap-1 flex items-center">
-              <span>Become A Sewak</span>
+              <span>Become A सेवक</span>
               <MaterialSymbol icon="arrow_outward" />
             </div>
           </Link>

@@ -7,6 +7,7 @@ import CallToActionCard from "./components/CallToActionCard";
 import Map from "./components/Map";
 import Container from "./components/Container";
 import HeroSlider from "./components/HeroSlider";
+import TestimonialSlider from "./components/TestimonialSlider";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -71,14 +72,15 @@ export const projectBgColor = {
 } as const;
 
 export default async function Home() {
-  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations, donationFormLink } = await getHomePageContent();
+  const { sliderImgUrls, missionImgUrls, visionImgUrls, locations, testimonials, donationFormLink } =
+    await getHomePageContent();
 
   return (
     <main className="min-h-screen">
       <section className="pt-4 md:pt-6 lg:pt-10 flex flex-col gap-8 mb-17">
         <Container className="flex items-end max-lg:flex-col max-lg:items-start gap-3 justify-start">
           <div className="flex flex-col items-start gap-2">
-            <div className="max-md:w-13 w-16 mb-2">
+            <div className="md:w-14 w-12 mb-2">
               <Image
                 className="w-full h-auto"
                 alt="Selfless Sewa NGO Logomark"
@@ -180,7 +182,7 @@ export default async function Home() {
                   <div className="max-md:hidden">
                     <MaterialSymbol
                       icon={p.icon}
-                      size={40}
+                      size={32}
                       weight={400}
                       className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
                     />
@@ -194,8 +196,10 @@ export default async function Home() {
                     />
                   </div>
                 </div>
-                <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight">{p.title}</h3>
-                <p className="font-hindi text-headline-sm font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
+                <h3 className="font-display text-headline-md md:text-headline-lg tracking-tight">{p.title}</h3>
+                <p className="font-hindi text-title-lg md:text-headline-md font-medium max-md:mt-2 col-start-2">
+                  {p.hindiTitle}
+                </p>
                 <p className="col-start-2 md:text-title-md font-light mt-2">{p.description}</p>
                 <Link
                   href={"/projects#" + p.id}
@@ -209,13 +213,20 @@ export default async function Home() {
         </Container>
       </section>
       <section>
-        <Container className="my-8">
-          <h2 className="tracking-wider text-center mb-5">Our Weekly On-field Drives</h2>
+        <Container className="max-md:p-[0px] my-12">
+          <TestimonialSlider testimonials={testimonials} />
+        </Container>
+      </section>
+      <section>
+        <Container className="my-12 md:mt-20">
+          <h2 className="text-center text-balance max-md:mb-2 text-headline-sm max-md:text-title-md mb-3 tracking-normal">
+            Our Weekly On-field Drives
+          </h2>
           <Map points={locations} />
         </Container>
       </section>
       <section>
-        <Container className="mb-14 py-8 flex items-center min-h-[80vh]">
+        <Container className="mb-14 my-8 flex items-center min-h-[60vh]">
           <CallToActionCard
             title="Make a positive change"
             body="With compassion and empathy at our core, we strive to make a positive difference in people's lives. This dedication is evident in our volunteer-driven initiatives and collaborative partnerships, aimed at providing education and healthcare to under-served communities. Together, Lets serve before ourselves."

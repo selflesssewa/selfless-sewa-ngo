@@ -4,12 +4,11 @@ type TSewak = {
   imgUrl: string;
 };
 
-type TFounder = TSewak & { bio: string };
+type TSewakWithBio = TSewak & { bio: React.ReactNode };
 
 type TTeamPageContent = {
   volunteerFormLink: string;
-  founder: TFounder;
-  chief: TSewak;
+  founder: TSewakWithBio;
   team: TSewak[];
 };
 
@@ -44,7 +43,14 @@ type TLocation = {
 type THomePageContent = {
   donationFormLink: string;
   locations: TLocation[];
+  testimonials: TTestimonial[];
   sliderImgUrls: string[];
   missionImgUrls: string[];
   visionImgUrls: string[];
+};
+
+type TTestimonial = {
+  name: string;
+  role: string;
+  content: React.ReactNode;
 };
