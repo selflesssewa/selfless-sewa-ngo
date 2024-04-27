@@ -66,7 +66,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href={data.volunteerFormLink} target="_blank" className="flex items-center gap-1">
-                      Become a Sewak
+                      Become a सेवक
                       <MaterialSymbol icon="arrow_outward" size={16} weight={300} />
                     </Link>
                   </li>

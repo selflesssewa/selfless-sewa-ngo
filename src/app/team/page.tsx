@@ -30,11 +30,11 @@ const Team = async () => {
       <section>
         <Container className="flex flex-col">
           <div className="bg-white-70 self-center text-black p-5 md:px-7 mb-12 mt-6 md:py-6  backdrop-blur-lg rounded-[24px]">
-            <h2 className="text-headline-sm mb-3 tracking-normal">Our Sewaks</h2>
+            <h2 className="text-headline-sm mb-3 tracking-normal">Our सेवकs</h2>
             <p className="max-w-[45ch] text-pretty">
-              At Selfless Sewa NGO, every volunteer (sewak) embodies the spirit of “Sewa”. Whether our founder, core
-              team, or dedicated volunteers, we all serve selflessly. Our founder leads as the Founder Sewak, and our
-              core team are Core Sewak, setting the standard for service. Together, we live our values through every act
+              At Selfless Sewa NGO, every volunteer (सेवक) embodies the spirit of “Sewa”. Whether our founder, core
+              team, or dedicated volunteers, we all serve selflessly. Our founder leads as the Founder सेवक, and our
+              core team are Core सेवक, setting the standard for service. Together, we live our values through every act
               of Sewa.
             </p>
           </div>
@@ -94,7 +94,7 @@ const Team = async () => {
             imgAltText=""
             footer={
               <div className="mt-8">
-                <p className="text-black text-body-lg font-medium mb-1">Ready to become a Sewak?</p>
+                <p className="text-black text-body-lg font-medium mb-1">Ready to become a सेवक?</p>
                 <div className="flex gap-3">
                   <Link
                     href={data.volunteerFormLink}

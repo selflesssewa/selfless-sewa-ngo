@@ -12,7 +12,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
   const [isStopped, setIsStopped] = useState(true);
   const [trigger, setTrigger] = useState<"auto" | "swipe" | "tap">();
   const slideTimeoutId = useRef<NodeJS.Timeout>();
-  const { ref, inView } = useInView({ triggerOnce: true });
+  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "0% 0% -50% 0%" });
 
   const stopAnimation = () => {
     setIsStopped(true);
@@ -72,8 +72,8 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
   return (
     <div className="flex gap-4 flex-col">
       <div className="max-md:px-3">
-        <h2 className="text-center text-balance max-md:mb-2 text-headline-md max-md:text-title-lg mb-3 tracking-normal">
-          Hear From Our Sewaks
+        <h2 className="text-center text-balance max-md:mb-2 text-headline-sm max-md:text-title-md mb-3 tracking-normal">
+          Hear From Our सेवकs
         </h2>
       </div>
       <div ref={ref}>
@@ -108,29 +108,22 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
             >
               <div
                 className={twMerge(
-                  "p-1 rounded-[16px] bg-blue-30 shadow-xl shadow-blue-60 duration-500 origin-center w-full backdrop-blur-xl",
-                  activeSlideIndex == idx ? "scale-100" : "scale-90",
+                  "rounded-[12px] shadow-xl gap-5 max-md:p-4 p-5 flex bg-blue flex-col duration-300 origin-center w-full backdrop-blur-3xl",
+                  activeSlideIndex == idx ? "scale-100 shadow-blue-30" : "scale-90 shadow-blue-30 opacity-60",
                   activeSlideIndex > idx && "origin-right",
                   idx > activeSlideIndex && "origin-left"
                 )}
               >
-                <div
-                  className={twMerge(
-                    "max-md:p-4 p-5 flex flex-col gap-5 rounded-[12px] h-full",
-                    activeSlideIndex == idx ? "bg-blue" : "bg-blue-30"
-                  )}
-                >
-                  {content}
-                  <div className="mt-auto">
-                    <p className="text-title-lg">{name}</p>
-                    <p className="opacity-90">{role}</p>
-                  </div>
+                {content}
+                <div className="mt-auto">
+                  <p className="text-title-lg">{name}</p>
+                  <p className="opacity-90">{role}</p>
                 </div>
               </div>
             </li>
           ))}
         </ul>
-        <div className="flex gap-2 justify-center mt-4 items-center">
+        <div className="flex gap-2 justify-center mt-6 items-center">
           {testimonials.map((_, idx) => (
             <button
               key={idx}

@@ -55,6 +55,6 @@
   }
 
   .testimonial-mask {
-    mask: linear-gradient(to right, transparent, white 8%, white 92%, transparent);
+    mask: linear-gradient(to left, transparent, white 6%, white 94%, transparent);
   }
 }
