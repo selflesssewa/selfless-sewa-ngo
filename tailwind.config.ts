@@ -70,14 +70,19 @@ const config: Config = {
         slider: {
           "100%": { transform: "translateX(calc(-50% - 1.6rem))" },
         },
+        progress: {
+          "0%": { transform: "scaleX(0)" },
+          "100%": { transform: "scaleX(1)" },
+        },
       },
       animation: {
         slider: "slider var(--slider-duration, 50s) linear infinite",
+        progress: "progress var(--progress-duration) linear forwards",
       },
     },
   },
   future: {
-    hoverOnlyWhenSupported: true
+    hoverOnlyWhenSupported: true,
   },
   plugins: [],
 };

@@ -1,7 +1,7 @@
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, Document, Text } from "@contentful/rich-text-types";
 import { createClient, type Asset, type Entry } from "contentful";
 import { getEnvVariable } from "./helper";
-import { documentToHtmlString } from "@contentful/rich-text-html-renderer";
-import { Document } from "@contentful/rich-text-types";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -52,6 +52,7 @@ export async function getHomePageContent(): Promise<THomePageContent> {
       "fields.visionImages",
       "fields.locations",
       "fields.donationFormLink",
+      "fields.testimonials",
     ],
     limit: 1,
   });
@@ -68,11 +69,45 @@ export async function getHomePageContent(): Promise<THomePageContent> {
     } as TLocation;
   });
 
+  const parseText = (doc: Document) =>
+    documentToReactComponents(doc, {
+      renderNode: {
+        [BLOCKS.PARAGRAPH]: (node, children) => {
+          const length = node.content.reduce((length, block) => (length += (block as Text).value.length), 0);
+          return (
+            <p data-length={length} className="tracking-wider">
+              {children}
+            </p>
+          );
+        },
+      },
+      renderText: text => {
+        return text.split("\n").reduce((children, textSegment, index) => {
+          return [...children, index > 0 && <br key={index} />, textSegment] as string[];
+        }, [] as string[]);
+      },
+    });
+
+  const testimonials = (data.testimonials as Entry[]).map(({ fields }) => {
+    return {
+      name: fields.name,
+      role: fields.role,
+      content: parseText(fields.content as Document),
+    } as TTestimonial;
+  });
+
   const sliderImgUrls = (data.sliderImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
   const missionImgUrls = (data.missionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
   const visionImgUrls = (data.visionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
 
-  return { locations, sliderImgUrls, missionImgUrls, visionImgUrls, donationFormLink: data.donationFormLink as string };
+  return {
+    locations,
+    testimonials,
+    sliderImgUrls,
+    missionImgUrls,
+    visionImgUrls,
+    donationFormLink: data.donationFormLink as string,
+  };
 }
 
 export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> {
@@ -109,9 +144,14 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
     };
 
     const parseBio = (doc: Document) =>
-      documentToHtmlString(doc, {
+      documentToReactComponents(doc, {
         renderNode: {
-          ["paragraph"]: (node, next) => `<p>${next(node.content).replace(/\n/g, `</br>`)}</p>`,
+          [BLOCKS.PARAGRAPH]: (_, children) => <p>{children}</p>,
+        },
+        renderText: text => {
+          return text.split("\n").reduce((children, textSegment, index) => {
+            return [...children, index > 0 && <br key={index} />, textSegment] as string[];
+          }, [] as string[]);
         },
       });
 

@@ -35,7 +35,7 @@ const Project = () => {
               <div className="max-md:hidden">
                 <MaterialSymbol
                   icon={p.icon}
-                  size={40}
+                  size={36}
                   weight={400}
                   className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
                 />
@@ -49,8 +49,10 @@ const Project = () => {
                 />
               </div>
             </div>
-            <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight">{p.title}</h3>
-            <p className="font-hindi text-headline-sm font-medium max-md:mt-2 col-start-2">{p.hindiTitle}</p>
+            <h3 className="font-display text-headline-md md:text-headline-lg tracking-tight">{p.title}</h3>
+            <p className="font-hindi text-title-lg md:text-headline-md font-medium max-md:mt-2 col-start-2">
+              {p.hindiTitle}
+            </p>
             <p className="md:col-start-2 max-md:col-span-2 md:text-title-md font-light mt-4 text-balance max-w-[55ch]">
               {p.body}
             </p>

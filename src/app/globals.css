@@ -7,7 +7,6 @@
   html {
     font-size: 62.5%;
     user-select: none;
-    scroll-behavior: smooth;
   }
 
   body {
@@ -53,5 +52,9 @@
 
   .masked {
     mask: linear-gradient(to right, transparent 4%, white 12%, white 88%, transparent 96%);
+  }
+
+  .testimonial-mask {
+    mask: linear-gradient(to left, transparent, white 6%, white 94%, transparent);
   }
 }
