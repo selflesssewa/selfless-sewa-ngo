@@ -1,8 +1,8 @@
 "use client";
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { twMerge } from "tailwind-merge";
+import { useInView } from "react-intersection-observer";
 
 const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
@@ -79,13 +79,9 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
       <div ref={ref}>
         <ul
           ref={wrapperRef}
-          style={{
-            scrollSnapStop: "always",
-          }}
           className="no-scrollbar overflow-x-scroll relative md:testimonial-mask flex snap-x snap-mandatory max-md:gap-2 gap-3 pb-6 -mb-6"
           onScroll={ev => {
             ev.preventDefault();
-
             if (trigger == "auto" || trigger == "tap") return;
             setIsStopped(true);
             setTrigger("swipe");
@@ -108,7 +104,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
             >
               <div
                 className={twMerge(
-                  "rounded-[12px] shadow-xl gap-5 max-md:p-4 p-5 flex bg-blue flex-col duration-300 origin-center w-full backdrop-blur-3xl",
+                  "rounded-[12px] snap-always shadow-xl gap-5 max-md:p-4 p-5 flex bg-blue flex-col duration-300 origin-center w-full backdrop-blur-3xl",
                   activeSlideIndex == idx ? "scale-100 shadow-blue-30" : "scale-90 shadow-blue-30 opacity-60",
                   activeSlideIndex > idx && "origin-right",
                   idx > activeSlideIndex && "origin-left"
