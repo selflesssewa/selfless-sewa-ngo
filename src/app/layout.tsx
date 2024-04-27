@@ -6,6 +6,7 @@ import { twMerge } from "tailwind-merge";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
@@ -80,6 +81,7 @@ export default async function RootLayout({
         <Navbar donationFormLink={data.donationFormLink} />
         {children}
         <Footer data={data} />
+        <Analytics />
       </body>
     </html>
   );
