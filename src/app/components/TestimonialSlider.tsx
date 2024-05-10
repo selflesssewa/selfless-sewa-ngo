@@ -100,12 +100,12 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
           {testimonials.map(({ content, name, role }, idx) => (
             <li
               key={idx}
-              className="snap-center flex shrink-0 items-stretch max-md:w-[90%] w-[84%] max-w-prose first:ms-[50vw] last:me-[50vw]"
+              className="snap-center snap-always flex shrink-0 items-stretch max-md:w-[90%] w-[84%] max-w-prose first:ms-[30vw] last:me-[30vw]"
             >
               <div
                 className={twMerge(
-                  "rounded-[12px] snap-always shadow-xl gap-5 max-md:p-4 p-5 flex bg-blue flex-col duration-300 origin-center w-full backdrop-blur-3xl",
-                  activeSlideIndex == idx ? "scale-100 shadow-blue-30" : "scale-90 shadow-blue-30 opacity-60",
+                  "bg-[radial-gradient(farthest-corner_at_center_top,theme(colors[blue]/30%),theme(colors[blue]/90%))] rounded-[16px] shadow-xl gap-5 max-md:p-4 p-5 flex flex-col duration-300 origin-center backdrop-blur-xl shadow-blue-30",
+                  activeSlideIndex == idx ? "scale-100  opacity-100" : "scale-90 opacity-60",
                   activeSlideIndex > idx && "origin-right",
                   idx > activeSlideIndex && "origin-left"
                 )}
@@ -129,18 +129,22 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
                 scrollToSlide(idx);
                 setActiveSlideIndex(idx);
               }}
-              className={twMerge(
-                "cursor-pointer overflow-hidden z-10 rounded-md duration-200 ease-in-out w-[1.2rem] h-2 bg-blue-60",
-                activeSlideIndex == idx && "bg-blue w-6"
-              )}
+              className="cursor-pointer z-10 py-2 -my-2"
             >
               <div
                 className={twMerge(
-                  "h-full w-full scale-0 origin-left bg-white",
-                  activeSlideIndex == idx && !isStopped && "animate-progress"
+                  "rounded-[2px] duration-200 ease-in-out w-[1.2rem] h-1 bg-blue-60 overflow-hidden",
+                  activeSlideIndex == idx && "bg-blue w-6"
                 )}
-                style={{ "--progress-duration": `${contentLens[activeSlideIndex]}ms` } as CSSProperties}
-              />
+              >
+                <div
+                  className={twMerge(
+                    "h-full w-full scale-0 origin-left bg-white",
+                    activeSlideIndex == idx && !isStopped && "animate-progress"
+                  )}
+                  style={{ "--progress-duration": `${contentLens[activeSlideIndex]}ms` } as CSSProperties}
+                />
+              </div>
             </button>
           ))}
         </div>

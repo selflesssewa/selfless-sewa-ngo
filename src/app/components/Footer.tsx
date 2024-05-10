@@ -11,7 +11,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
       <Container className="py-5 max-w-full">
         <div className="flex max-lg:flex-col lg:items-start gap-8 justify-between gap-y-5">
           <div className="basis-1/4">
-            <Link href="/" className="flex flex-col gap-2 items-start">
+            <Link href="/" className="flex flex-col gap-2 items-start w-fit">
               <div className="w-13">
                 <Image
                   className="w-full h-auto"
@@ -29,11 +29,11 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
           </div>
           <div className="grow">
             <div
-              className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 [&_ul]:flex
+              className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 md:gap-y-6 [&_ul]:flex
              [&_ul]:gap-2 max-md:[&_ul]:gap-1 [&_ul]:flex-col [&_ul]:items-start"
             >
               <div>
-                <p className="text-title-md font-medium mb-2">Contact</p>
+                <p className="text-title-md font-light font-display mb-2">Contact</p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex items-center gap-2">
                     {
@@ -62,7 +62,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">Volunteer</p>
+                <p className="text-title-md font-light font-display mb-2">Volunteer</p>
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href={data.volunteerFormLink} target="_blank" className="flex items-center gap-1">
@@ -79,7 +79,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">About</p>
+                <p className="text-title-md font-light font-display mb-2">About</p>
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href="/team">Team</Link>
@@ -90,7 +90,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-medium mb-2">Collab</p>
+                <p className="text-title-md font-light font-display mb-2">Collab</p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex gap-1">
                     <Link href={`mailto:${data.collabEmailId}`}>{data.collabEmailId}</Link>

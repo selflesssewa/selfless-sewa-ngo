@@ -1,4 +1,5 @@
 import Image from "next/image";
+import GlowCard from "./GlowCard";
 
 type Props = {
   title: string;

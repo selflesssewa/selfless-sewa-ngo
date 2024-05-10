@@ -4,6 +4,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import CallToActionCard from "../components/CallToActionCard";
 import Container from "../components/Container";
 import { getTeamPageContent, teamBeliefs } from "@/dao";
+import GlowCard from "../components/GlowCard";
 
 const Team = async () => {
   const data = await getTeamPageContent();
@@ -14,15 +15,14 @@ const Team = async () => {
         <Container className="flex items-center flex-col my-12  md:my-17">
           <MaterialSymbol icon="flare" weight={200} size={40} className="mb-2" />
           <h2 className="mb-4 tracking-wider text-center">Our Guiding Principle</h2>
-          <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight italic mb-7 text-center">
+          <h3 className="font-display text-headline-lg font-light md:text-display-sm tracking-tight italic mb-7 md:mb-10 text-center">
             Lead By Example
           </h3>
-
-          <div className="grid md:grid-cols-2 gap-1 bg-blue-60 p-1 backdrop-blur-xl rounded-[8px] auto-rows-fr auto-cols-fr">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6 auto-rows-auto auto-cols-fr">
             {teamBeliefs.map((belief, idx) => (
-              <div className="bg-white-70 text-balance text-black rounded-[4px] px-4 py-3 md:max-w-[40ch]" key={idx}>
-                <p>{belief}</p>
-              </div>
+              <GlowCard key={idx} className="md:max-w-[35ch]">
+                <p className="drop-shadow-md text-pretty">{belief}</p>
+              </GlowCard>
             ))}
           </div>
         </Container>
@@ -39,7 +39,7 @@ const Team = async () => {
             </p>
           </div>
           <h1 className="tracking-wider text-center my-7">Our Team</h1>
-          <div className="flex max-sm:flex-col p-2 my-4 mb-14 gap-2 bg-blue-30 backdrop-blur-lg rounded-[12px] grow">
+          <GlowCard className="flex max-sm:flex-col p-3 my-4 max-sm:gap-y-4 mb-14 backdrop-blur rounded-[12px] grow">
             <div className="relative sm:basis-2/5 aspect-square rounded-[4px] overflow-clip">
               <Image
                 fill
@@ -49,37 +49,39 @@ const Team = async () => {
                 alt={data.founder.name}
               />
             </div>
-            <div className=" bg-white-70 sm:basis-3/5 text-black backdrop-blur-lg rounded-[4px] p-3 max-sm:pb-4 px-4">
+            <div className="sm:basis-3/5 drop-shadow-md sm:p-3 max-sm:pb-2 sm:px-4">
               <p className="text-title-lg font-medium" title={data.founder.name}>
                 {data.founder.name}
               </p>
-              <p className="text-ellipsis font-medium whitespace-nowrap overflow-hidden" title={data.founder.role}>
+              <p
+                className="text-ellipsis tracking-wider font-medium whitespace-nowrap overflow-hidden"
+                title={data.founder.role}
+              >
                 {data.founder.role}
               </p>
-              <div className="mt-3 text-balance max-w-prose">{data.founder.bio}</div>
+              <div className="mt-3 max-w-prose text-pretty">{data.founder.bio}</div>
             </div>
-          </div>
+          </GlowCard>
           <h2 className="tracking-wider text-center">Core Team</h2>
           <ul className="grid max-sm:grid-cols-2 max-md:grid-cols-3 my-8 grid-cols-[repeat(auto-fill,minmax(24rem,1fr))] gap-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
             {data.team.map((sewak, idx) => (
-              <li className="flex flex-col p-1 gap-1 bg-blue-30 backdrop-blur-lg rounded-[8px]" key={idx}>
-                <div className="relative grow aspect-square rounded-[4px] overflow-clip">
-                  <Image
-                    fill
-                    sizes="300x300"
-                    className="object-cover w-full h-full"
-                    src={sewak.imgUrl}
-                    alt={sewak.name}
-                  />
-                </div>
-                <div className="bg-white-70 text-black backdrop-blur-lg rounded-[4px] ps-[1.2rem] p-2 font-medium">
-                  <p className="text-ellipsis whitespace-nowrap overflow-hidden" title={sewak.name}>
-                    {sewak.name}
-                  </p>
-                  <p className="text-body-lg text-ellipsis whitespace-nowrap overflow-hidden" title={sewak.role}>
-                    {sewak.role}
-                  </p>
-                </div>
+              <li key={idx}>
+                <GlowCard className="p-2 flex flex-col gap-3">
+                  <div className="relative grow aspect-square rounded-[4px] overflow-clip">
+                    <Image fill sizes="300x300" className="object-cover" src={sewak.imgUrl} alt={sewak.name} />
+                  </div>
+                  <div className="drop-shadow-md">
+                    <p className="text-ellipsis whitespace-nowrap overflow-hidden font-medium" title={sewak.name}>
+                      {sewak.name}
+                    </p>
+                    <p
+                      className="text-body-lg text-ellipsis whitespace-nowrap tracking-wider overflow-hidden"
+                      title={sewak.role}
+                    >
+                      {sewak.role}
+                    </p>
+                  </div>
+                </GlowCard>
               </li>
             ))}
           </ul>
@@ -94,7 +96,7 @@ const Team = async () => {
             imgAltText=""
             footer={
               <div className="mt-8">
-                <p className="text-black text-body-lg font-medium mb-1">Ready to become a सेवक?</p>
+                <p className="text-black text-body-lg font-medium mb-2 ms-1">Ready to become a सेवक?</p>
                 <div className="flex gap-3">
                   <Link
                     href={data.volunteerFormLink}

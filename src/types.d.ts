@@ -54,3 +54,7 @@ type TTestimonial = {
   role: string;
   content: React.ReactNode;
 };
+
+type TProjectPageContent = {
+  donationFormLink: string;
+};

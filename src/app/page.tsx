@@ -8,6 +8,7 @@ import Map from "./components/Map";
 import Container from "./components/Container";
 import HeroSlider from "./components/HeroSlider";
 import TestimonialSlider from "./components/TestimonialSlider";
+import GlowCard from "./components/GlowCard";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -63,7 +64,7 @@ export const projects = [
   },
 ] as const;
 
-export const projectBgColor = {
+export const projectIconClasses = {
   saksham: "bg-saksham",
   chikitsa: "bg-chikitsa",
   aahar: "bg-aahar",
@@ -80,20 +81,16 @@ export default async function Home() {
       <section className="pt-4 md:pt-6 lg:pt-10 flex flex-col gap-8 mb-17">
         <Container className="flex items-end max-lg:flex-col max-lg:items-start gap-3 justify-start">
           <div className="flex flex-col items-start gap-2">
-            <div className="md:w-14 w-12 mb-2">
-              <Image
-                className="w-full h-auto"
-                alt="Selfless Sewa NGO Logomark"
-                id="logo"
-                src={"/selfless-sewa-logo.svg"}
-                width={32}
-                height={32}
-              />
-            </div>
-            <p className="text-body-lg tracking-wider flex items-center gap-1 bg-white/10 border-white/15 backdrop-blur-sm border px-1 rounded-[4px]">
-              <MaterialSymbol color="gold" icon="award_star" />
-              Registered under The Indian Trusts Act, 1882
-            </p>
+            <ul className="flex gap-2 flex-wrap">
+              <li className="text-body-md tracking-wider flex items-center gap-1 bg-white/10 border-white/10 backdrop-blur-sm border px-1 rounded-[4px]">
+                <MaterialSymbol icon="award_star" color="gold" />
+                Registered under The Indian Trusts Act, 1882
+              </li>
+              <li className="text-body-md tracking-wider flex items-center gap-1 bg-white/10 border-white/10 backdrop-blur-sm border px-1 rounded-[4px]">
+                <MaterialSymbol icon="handshake" color="gold" />
+                Affiliated with Niti Aayog through NGO Darpan
+              </li>
+            </ul>
             <h1 className="font-display text-headline-md origin-bottom-left md:text-headline-lg lg:text-display-sm text-balance font-normal tracking-tight">
               Join our commitment to making a positive difference in the world.
             </h1>
@@ -101,9 +98,9 @@ export default async function Home() {
           <Link
             href={donationFormLink}
             target="_blank"
-            className="flex p-1 rounded-[0.8rem] flex-shrink-0 bg-green-50 backdrop-blur-lg hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-150 ease-in"
+            className="flex p-1 rounded-[0.8rem] flex-shrink-0 bg-green-50 shadow-blue-30 shadow-xl backdrop-blur-lg hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-150 ease-in"
           >
-            <div className="px-4 py-2 max-sm:py-0 max-sm:ps-2 rounded-[0.4rem] bg-green/50 flex gap-2 items-center">
+            <div className="px-4 py-2 max-sm:py-0 max-sm:ps-2 ps-3 rounded-[0.4rem] bg-green/50 flex gap-2 items-center ">
               <MaterialSymbol icon="volunteer_activism" weight={300} size={48} />
               <div className="flex flex-col items-start">
                 <span className="font-medium text-title-lg tracking-normal">Make a Donation</span>
@@ -118,14 +115,14 @@ export default async function Home() {
         <Container className="flex items-center flex-col mb-12  md:mb-17">
           <MaterialSymbol icon="flare" weight={200} size={40} className="mb-2" />
           <h2 className="mb-4 tracking-wider text-center">Our Core Belief</h2>
-          <h3 className="font-display text-headline-lg md:text-display-sm tracking-tight italic mb-7 text-center">
+          <h3 className="font-display text-headline-lg font-light md:text-display-sm tracking-tight italic mb-7 md:mb-10 text-center">
             Service Above Self
           </h3>
-          <div className="grid md:grid-cols-2 gap-1 bg-blue-60 p-1 backdrop-blur-xl rounded-[8px] auto-rows-fr auto-cols-fr">
+          <div className="grid sm:grid-cols-2 gap-3 md:gap-4 auto-rows-auto auto-cols-fr">
             {beliefs.map((belief, idx) => (
-              <div className="bg-white-70 text-pretty text-black rounded-[4px] px-4 py-3 md:max-w-[40ch]" key={idx}>
-                <p>{belief}</p>
-              </div>
+              <GlowCard key={idx} className="md:max-w-[35ch]">
+                <p className="drop-shadow-md text-pretty">{belief}</p>
+              </GlowCard>
             ))}
           </div>
         </Container>
@@ -178,13 +175,13 @@ export default async function Home() {
                 key={p.id}
               >
                 <span className="col-start-2 italic font-display tracking-wider">Project</span>
-                <div className="max-md:p-0 p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-2xl shadow-blue-30">
+                <div className="max-md:p-0 p-1 bg-white/10 border border-white/10 backdrop-blur-lg rounded-full shadow-blue-30 shadow-sm">
                   <div className="max-md:hidden">
                     <MaterialSymbol
                       icon={p.icon}
                       size={32}
                       weight={400}
-                      className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
+                      className={twMerge("rounded-full p-3 text-black/60", projectIconClasses[p.id])}
                     />
                   </div>
                   <div className="md:hidden">
@@ -192,18 +189,18 @@ export default async function Home() {
                       icon={p.icon}
                       size={24}
                       weight={400}
-                      className={twMerge("rounded-full p-2 text-black/70", projectBgColor[p.id])}
+                      className={twMerge("rounded-full p-2 text-black/60", projectIconClasses[p.id])}
                     />
                   </div>
                 </div>
                 <h3 className="font-display text-headline-md md:text-headline-lg tracking-tight">{p.title}</h3>
-                <p className="font-hindi text-title-lg md:text-headline-md font-medium max-md:mt-2 col-start-2">
+                <p className="font-hindi text-title-lg md:text-headline-sm font-medium max-md:mt-1 col-start-2">
                   {p.hindiTitle}
                 </p>
-                <p className="col-start-2 md:text-title-md font-light mt-2">{p.description}</p>
+                <p className="col-start-2 md:text-title-md drop-shadow-md font-light mt-2">{p.description}</p>
                 <Link
                   href={"/projects#" + p.id}
-                  className="col-start-2 mt-4 p-1 px-3 rounded-[8px]  bg-white/30 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl "
+                  className="col-start-2 mt-4 p-1 px-3 rounded-[8px] text-body-lg bg-white/10 drop-shadow-sm border border-white/10 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-sm"
                 >
                   Read more
                 </Link>

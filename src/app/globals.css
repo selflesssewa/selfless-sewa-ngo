@@ -33,6 +33,78 @@
     font-family: var(--font-hindi);
     @apply tracking-normal
   }
+
+  .blob-1 {
+    width: max(70vw, 80vh);
+    left: 0;
+    bottom: 0;
+    scale: 0.8;
+    aspect-ratio: 1;
+    translate: 0 0;
+    transform-origin: 45% 25%;
+    animation: random-1 29s infinite alternate;
+    background: radial-gradient(farthest-side, theme(colors[saksham]/25%) 5%, transparent);
+  }
+
+  .blob-2 {
+    width: max(70vw, 60vh);
+    right: 0;
+    top: 0;
+    scale: 0.8;
+    translate: 0 0;
+    aspect-ratio: 1;
+    transform-origin: 25% 45%;
+    animation: random-2 23s infinite alternate;
+    background: radial-gradient(farthest-side, theme(colors[chikitsa]/25%) 5%, transparent);
+  }
+}
+
+@keyframes random-1 {
+  0% {
+    translate: 0 0;
+    scale: 0.8;
+  }
+
+  33% {
+    translate: -15vw -30vh;
+    rotate: 40deg;
+    scale: 1;
+  }
+
+  66% {
+    rotate: 0deg;
+    translate: -10vw 40vh;
+    scale: 1.8;
+  }
+
+  100% {
+    translate: -40vw 0;
+    rotate: -40deg;
+  }
+}
+
+@keyframes random-2 {
+  0% {
+    translate: 0 0;
+    scale: 0.8;
+  }
+
+  33% {
+    rotate: 30deg;
+    translate: 20vw -30vh;
+    scale: 1;
+  }
+
+  66% {
+    translate: 0 -10vh;
+    rotate: 0deg;
+    scale: 1.2;
+  }
+
+  100% {
+    translate: 10vw 60vh;
+    rotate: -40deg;
+  }
 }
 
 @layer utilities {
@@ -57,4 +129,17 @@
   .testimonial-mask {
     mask: linear-gradient(to left, transparent, white 6%, white 94%, transparent);
   }
+
+  .nav-mask {
+    position: relative;
+  }
+
+  .nav-mask::after {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    height: 150%;
+    mask: linear-gradient(to bottom, white 35%, transparent);
+  }
+
 }

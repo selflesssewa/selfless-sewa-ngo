@@ -1,6 +1,17 @@
 import { getLayoutContent } from "@/dao";
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Instrument_Sans, Karma } from "next/font/google";
+import {
+  Domine,
+  Fraunces,
+  Ibarra_Real_Nova,
+  Instrument_Sans,
+  Josefin_Sans,
+  Josefin_Slab,
+  Karma,
+  Source_Serif_4,
+  Volkhov,
+  Vollkorn,
+} from "next/font/google";
 import "react-material-symbols/rounded";
 import { twMerge } from "tailwind-merge";
 import Footer from "./components/Footer";
@@ -15,12 +26,14 @@ const bodyFont = Instrument_Sans({
   display: "swap",
   variable: "--font-body",
 });
+
 const displayFont = Fraunces({
   variable: "--font-display",
   subsets: ["latin"],
   style: ["italic", "normal"],
   axes: ["opsz", "WONK", "SOFT"],
 });
+
 const hindiFont = Karma({
   variable: "--font-hindi",
   subsets: ["devanagari"],
@@ -77,7 +90,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={twMerge(bodyFont.variable, displayFont.variable, hindiFont.variable, "text-white font-body")}>
-        <div className="from-blue/95 to-green/75 bg-gradient-to-bl bg-no-repeat left-[0px] top-[0px] w-full h-lvh fixed -z-10" />
+        <div className="from-blue/95 via-blue/85 via-30% to-green/70 bg-gradient-to-b bg-no-repeat overflow-hidden pointer-events-none left-[0px] top-[0px] w-full h-lvh fixed -z-10">
+          <div className="w-full h-full relative">
+            <div className="inset-[0px] absolute bg-[repeating-radial-gradient(circle_at_center,theme(colors[blue]/7%),0.00015px,theme(colors[blue]/7%),0,theme(colors[white]/7%),0.0003px,theme(colors[white]/7%)_0)]" />
+            <div className="z-10 blob-1 absolute" />
+            <div className="z-10 blob-2 absolute" />
+          </div>
+        </div>
         <Navbar donationFormLink={data.donationFormLink} />
         {children}
         <Footer data={data} />

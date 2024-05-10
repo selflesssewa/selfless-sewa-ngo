@@ -1,16 +1,19 @@
 import Link from "next/link";
-import { projectBgColor, projects } from "../page";
+import { projectIconClasses, projects } from "../page";
 import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
+import { getProjectPageContent } from "@/dao";
 
-const Project = () => {
+const Project = async () => {
+  const data = await getProjectPageContent();
+
   return (
     <main className="min-h-screen">
       <section>
         <Container className="my-4">
           <h1 className="md:ms-16 tracking-normal text-headline-sm mb-4 mt-7">Our Projects</h1>
-          <p className="md:ms-16 max-w-[55ch] md:text-title-md font-light mb-3">
+          <p className="md:ms-16 max-w-[55ch] md:text-title-md font-light mb-3 drop-shadow-md">
             Selfless Sewa, where we believe in making a meaningful impact through our diverse range of projects. Our
             initiatives are dedicated to fostering positive change in society by addressing crucial issues such as
             quality education, healthcare accessibility, menstrual hygiene, animal welfare, food donation, and
@@ -31,13 +34,13 @@ const Project = () => {
             key={p.id}
           >
             <span className="col-start-2 italic font-display tracking-wider">Project</span>
-            <div className="max-md:p-0 p-1 bg-white-70 backdrop-blur-2xl rounded-full shadow-2xl shadow-blue-30">
+            <div className="max-md:p-0 p-1 bg-white/10 border border-white/10 backdrop-blur-lg rounded-full">
               <div className="max-md:hidden">
                 <MaterialSymbol
                   icon={p.icon}
                   size={36}
                   weight={400}
-                  className={twMerge("rounded-full p-3 text-black/70", projectBgColor[p.id])}
+                  className={twMerge("rounded-full p-3 text-black/70", projectIconClasses[p.id])}
                 />
               </div>
               <div className="md:hidden">
@@ -45,22 +48,23 @@ const Project = () => {
                   icon={p.icon}
                   size={24}
                   weight={400}
-                  className={twMerge("rounded-full p-2 text-black/70", projectBgColor[p.id])}
+                  className={twMerge("rounded-full p-2 text-black/70", projectIconClasses[p.id])}
                 />
               </div>
             </div>
             <h3 className="font-display text-headline-md md:text-headline-lg tracking-tight">{p.title}</h3>
-            <p className="font-hindi text-title-lg md:text-headline-md font-medium max-md:mt-2 col-start-2">
+            <p className="font-hindi text-title-lg md:text-headline-sm font-medium max-md:mt-1 col-start-2">
               {p.hindiTitle}
             </p>
-            <p className="md:col-start-2 max-md:col-span-2 md:text-title-md font-light mt-4 text-balance max-w-[55ch]">
+            <p className="md:col-start-2 drop-shadow-md max-md:col-span-2 md:text-title-md font-light mt-4 text-balance max-w-[55ch]">
               {p.body}
             </p>
             <Link
-              href="#donate"
-              className="p-1 md:mt-4 mt-5 md:col-start-2 max-md:col-span-2 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl bg-blue-60 rounded-[8px]"
+              href={data.donationFormLink}
+              target="_blank"
+              className="p-1 px-3 mt-5 md:col-start-2 max-md:col-span-2 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-sm bg-blue-30 border border-blue-30 rounded-[8px]"
             >
-              <div className="p-1 px-3 bg-white/10 rounded-[4px]">Donate</div>
+              Donate
             </Link>
           </section>
         ))}

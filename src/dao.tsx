@@ -126,6 +126,20 @@ export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> 
   };
 }
 
+export async function getProjectPageContent(): Promise<TProjectPageContent> {
+  const entries = await contentful.getEntries({
+    content_type: "misc",
+    select: ["fields.donationFormLink"],
+    limit: 1,
+  });
+
+  const data = entries.items[0].fields;
+
+  return {
+    donationFormLink: data.donationFormLink as string,
+  };
+}
+
 export async function getTeamPageContent(): Promise<TTeamPageContent> {
   const entries = await contentful.getEntries({
     content_type: "sewak",
@@ -177,7 +191,9 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
   };
 }
 
+const nbsp = String.fromCharCode(160);
+
 export const teamBeliefs = [
-  `At Selfless Sewa, our mantra of "Lead by Example" is our guiding light. It’s about walking the talk and setting the bar high ineverything we do. We don't just preach; we practice what we believe in—excellence, service, and dedication.`,
+  `At Selfless Sewa, our mantra of "Lead${nbsp}by${nbsp}Example" is our guiding light. It’s about walking the talk and setting the bar high in everything we do. We don't just preach; we practice what we believe in—excellence, service, and dedication.`,
   `By leading with integrity and passion, we inspire others to follow suit and join us in our mission of service and empowerment. Our actions speak volumes, showing that making a difference is not just a slogan but a way of life.`,
 ];
