@@ -9,6 +9,7 @@ import Container from "./components/Container";
 import HeroSlider from "./components/HeroSlider";
 import TestimonialSlider from "./components/TestimonialSlider";
 import GlowCard from "./components/GlowCard";
+import { GeneralStatistics } from "./components/GeneralStatistics";
 
 const beliefs = [
     "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
@@ -164,6 +165,14 @@ export default async function Home() {
             <p className="text-balance">{visionText}</p>
           </div>
         </div>
+      </section>
+      <section>
+        <Container className="py-8 md:py-12">
+          <h2 className="tracking-wider text-center mb-8">Our Impact</h2>
+          <div className="mt-6 md:mt-8">
+            <GeneralStatistics />
+          </div>
+        </Container>
       </section>
       <section>
         <Container className=" md:py-17 py-10 max-md:ps-4">

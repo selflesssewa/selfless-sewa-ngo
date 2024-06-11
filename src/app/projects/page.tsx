@@ -1,19 +1,20 @@
+import { getProjectPageContent } from "@/dao";
 import Link from "next/link";
-import { projectIconClasses, projects } from "../page";
 import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
-import { getProjectPageContent } from "@/dao";
+import { GeneralStatistics } from "../components/GeneralStatistics";
+import { projectIconClasses, projects } from "../page";
 
 const Project = async () => {
-  const data = await getProjectPageContent();
+  const { donationFormLink } = await getProjectPageContent();
 
   return (
     <main className="min-h-screen">
       <section>
-        <Container className="my-4">
-          <h1 className="md:ms-16 tracking-normal text-headline-sm mb-4 mt-7">Our Projects</h1>
-          <p className="md:ms-16 max-w-[55ch] md:text-title-md font-light mb-3 drop-shadow-md">
+        <Container className="my-4 md:ps-16">
+          <h1 className=" tracking-normal text-headline-sm mb-4 mt-7">Our Projects</h1>
+          <p className="max-w-[55ch] md:text-title-md font-light drop-shadow-md">
             Selfless Sewa, where we believe in making a meaningful impact through our diverse range of projects. Our
             initiatives are dedicated to fostering positive change in society by addressing crucial issues such as
             quality education, healthcare accessibility, menstrual hygiene, animal welfare, food donation, and
@@ -24,6 +25,9 @@ const Project = async () => {
             has the opportunity to thrive and live a dignified life. We&apos;re on our journey towards building a
             brighter, more compassionate future for all.
           </p>
+          <div className="mt-6 md:mt-8">
+            <GeneralStatistics />
+          </div>
         </Container>
       </section>
       <Container className=" md:my-17 my-14 max-md:ps-4 flex flex-col md:gap-16 gap-12">
@@ -60,7 +64,7 @@ const Project = async () => {
               {p.body}
             </p>
             <Link
-              href={data.donationFormLink}
+              href={donationFormLink}
               target="_blank"
               className="p-1 px-3 mt-5 md:col-start-2 max-md:col-span-2 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-sm bg-blue-30 border border-blue-30 rounded-[8px]"
             >

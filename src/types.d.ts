@@ -59,7 +59,7 @@ type TProjectPageContent = {
   donationFormLink: string;
 };
 
-type TStats = {
+type TStatistic = {
   value: number;
   title: string;
   suffix?: string;

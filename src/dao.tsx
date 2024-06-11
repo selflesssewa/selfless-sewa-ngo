@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, Document, Text } from "@contentful/rich-text-types";
 import { createClient, type Asset, type Entry } from "contentful";
@@ -188,6 +189,25 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
     team,
     founder: founder as TSewakWithBio,
     volunteerFormLink: data.volunteerFormLink as string,
+  };
+}
+
+export const getStatisticsCached = cache(getStatistics);
+async function getStatistics(): Promise<{ generalStatistics: TStatistic[] }> {
+  const entries = await contentful.getEntries({
+    content_type: "misc",
+    select: ["fields.projectPageStatistics"],
+    limit: 1,
+  });
+
+  const data = entries.items[0].fields;
+
+  const generalStatistics = (data.projectPageStatistics as Entry[]).map(stat => {
+    return { value: stat.fields.value, title: stat.fields.title, suffix: stat.fields.suffix } as TStatistic;
+  });
+
+  return {
+    generalStatistics,
   };
 }
 
