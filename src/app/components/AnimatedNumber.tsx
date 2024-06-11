@@ -23,7 +23,7 @@ export const AnimatedNumber = ({ as, className, to, from = 0 }: Props) => {
 
     const controls = animate(from, to, {
       duration: Math.random() * (max - min) + min,
-      ease: "easeOut",
+      ease: "linear",
       onComplete() {
         if (elRef.current) elRef.current.dataset["done"] = "true";
       },
