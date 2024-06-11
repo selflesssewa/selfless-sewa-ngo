@@ -7,6 +7,8 @@
   html {
     font-size: 62.5%;
     user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors[white-70]) theme(colors[black]);
   }
 
   body {
