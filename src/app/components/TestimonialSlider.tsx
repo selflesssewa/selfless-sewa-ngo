@@ -2,17 +2,18 @@
 
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useInView } from "react-intersection-observer";
+import { useInView } from "framer-motion";
 
 const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const wrapperRef = useRef<HTMLUListElement>(null);
   const slidesRef = useRef<HTMLLIElement[]>([]);
-  const [contentLens, setContentLens] = useState<number[]>([]);
+  const [contentLengths, setContentLengths] = useState<number[]>([]);
   const [isStopped, setIsStopped] = useState(true);
   const [trigger, setTrigger] = useState<"auto" | "swipe" | "tap">();
   const slideTimeoutId = useRef<NodeJS.Timeout>();
-  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "0% 0% -50% 0%" });
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sliderContainerRef, { once: true, margin: "0% 0% -50% 0%" });
 
   const stopAnimation = () => {
     setIsStopped(true);
@@ -38,8 +39,8 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
   useEffect(() => {
     const nodes = wrapperRef.current?.querySelectorAll<HTMLParagraphElement>("[data-length]");
     if (nodes) {
-      const lens = Array.from(nodes).map(el => Number(el.dataset.length ?? 350) * 15);
-      setContentLens(lens);
+      const contentLengths = Array.from(nodes).map(el => Number(el.dataset.length ?? 350) * 15);
+      setContentLengths(contentLengths);
     }
 
     const listNodes = wrapperRef.current?.querySelectorAll<HTMLLIElement>("li");
@@ -56,18 +57,18 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
     });
 
     if (!isStopped) {
-      const time = contentLens[activeSlideIndex];
+      const timeSecs = contentLengths[activeSlideIndex];
       slideTimeoutId.current = setTimeout(() => {
         const nextIdx = (activeSlideIndex + 1) % testimonials.length;
         scrollToSlide(nextIdx);
         setActiveSlideIndex(nextIdx);
-      }, time);
+      }, timeSecs);
     }
 
     return () => {
       clearTimeout(slideTimeoutId.current);
     };
-  }, [activeSlideIndex, isStopped, trigger, contentLens, testimonials.length]);
+  }, [activeSlideIndex, isStopped, trigger, contentLengths, testimonials.length]);
 
   return (
     <div className="flex gap-4 flex-col">
@@ -76,7 +77,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
           Hear From Our सेवकs
         </h2>
       </div>
-      <div ref={ref}>
+      <div ref={sliderContainerRef}>
         <ul
           ref={wrapperRef}
           className="no-scrollbar overflow-x-scroll relative md:testimonial-mask flex snap-x snap-mandatory max-md:gap-2 gap-3 pb-6 -mb-6"
@@ -119,7 +120,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
             </li>
           ))}
         </ul>
-        <div className="flex gap-2 justify-center mt-6 items-center">
+        <div className="flex justify-center mt-6 items-center">
           {testimonials.map((_, idx) => (
             <button
               key={idx}
@@ -129,11 +130,11 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
                 scrollToSlide(idx);
                 setActiveSlideIndex(idx);
               }}
-              className="cursor-pointer z-10 py-2 -my-2"
+              className="cursor-pointer z-10 py-2 duration-200 -my-2 group px-1"
             >
               <div
                 className={twMerge(
-                  "rounded-[2px] duration-200 ease-in-out w-[1.2rem] h-1 bg-blue-60 overflow-hidden",
+                  "rounded-[2px] duration-200 ease-in-out w-[1.2rem] h-1 bg-blue-60  overflow-hidden group-hover:ring-1 ring-blue-60",
                   activeSlideIndex == idx && "bg-blue w-6"
                 )}
               >
@@ -142,7 +143,7 @@ const TestimonialSlider = ({ testimonials }: { testimonials: TTestimonial[] }) =
                     "h-full w-full scale-0 origin-left bg-white",
                     activeSlideIndex == idx && !isStopped && "animate-progress"
                   )}
-                  style={{ "--progress-duration": `${contentLens[activeSlideIndex]}ms` } as CSSProperties}
+                  style={{ "--progress-duration": `${contentLengths[activeSlideIndex]}ms` } as CSSProperties}
                 />
               </div>
             </button>
