@@ -58,3 +58,9 @@ type TTestimonial = {
 type TProjectPageContent = {
   donationFormLink: string;
 };
+
+type TStats = {
+  value: number;
+  title: string;
+  suffix?: string;
+};
