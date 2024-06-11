@@ -25,7 +25,7 @@ export async function getLayoutContent(): Promise<TLayoutContent> {
 
   const data = entries.items[0].fields;
 
-  const socials = (data.socials as Entry[]).map(entry => {
+  const socials = (data.socials as Entry[]).map((entry) => {
     return { handle: entry.fields.handle, url: entry.fields.url } as TSocial;
   });
 
@@ -74,7 +74,10 @@ export async function getHomePageContent(): Promise<THomePageContent> {
     documentToReactComponents(doc, {
       renderNode: {
         [BLOCKS.PARAGRAPH]: (node, children) => {
-          const length = node.content.reduce((length, block) => (length += (block as Text).value.length), 0);
+          const length = node.content.reduce(
+            (length, block) => (length += (block as Text).value.length),
+            0,
+          );
           return (
             <p data-length={length} className="tracking-wider">
               {children}
@@ -82,9 +85,13 @@ export async function getHomePageContent(): Promise<THomePageContent> {
           );
         },
       },
-      renderText: text => {
+      renderText: (text) => {
         return text.split("\n").reduce((children, textSegment, index) => {
-          return [...children, index > 0 && <br key={index} />, textSegment] as string[];
+          return [
+            ...children,
+            index > 0 && <br key={index} />,
+            textSegment,
+          ] as string[];
         }, [] as string[]);
       },
     });
@@ -97,9 +104,15 @@ export async function getHomePageContent(): Promise<THomePageContent> {
     } as TTestimonial;
   });
 
-  const sliderImgUrls = (data.sliderImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
-  const missionImgUrls = (data.missionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
-  const visionImgUrls = (data.visionImages as Asset[]).map(asset => (`https:` + asset.fields.file?.url) as string);
+  const sliderImgUrls = (data.sliderImages as Asset[]).map(
+    (asset) => (`https:` + asset.fields.file?.url) as string,
+  );
+  const missionImgUrls = (data.missionImages as Asset[]).map(
+    (asset) => (`https:` + asset.fields.file?.url) as string,
+  );
+  const visionImgUrls = (data.visionImages as Asset[]).map(
+    (asset) => (`https:` + asset.fields.file?.url) as string,
+  );
 
   return {
     locations,
@@ -114,7 +127,11 @@ export async function getHomePageContent(): Promise<THomePageContent> {
 export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.volunteerRules", "fields.certificateCriteria", "fields.volunteerFormLink"],
+    select: [
+      "fields.volunteerRules",
+      "fields.certificateCriteria",
+      "fields.volunteerFormLink",
+    ],
     limit: 1,
   });
 
@@ -151,7 +168,7 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
   const team: TSewak[] = [];
   let founder: TSewakWithBio | undefined;
 
-  entries.items.forEach(el => {
+  entries.items.forEach((el) => {
     const member: TSewak = {
       name: el.fields.name as string,
       role: el.fields.department as string,
@@ -163,9 +180,13 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
         renderNode: {
           [BLOCKS.PARAGRAPH]: (_, children) => <p>{children}</p>,
         },
-        renderText: text => {
+        renderText: (text) => {
           return text.split("\n").reduce((children, textSegment, index) => {
-            return [...children, index > 0 && <br key={index} />, textSegment] as string[];
+            return [
+              ...children,
+              index > 0 && <br key={index} />,
+              textSegment,
+            ] as string[];
           }, [] as string[]);
         },
       });
@@ -202,9 +223,15 @@ async function getStatistics(): Promise<{ generalStatistics: TStatistic[] }> {
 
   const data = entries.items[0].fields;
 
-  const generalStatistics = (data.projectPageStatistics as Entry[]).map(stat => {
-    return { value: stat.fields.value, title: stat.fields.title, suffix: stat.fields.suffix } as TStatistic;
-  });
+  const generalStatistics = (data.projectPageStatistics as Entry[]).map(
+    (stat) => {
+      return {
+        value: stat.fields.value,
+        title: stat.fields.title,
+        suffix: stat.fields.suffix,
+      } as TStatistic;
+    },
+  );
 
   return {
     generalStatistics,

@@ -9,16 +9,30 @@ type Props = {
   footer: React.ReactNode;
 };
 
-const CallToActionCard = ({ title, body, imgSrc, imgAltText, footer }: Props) => {
+const CallToActionCard = ({
+  title,
+  body,
+  imgSrc,
+  imgAltText,
+  footer,
+}: Props) => {
   return (
-    <div className="grid auto-cols-fr lg:grid-cols-2 gap-2 bg-blue-30 backdrop-blur-xl p-2 rounded-[16px]">
-      <div className="bg-white-70 flex flex-col px-3 py-4 md:p-5 rounded-[8px]">
-        <h2 className="text-pretty text-black text-headline-sm mb-3 tracking-normal">{title}</h2>
-        <p className="text-black text-pretty">{body}</p>
+    <div className="grid auto-cols-fr gap-2 rounded-[16px] bg-blue-30 p-2 backdrop-blur-xl lg:grid-cols-2">
+      <div className="flex flex-col rounded-[8px] bg-white-70 px-3 py-4 md:p-5">
+        <h2 className="mb-3 text-pretty text-headline-sm tracking-normal text-black">
+          {title}
+        </h2>
+        <p className="text-pretty text-black">{body}</p>
         {footer}
       </div>
-      <div className="relative rounded-[8px] overflow-clip max-lg:aspect-[4/3] max-lg:-order-1">
-        <Image src={imgSrc} alt={imgAltText} fill className="object-cover" sizes="700x800" />
+      <div className="relative overflow-clip rounded-[8px] max-lg:-order-1 max-lg:aspect-[4/3]">
+        <Image
+          src={imgSrc}
+          alt={imgAltText}
+          fill
+          className="object-cover"
+          sizes="700x800"
+        />
       </div>
     </div>
   );
