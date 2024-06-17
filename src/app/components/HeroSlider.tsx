@@ -1,5 +1,6 @@
 "use client";
 
+import { THomePageContent } from "@/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";

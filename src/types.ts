@@ -1,23 +1,25 @@
-type TSewak = {
+import { Document } from "@contentful/rich-text-types";
+
+export type TSewak = {
   name: string;
   role: string;
   imgUrl: string;
 };
 
-type TSewakWithBio = TSewak & { bio: React.ReactNode };
+export type TSewakWithBio = TSewak & { bio: React.ReactNode };
 
-type TTeamPageContent = {
+export type TTeamPageContent = {
   volunteerFormLink: string;
   founder: TSewakWithBio;
   team: TSewak[];
 };
 
-type TSocial = {
+export type TSocial = {
   handle: string;
   url: string;
 };
 
-type TLayoutContent = {
+export type TLayoutContent = {
   contactNo: string;
   contactEmailId: string;
   collabEmailId: string;
@@ -26,13 +28,13 @@ type TLayoutContent = {
   socials: TSocial[];
 };
 
-type TVolunteerPageContent = {
+export type TVolunteerPageContent = {
   volunteerFormLink: string;
   volunteerRules: string[];
   certificateCriteria: string[];
 };
 
-type TLocation = {
+export type TLocation = {
   label: string;
   lon: number;
   lat: number;
@@ -40,7 +42,7 @@ type TLocation = {
   offsetY: number;
 };
 
-type THomePageContent = {
+export type THomePageContent = {
   donationFormLink: string;
   locations: TLocation[];
   testimonials: TTestimonial[];
@@ -49,17 +51,26 @@ type THomePageContent = {
   visionImgUrls: string[];
 };
 
-type TTestimonial = {
+export type TTestimonial = {
   name: string;
   role: string;
   content: React.ReactNode;
 };
 
-type TProjectPageContent = {
-  donationFormLink: string;
+export type TProject = {
+  title: string;
+  hindiTitle: string;
+  slug: string;
+  description: string;
+  body: Document;
 };
 
-type TStatistic = {
+export type TProjectPageContent = {
+  donationFormLink: string;
+  projects: Array<TProject>;
+};
+
+export type TStatistic = {
   value: number;
   title: string;
   suffix?: string;

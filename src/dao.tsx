@@ -1,8 +1,23 @@
-import { cache } from "react";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, Document, Text } from "@contentful/rich-text-types";
 import { createClient, type Asset, type Entry } from "contentful";
+import { cache } from "react";
 import { getEnvVariable } from "./helper";
+import {
+  THomePageContent,
+  TLayoutContent,
+  TLocation,
+  TProject,
+  TProjectPageContent,
+  TSewak,
+  TSewakWithBio,
+  TSocial,
+  TStatistic,
+  TTeamPageContent,
+  TTestimonial,
+  TVolunteerPageContent,
+} from "./types";
+import { SymbolCodepoints } from "react-material-symbols";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -147,14 +162,24 @@ export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> 
 export async function getProjectPageContent(): Promise<TProjectPageContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.donationFormLink"],
+    select: ["fields.donationFormLink", "fields.projects"],
     limit: 1,
   });
 
   const data = entries.items[0].fields;
+  const projects = (data.projects as Array<Entry>).map((p) => {
+    return {
+      title: p.fields.title,
+      hindiTitle: p.fields.hindiTitle,
+      slug: p.fields.slug,
+      description: p.fields.description,
+      body: p.fields.body as Document,
+    } as TProject;
+  });
 
   return {
     donationFormLink: data.donationFormLink as string,
+    projects,
   };
 }
 
@@ -244,3 +269,11 @@ export const teamBeliefs = [
   `At Selfless Sewa, our mantra of "Lead${nbsp}by${nbsp}Example" is our guiding light. It’s about walking the talk and setting the bar high in everything we do. We don't just preach; we practice what we believe in—excellence, service, and dedication.`,
   `By leading with integrity and passion, we inspire others to follow suit and join us in our mission of service and empowerment. Our actions speak volumes, showing that making a difference is not just a slogan but a way of life.`,
 ];
+
+export const projectIcons: Record<string, SymbolCodepoints> = {
+  saksham: "auto_stories",
+  chikitsa: "digital_wellbeing",
+  aahar: "grocery",
+  saundarya: "nature",
+  "jeev-kalyan": "pets",
+};

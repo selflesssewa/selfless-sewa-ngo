@@ -3,11 +3,12 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useInView } from "framer-motion";
+import { TTestimonial } from "@/types";
 
 const TestimonialSlider = ({
   testimonials,
 }: {
-  testimonials: TTestimonial[];
+  testimonials: Array<TTestimonial>;
 }) => {
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const wrapperRef = useRef<HTMLUListElement>(null);

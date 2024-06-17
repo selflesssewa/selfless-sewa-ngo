@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
 import CopyButton from "./CopyButton";
+import { TLayoutContent } from "@/types";
 
 const Footer = ({ data }: { data: TLayoutContent }) => {
   return (

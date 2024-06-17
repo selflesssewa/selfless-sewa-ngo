@@ -1,5 +1,6 @@
 "use client";
 
+import { TLocation } from "@/types";
 import Container from "./Container";
 import {
   ComposableMap,
@@ -12,7 +13,7 @@ import {
 const geoUrl =
   "https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.topo.json";
 
-export default function Map({ points }: { points: TLocation[] }) {
+export default function Map({ points }: { points: Array<TLocation> }) {
   return (
     <ComposableMap
       className="max-h-[80vh] w-full"

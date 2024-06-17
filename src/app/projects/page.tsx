@@ -1,13 +1,17 @@
-import { getProjectPageContent } from "@/dao";
+import { getProjectPageContent, projectIcons } from "@/dao";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS } from "@contentful/rich-text-types";
+import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
 import { GeneralStatistics } from "../components/GeneralStatistics";
-import { projectIconClasses, projects } from "../page";
+import { projectIconClasses } from "../page";
+import GlowCard from "../components/GlowCard";
 
 const Project = async () => {
-  const { donationFormLink } = await getProjectPageContent();
+  const { donationFormLink, projects } = await getProjectPageContent();
 
   return (
     <main className="min-h-screen">
@@ -34,12 +38,12 @@ const Project = async () => {
           </div>
         </Container>
       </section>
-      <Container className="my-14 flex flex-col gap-12 max-md:ps-4 md:my-17 md:gap-16">
+      <Container className="my-14 flex flex-col gap-12 md:my-17 md:gap-16">
         {projects.map((p) => (
           <section
-            id={p.id}
+            id={p.slug}
             className="grid scroll-mt-[12vh] grid-cols-[auto,1fr] items-center justify-items-start gap-x-3 md:gap-x-6"
-            key={p.id}
+            key={p.slug}
           >
             <span className="font-display col-start-2 italic tracking-wider">
               Project
@@ -47,23 +51,27 @@ const Project = async () => {
             <div className="rounded-full border border-white/10 bg-white/10 p-1 backdrop-blur-lg max-md:p-0">
               <div className="max-md:hidden">
                 <MaterialSymbol
-                  icon={p.icon}
+                  icon={projectIcons[p.slug]}
                   size={36}
                   weight={400}
                   className={twMerge(
                     "rounded-full p-3 text-black/70",
-                    projectIconClasses[p.id],
+                    projectIconClasses[
+                      p.slug as keyof typeof projectIconClasses
+                    ],
                   )}
                 />
               </div>
               <div className="md:hidden">
                 <MaterialSymbol
-                  icon={p.icon}
+                  icon={projectIcons[p.slug]}
                   size={24}
                   weight={400}
                   className={twMerge(
                     "rounded-full p-2 text-black/70",
-                    projectIconClasses[p.id],
+                    projectIconClasses[
+                      p.slug as keyof typeof projectIconClasses
+                    ],
                   )}
                 />
               </div>
@@ -74,9 +82,37 @@ const Project = async () => {
             <p className="font-hindi col-start-2 text-title-lg font-medium max-md:mt-1 md:text-headline-sm">
               {p.hindiTitle}
             </p>
-            <p className="mt-4 max-w-[55ch] text-balance font-light drop-shadow-md max-md:col-span-2 md:col-start-2 md:text-title-md">
-              {p.body}
-            </p>
+            <span className="mt-4 max-w-[55ch] text-balance font-light drop-shadow-md max-md:col-span-2 md:col-start-2 md:text-title-md">
+              {documentToReactComponents(p.body, {
+                renderNode: {
+                  [BLOCKS.EMBEDDED_ASSET]: (node) => {
+                    const data = node.data.target.fields;
+                    return (
+                      <GlowCard className="-m-1 p-1 sm:-m-2 sm:p-2">
+                        <Image
+                          src={"https:" + data.file.url}
+                          alt={data.description}
+                          className="w-full rounded object-cover drop-shadow-none"
+                          width={900}
+                          height={600}
+                        />
+                      </GlowCard>
+                    );
+                  },
+                },
+                renderText: (text) => {
+                  return text
+                    .split("\n")
+                    .reduce((children, textSegment, index) => {
+                      return [
+                        ...children,
+                        index > 0 && <br key={index} />,
+                        textSegment,
+                      ] as string[];
+                    }, [] as string[]);
+                },
+              })}
+            </span>
             <Link
               href={donationFormLink}
               target="_blank"
