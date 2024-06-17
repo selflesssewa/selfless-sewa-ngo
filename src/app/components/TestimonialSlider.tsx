@@ -51,7 +51,7 @@ const TestimonialSlider = ({
       );
     if (nodes) {
       const contentLengths = Array.from(nodes).map(
-        (el) => Number(el.dataset.length ?? 350) * 15,
+        (el) => Number(el.dataset.length ?? 350) * 25,
       );
       setContentLengths(contentLengths);
     }

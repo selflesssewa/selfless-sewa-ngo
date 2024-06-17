@@ -82,17 +82,17 @@ const Project = async () => {
             <p className="font-hindi col-start-2 text-title-lg font-medium max-md:mt-1 md:text-headline-sm">
               {p.hindiTitle}
             </p>
-            <span className="mt-4 max-w-[55ch] text-balance font-light drop-shadow-md max-md:col-span-2 md:col-start-2 md:text-title-md">
+            <article className="mt-4 drop-shadow-md max-md:col-span-2 md:col-start-2 [&_p]:max-w-[55ch] [&_p]:text-pretty [&_p]:md:text-title-sm">
               {documentToReactComponents(p.body, {
                 renderNode: {
                   [BLOCKS.EMBEDDED_ASSET]: (node) => {
                     const data = node.data.target.fields;
                     return (
-                      <GlowCard className="-m-1 p-1 sm:-m-2 sm:p-2">
+                      <GlowCard className="-m-1 p-1 drop-shadow-none sm:-m-2 sm:p-2">
                         <Image
                           src={"https:" + data.file.url}
                           alt={data.description}
-                          className="w-full rounded object-cover drop-shadow-none"
+                          className="w-full max-w-prose rounded object-cover drop-shadow-none"
                           width={900}
                           height={600}
                         />
@@ -112,7 +112,7 @@ const Project = async () => {
                     }, [] as string[]);
                 },
               })}
-            </span>
+            </article>
             <Link
               href={donationFormLink}
               target="_blank"
