@@ -82,7 +82,7 @@ const Project = async () => {
             <p className="font-hindi col-start-2 text-title-lg font-medium max-md:mt-1 md:text-headline-sm">
               {p.hindiTitle}
             </p>
-            <article className="mt-4 drop-shadow-md max-md:col-span-2 md:col-start-2 [&_p]:max-w-[55ch] [&_p]:text-pretty [&_p]:md:text-title-sm">
+            <article className="mt-4 drop-shadow-md max-md:col-span-2 md:col-start-2 [&_p]:max-w-[55ch] [&_p]:text-balance [&_p]:md:text-title-sm">
               {documentToReactComponents(p.body, {
                 renderNode: {
                   [BLOCKS.EMBEDDED_ASSET]: (node) => {
