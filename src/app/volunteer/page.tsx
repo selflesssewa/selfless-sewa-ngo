@@ -3,7 +3,11 @@ import Container from "../components/Container";
 import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
 import Link from "next/link";
 
-const departments = [
+const departments: Array<{
+  icon: SymbolCodepoints;
+  name: string;
+  description: string;
+}> = [
   {
     icon: "groups",
     name: "Human Resources & Management",
@@ -34,7 +38,7 @@ const departments = [
     name: "Public Relations & Outreach",
     description: "Connecting with communities to drive change.",
   },
-] as const;
+];
 
 const Volunteer = async () => {
   const data = await getVolunteerPageContent();
@@ -49,7 +53,7 @@ const Volunteer = async () => {
           <ul className="grid auto-cols-fr grid-cols-3 gap-4 max-md:gap-2 max-sm:grid-cols-2">
             {departments.map((department) => (
               <li
-                className="relative aspect-[3/4] max-w-[28rem] overflow-clip rounded-[24px] bg-blue-60 backdrop-blur-lg max-sm:aspect-[2/3] max-sm:rounded-[16px]"
+                className="relative aspect-[3/4] max-w-[28rem] overflow-clip rounded-[24px] bg-gradient-to-bl from-blue to-blue-30 to-80% backdrop-blur-lg max-sm:aspect-[2/3] max-sm:rounded-[16px]"
                 key={department.name}
               >
                 <div className="z-10 p-4 max-sm:p-3">
@@ -62,8 +66,8 @@ const Volunteer = async () => {
                 </div>
                 <div className="absolute -bottom-1 -left-9 -z-10 text-blue-60 max-lg:-bottom-6 max-lg:-left-7 max-sm:-bottom-2 max-sm:-left-6">
                   <MaterialSymbol
-                    className="text-[280px] [font-variation-settings:'opsz'_24,_'wght'_300] max-lg:text-[200px] max-sm:text-[180px]"
-                    icon={department.icon as SymbolCodepoints}
+                    className="text-[280px] [font-variation-settings:'opsz'_48,_'wght'_350] max-lg:text-[200px] max-sm:text-[180px]"
+                    icon={department.icon}
                   />
                 </div>
               </li>
