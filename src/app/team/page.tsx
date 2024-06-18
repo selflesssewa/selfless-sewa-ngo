@@ -115,8 +115,8 @@ const Team = async () => {
           <CallToActionCard
             title="Join the team"
             body="Join our community of Selfless सेवकs of Selfless Sewa NGO & make an impact by serving those in need & spread kindness and compassion. Your dedication and willingness to serve will make a difference in the lives of others. Join us in our journey of Selfless Sewa! Register now and be the change you want to see in the world."
-            imgSrc="/images/IMG_1582.jpeg"
-            imgAltText=""
+            imgSrc="/images/IMG_3202.webp"
+            imgAltText="group photo"
             footer={
               <div className="mt-8">
                 <p className="mb-2 ms-1 text-body-lg font-medium text-black">

@@ -304,8 +304,8 @@ export default async function Home() {
           <CallToActionCard
             title="Make a positive change"
             body="With compassion and empathy at our core, we strive to make a positive difference in people's lives. This dedication is evident in our volunteer-driven initiatives and collaborative partnerships, aimed at providing education and healthcare to under-served communities. Together, Lets serve before ourselves."
-            imgSrc="/images/IMG_1582.jpeg"
-            imgAltText=""
+            imgSrc="/images/IMG_3202.webp"
+            imgAltText="group photo"
             footer={
               <Link
                 href={donationFormLink}
