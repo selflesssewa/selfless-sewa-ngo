@@ -2,11 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   html {
     font-size: 62.5%;
     user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors[white-70]) theme(colors[black]);
   }
 
   body {
@@ -15,23 +16,26 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 
-    @apply text-title-sm
+    @apply text-title-sm;
   }
 
   .font-body {
     font-family: var(--font-body);
-    @apply tracking-wide
+    @apply tracking-wide;
   }
 
   .font-display {
     font-family: var(--font-display);
-    font-variation-settings: 'WONK' 0, 'SOFT' 50, 'opsz' 1;
-    @apply tracking-normal
+    font-variation-settings:
+      "WONK" 0,
+      "SOFT" 50,
+      "opsz" 1;
+    @apply tracking-normal;
   }
 
   .font-hindi {
     font-family: var(--font-hindi);
-    @apply tracking-normal
+    @apply tracking-normal;
   }
 
   .blob-1 {
@@ -43,7 +47,9 @@
     translate: 0 0;
     transform-origin: 45% 25%;
     animation: random-1 29s infinite alternate;
-    background: radial-gradient(farthest-side, theme(colors[saksham]/25%) 5%, transparent);
+    background: radial-gradient(farthest-side,
+        theme(colors[saksham]/25%) 5%,
+        transparent);
   }
 
   .blob-2 {
@@ -55,7 +61,9 @@
     aspect-ratio: 1;
     transform-origin: 25% 45%;
     animation: random-2 23s infinite alternate;
-    background: radial-gradient(farthest-side, theme(colors[chikitsa]/25%) 5%, transparent);
+    background: radial-gradient(farthest-side,
+        theme(colors[chikitsa]/25%) 5%,
+        transparent);
   }
 }
 
@@ -123,11 +131,19 @@
   }
 
   .masked {
-    mask: linear-gradient(to right, transparent 4%, white 12%, white 88%, transparent 96%);
+    mask: linear-gradient(to right,
+        transparent 4%,
+        white 12%,
+        white 88%,
+        transparent 96%);
   }
 
   .testimonial-mask {
-    mask: linear-gradient(to left, transparent, white 6%, white 94%, transparent);
+    mask: linear-gradient(to left,
+        transparent,
+        white 6%,
+        white 94%,
+        transparent);
   }
 
   .nav-mask {
@@ -142,4 +158,7 @@
     mask: linear-gradient(to bottom, white 35%, transparent);
   }
 
+  .title-drop-shadow {
+    filter: drop-shadow(0 1px 1px theme(colors[blue]/60%)) drop-shadow(0 3px 1px hsla(0, 0%, 100%, 0.2));
+  }
 }

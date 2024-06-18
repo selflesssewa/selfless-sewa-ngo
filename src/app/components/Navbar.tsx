@@ -28,11 +28,11 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
     <header className="sticky top-[0px] z-50">
       <div className="relative">
         <nav>
-          <Container className="nav-mask flex after:backdrop-blur justify-between py-2 max-w-full gap-3">
-            <Link href="/" className="flex gap-2 items-center">
-              <div className="w-5 border border-white-70 rounded-full">
+          <Container className="nav-mask flex max-w-full justify-between gap-3 py-2 after:backdrop-blur">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-5 rounded-full border border-white-70">
                 <Image
-                  className="w-full h-auto"
+                  className="h-auto w-full"
                   alt="Selfless Sewa NGO Logomark"
                   id="logo"
                   src={"/selfless-sewa-logo.svg"}
@@ -40,22 +40,25 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
                   height={12}
                 />
               </div>
-              <p id="word-mark" className="font-display font-medium text-title-md">
+              <p
+                id="word-mark"
+                className="font-display text-title-md font-medium"
+              >
                 Selfless Sewa NGO
               </p>
             </Link>
-            <ul className="flex text-body-lg tracking-wider underline-offset-4 items-stretch [&_a]:flex [&_a]:items-center gap-0 max-md:gap-2">
-              <li className="max-md:hidden flex hover:bg-blue-30 duration-300 rounded-[0.8rem]">
+            <ul className="flex items-stretch gap-0 text-body-lg tracking-wider underline-offset-4 max-md:gap-2 [&_a]:flex [&_a]:items-center">
+              <li className="flex rounded-[0.8rem] duration-300 hover:bg-blue-30 max-md:hidden">
                 <Link href="/projects" className="px-3 drop-shadow-md">
                   Projects
                 </Link>
               </li>
-              <li className="max-md:hidden flex hover:bg-blue-30 duration-300 rounded-[0.8rem]">
+              <li className="flex rounded-[0.8rem] duration-300 hover:bg-blue-30 max-md:hidden">
                 <Link href="/volunteer" className="px-3 drop-shadow-md">
                   Volunteer
                 </Link>
               </li>
-              <li className="max-md:hidden flex hover:bg-blue-30 duration-300 rounded-[0.8rem]">
+              <li className="flex rounded-[0.8rem] duration-300 hover:bg-blue-30 max-md:hidden">
                 <Link href="/team" className="px-3 drop-shadow-md">
                   Team
                 </Link>
@@ -64,22 +67,30 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
                 <Link
                   href={donationFormLink}
                   target="_blank"
-                  className="flex p-1 ms-3 rounded-[0.8rem] bg-green-50 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 self-center backdrop-blur-2xl"
+                  className="ms-3 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                 >
-                  <div className="px-2 py-1 rounded-[0.4rem] bg-green-50 flex gap-1 items-center">
-                    <MaterialSymbol icon="volunteer_activism" weight={200} size={20} />
+                  <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-2 py-1">
+                    <MaterialSymbol
+                      icon="volunteer_activism"
+                      weight={200}
+                      size={20}
+                    />
                     <span className="font-medium">Donate</span>
                   </div>
                 </Link>
               </li>
-              <li className="md:hidden flex">
+              <li className="flex md:hidden">
                 <button
                   className="flex items-center self-stretch"
                   onClick={() => {
-                    setIsOpen(state => !state);
+                    setIsOpen((state) => !state);
                   }}
                 >
-                  <MaterialSymbol icon={isOpen ? "close" : "menu"} size={24} weight={300} />
+                  <MaterialSymbol
+                    icon={isOpen ? "close" : "menu"}
+                    size={24}
+                    weight={300}
+                  />
                 </button>
               </li>
             </ul>
@@ -87,12 +98,12 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
         </nav>
         <nav
           className={twMerge(
-            "absolute w-full left-[0px] tracking-wider bg-blue-30 border-b border-t border-blue-30 backdrop-blur-md",
-            isOpen ? "visible" : "hidden"
+            "absolute left-[0px] w-full border-b border-t border-blue-30 bg-blue-30 tracking-wider backdrop-blur-md",
+            isOpen ? "visible" : "hidden",
           )}
         >
-          <Container className="py-2 max-w-full">
-            <ul className="[&_a]:py-2 [&_a]:block duration-500 hover:[&_li]:underline text-body-lg [&_li]:drop-shadow-md underline-offset-4 flex flex-col">
+          <Container className="max-w-full py-2">
+            <ul className="flex flex-col text-body-lg underline-offset-4 duration-500 [&_a]:block [&_a]:py-2 [&_li]:drop-shadow-md hover:[&_li]:underline">
               <li>
                 <Link href="/projects" onClick={() => setIsOpen(false)}>
                   Projects

@@ -1,11 +1,19 @@
 "use client";
 
+import { TLocation } from "@/types";
 import Container from "./Container";
-import { ComposableMap, Geographies, Geography, Marker, Annotation } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+  Annotation,
+} from "react-simple-maps";
 
-const geoUrl = "https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.topo.json";
+const geoUrl =
+  "https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.topo.json";
 
-export default function Map({ points }: { points: TLocation[] }) {
+export default function Map({ points }: { points: Array<TLocation> }) {
   return (
     <ComposableMap
       className="max-h-[80vh] w-full"
@@ -19,10 +27,10 @@ export default function Map({ points }: { points: TLocation[] }) {
     >
       <Geographies geography={geoUrl}>
         {({ geographies }) =>
-          geographies.map(geo => (
+          geographies.map((geo) => (
             <Geography
               tabIndex={-1}
-              className="fill-blue-30 stroke-blue stroke-[0.035rem] pointer-events-none"
+              className="pointer-events-none fill-blue-30 stroke-blue stroke-[0.035rem]"
               key={geo.rsmKey}
               geography={geo}
             />
@@ -31,10 +39,13 @@ export default function Map({ points }: { points: TLocation[] }) {
       </Geographies>
       {points.map(({ label, lon, lat }) => (
         <Marker coordinates={[lon, lat]} key={label}>
-          <circle r={5} className="fill-transparent stroke-white max-md:stroke-2 stroke-1" />
+          <circle
+            r={5}
+            className="fill-transparent stroke-white stroke-1 max-md:stroke-2"
+          />
         </Marker>
       ))}
-      {points.map(p => (
+      {points.map((p) => (
         <Annotation
           key={p.label}
           subject={[p.lon, p.lat]}

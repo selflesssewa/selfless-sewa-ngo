@@ -4,17 +4,18 @@ import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import Container from "./Container";
 import CopyButton from "./CopyButton";
+import { TLayoutContent } from "@/types";
 
 const Footer = ({ data }: { data: TLayoutContent }) => {
   return (
     <footer className="bg-blue-60 backdrop-blur-sm">
-      <Container className="py-5 max-w-full">
-        <div className="flex max-lg:flex-col lg:items-start gap-8 justify-between gap-y-5">
+      <Container className="max-w-full py-5">
+        <div className="flex justify-between gap-8 gap-y-5 max-lg:flex-col lg:items-start">
           <div className="basis-1/4">
-            <Link href="/" className="flex flex-col gap-2 items-start w-fit">
+            <Link href="/" className="flex w-fit flex-col items-start gap-2">
               <div className="w-13">
                 <Image
-                  className="w-full h-auto"
+                  className="h-auto w-full"
                   alt="Selfless Sewa NGO Logomark"
                   id="logo"
                   src={"/selfless-sewa-logo.svg"}
@@ -22,31 +23,45 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                   height={20}
                 />
               </div>
-              <p id="word-mark" className="font-display font-semibold text-title-md text-nowrap">
+              <p
+                id="word-mark"
+                className="font-display text-nowrap text-title-md font-semibold"
+              >
                 Selfless Sewa NGO
               </p>
             </Link>
           </div>
           <div className="grow">
-            <div
-              className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 md:gap-y-6 [&_ul]:flex
-             [&_ul]:gap-2 max-md:[&_ul]:gap-1 [&_ul]:flex-col [&_ul]:items-start"
-            >
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 md:gap-y-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:items-start [&_ul]:gap-2 max-md:[&_ul]:gap-1">
               <div>
-                <p className="text-title-md font-light font-display mb-2">Contact</p>
+                <p className="font-display mb-2 text-title-md font-light">
+                  Contact
+                </p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex items-center gap-2">
                     {
                       //@ts-ignore
                       <SiWhatsapp size={18} />
                     }
-                    <span className="select-text selection:bg-light-text-selection">{data.contactNo}</span>
+                    <span className="select-text selection:bg-light-text-selection">
+                      {data.contactNo}
+                    </span>
                     <CopyButton value={data.contactNo} />
                   </li>
                   <li className="flex gap-1">
-                    <Link className="flex items-center gap-2" href={`mailto:${data.contactEmailId}`}>
-                      <MaterialSymbol icon="alternate_email" size={22} className="-mx-0" weight={300} />
-                      <span className="select-text selection:bg-light-text-selection">{data.contactEmailId}</span>
+                    <Link
+                      className="flex items-center gap-2"
+                      href={`mailto:${data.contactEmailId}`}
+                    >
+                      <MaterialSymbol
+                        icon="alternate_email"
+                        size={22}
+                        className="-mx-0"
+                        weight={300}
+                      />
+                      <span className="select-text selection:bg-light-text-selection">
+                        {data.contactEmailId}
+                      </span>
                     </Link>
                     <CopyButton value={data.contactEmailId} />
                   </li>
@@ -62,12 +77,22 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-light font-display mb-2">Volunteer</p>
+                <p className="font-display mb-2 text-title-md font-light">
+                  Volunteer
+                </p>
                 <ul className="font-extralight tracking-wider">
                   <li>
-                    <Link href={data.volunteerFormLink} target="_blank" className="flex items-center gap-1">
+                    <Link
+                      href={data.volunteerFormLink}
+                      target="_blank"
+                      className="flex items-center gap-1"
+                    >
                       Become a सेवक
-                      <MaterialSymbol icon="arrow_outward" size={16} weight={300} />
+                      <MaterialSymbol
+                        icon="arrow_outward"
+                        size={16}
+                        weight={300}
+                      />
                     </Link>
                   </li>
                   <li>
@@ -79,7 +104,9 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-light font-display mb-2">About</p>
+                <p className="font-display mb-2 text-title-md font-light">
+                  About
+                </p>
                 <ul className="font-extralight tracking-wider">
                   <li>
                     <Link href="/team">Team</Link>
@@ -90,18 +117,28 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
               <div>
-                <p className="text-title-md font-light font-display mb-2">Collab</p>
+                <p className="font-display mb-2 text-title-md font-light">
+                  Collab
+                </p>
                 <ul className="font-extralight tracking-wider">
                   <li className="flex gap-1">
-                    <Link href={`mailto:${data.collabEmailId}`}>{data.collabEmailId}</Link>
+                    <Link href={`mailto:${data.collabEmailId}`}>
+                      {data.collabEmailId}
+                    </Link>
                     <CopyButton value={data.collabEmailId} />
                   </li>
                 </ul>
               </div>
             </div>
-            <p className="text-body-md mt-6 opacity-90 tracking-wider">
-              <MaterialSymbol icon="copyright" size={16} weight={200} className="translate-y-1" />
-              &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO. All&nbsp;rights&nbsp;reserved.
+            <p className="mt-6 text-body-md tracking-wider opacity-90">
+              <MaterialSymbol
+                icon="copyright"
+                size={16}
+                weight={200}
+                className="translate-y-1"
+              />
+              &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.
+              All&nbsp;rights&nbsp;reserved.
             </p>
           </div>
         </div>

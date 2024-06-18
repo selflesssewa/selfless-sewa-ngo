@@ -89,12 +89,19 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={twMerge(bodyFont.variable, displayFont.variable, hindiFont.variable, "text-white font-body")}>
-        <div className="from-blue/95 via-blue/85 via-30% to-green/70 bg-gradient-to-b bg-no-repeat overflow-hidden pointer-events-none left-[0px] top-[0px] w-full h-lvh fixed -z-10">
-          <div className="w-full h-full relative">
-            <div className="inset-[0px] absolute bg-[repeating-radial-gradient(circle_at_center,theme(colors[blue]/7%),0.00015px,theme(colors[blue]/7%),0,theme(colors[white]/7%),0.0003px,theme(colors[white]/7%)_0)]" />
-            <div className="z-10 blob-1 absolute" />
-            <div className="z-10 blob-2 absolute" />
+      <body
+        className={twMerge(
+          bodyFont.variable,
+          displayFont.variable,
+          hindiFont.variable,
+          "font-body text-white",
+        )}
+      >
+        <div className="pointer-events-none fixed left-[0px] top-[0px] -z-10 h-lvh w-full overflow-hidden bg-gradient-to-b from-blue/95 via-blue/85 via-30% to-green/70 bg-no-repeat">
+          <div className="relative h-full w-full">
+            <div className="absolute inset-[0px] bg-[repeating-radial-gradient(circle_at_center,theme(colors[blue]/7%),0.00015px,theme(colors[blue]/7%),0,theme(colors[white]/7%),0.0003px,theme(colors[white]/7%)_0)]" />
+            <div className="blob-1 absolute z-10" />
+            <div className="blob-2 absolute z-10" />
           </div>
         </div>
         <Navbar donationFormLink={data.donationFormLink} />

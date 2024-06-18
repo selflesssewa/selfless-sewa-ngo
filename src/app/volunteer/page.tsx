@@ -3,7 +3,11 @@ import Container from "../components/Container";
 import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
 import Link from "next/link";
 
-const departments = [
+const departments: Array<{
+  icon: SymbolCodepoints;
+  name: string;
+  description: string;
+}> = [
   {
     icon: "groups",
     name: "Human Resources & Management",
@@ -34,7 +38,7 @@ const departments = [
     name: "Public Relations & Outreach",
     description: "Connecting with communities to drive change.",
   },
-] as const;
+];
 
 const Volunteer = async () => {
   const data = await getVolunteerPageContent();
@@ -42,24 +46,28 @@ const Volunteer = async () => {
   return (
     <main className="min-h-screen">
       <section id="departments" className="scroll-mt-[16vh]">
-        <Container className="flex items-center flex-col my-12 md:my-17">
-          <h2 className="tracking-normal text-headline-sm max-md:mb-7 mb-12">Our Departments</h2>
-          <ul className="grid auto-cols-fr max-md:gap-2 gap-4  max-sm:grid-cols-2 grid-cols-3">
-            {departments.map(department => (
+        <Container className="my-12 flex flex-col items-center md:my-17">
+          <h2 className="mb-12 text-headline-sm tracking-normal max-md:mb-7">
+            Our Departments
+          </h2>
+          <ul className="grid auto-cols-fr grid-cols-3 gap-4 max-md:gap-2 max-sm:grid-cols-2">
+            {departments.map((department) => (
               <li
-                className="relative bg-blue-60 max-w-[28rem] max-sm:aspect-[2/3] aspect-[3/4] backdrop-blur-lg max-sm:rounded-[16px] rounded-[24px] overflow-clip"
+                className="relative aspect-[3/4] max-w-[28rem] overflow-clip rounded-[24px] bg-gradient-to-bl from-blue to-blue-30 to-80% backdrop-blur-lg max-sm:aspect-[2/3] max-sm:rounded-[16px]"
                 key={department.name}
               >
-                <div className="max-sm:p-3 p-4 z-10">
-                  <h2 className="md:text-title-md mb-2 leading-tight">{department.name}</h2>
-                  <p className="font-light text-body-md max-sm:tracking-wider sm:text-body-lg">
+                <div className="z-10 p-4 max-sm:p-3">
+                  <h2 className="mb-2 leading-tight md:text-title-md">
+                    {department.name}
+                  </h2>
+                  <p className="text-body-md font-light max-sm:tracking-wider sm:text-body-lg">
                     {department.description}
                   </p>
                 </div>
-                <div className="absolute text-blue-60 max-sm:-left-6 max-lg:-left-7 -left-9 max-sm:-bottom-2 max-lg:-bottom-6 -bottom-1 -z-10">
+                <div className="absolute -bottom-1 -left-9 -z-10 text-blue-60 max-lg:-bottom-6 max-lg:-left-7 max-sm:-bottom-2 max-sm:-left-6">
                   <MaterialSymbol
-                    className="[font-variation-settings:'opsz'_24,_'wght'_300] max-sm:text-[180px] max-lg:text-[200px] text-[280px]"
-                    icon={department.icon as SymbolCodepoints}
+                    className="text-[280px] [font-variation-settings:'opsz'_48,_'wght'_350] max-lg:text-[200px] max-sm:text-[180px]"
+                    icon={department.icon}
                   />
                 </div>
               </li>
@@ -68,19 +76,22 @@ const Volunteer = async () => {
         </Container>
       </section>
       <section id="rules" className="scroll-mt-[16vh]">
-        <Container className="flex items-center flex-col my-12 md:my-17">
+        <Container className="my-12 flex flex-col items-center md:my-17">
           <List title="Volunteering Rules" list={data.volunteerRules} />
         </Container>
-        <Container className="flex items-center flex-col my-12 md:my-17">
-          <List title="Certification Criteria" list={data.certificateCriteria} />
+        <Container className="my-12 flex flex-col items-center md:my-17">
+          <List
+            title="Certification Criteria"
+            list={data.certificateCriteria}
+          />
         </Container>
-        <Container className="grid place-items-center my-18">
+        <Container className="my-18 grid place-items-center">
           <Link
             href={data.volunteerFormLink}
             target="_blank"
-            className="flex p-1 rounded-[0.8rem] bg-blue-30 hover:saturate-150 hover:scale-105 transition-[filter,transform] duration-200 backdrop-blur-2xl"
+            className="flex rounded-[0.8rem] bg-blue-30 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
           >
-            <div className="px-3 py-2 rounded-[0.4rem] bg-blue-60 gap-1 flex items-center">
+            <div className="flex items-center gap-1 rounded-[0.4rem] bg-blue-60 px-3 py-2">
               <span>Become A सेवक</span>
               <MaterialSymbol icon="arrow_outward" />
             </div>
@@ -95,12 +106,16 @@ export default Volunteer;
 
 const List = ({ title, list }: { title: string; list: string[] }) => {
   return (
-    <div className="bg-white-70 text-black overflow-hidden backdrop-blur-lg pb-3 rounded-[24px]">
-      <h2 className="text-headline-sm p-4 pb-3 tracking-normal bg-white-70">{title}</h2>
-      <ul className="select-text selection:bg-dark-text-selection flex flex-col divide-y-[1px] max-w-prose divide-blue-30">
+    <div className="overflow-hidden rounded-[24px] bg-white-70 pb-3 text-black backdrop-blur-lg">
+      <h2 className="bg-white-70 p-4 pb-3 text-headline-sm tracking-normal">
+        {title}
+      </h2>
+      <ul className="flex max-w-prose select-text flex-col divide-y-[1px] divide-blue-30 selection:bg-dark-text-selection">
         {list.map((rule, idx) => (
-          <li className="p-3 px-4 flex gap-3 items-baseline" key={idx}>
-            <span className="font-bold underline underline-offset-2 text-blue-60">{idx + 1}</span>
+          <li className="flex items-baseline gap-3 p-3 px-4" key={idx}>
+            <span className="font-bold text-blue-60 underline underline-offset-2">
+              {idx + 1}
+            </span>
             {rule}
           </li>
         ))}
