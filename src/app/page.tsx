@@ -103,7 +103,7 @@ export default async function Home() {
                 Affiliated with Niti Aayog through NGO Darpan
               </li>
             </ul>
-            <h1 className="font-display origin-bottom-left text-balance text-headline-md font-normal tracking-tight md:text-headline-lg lg:text-display-sm">
+            <h1 className="font-display title-drop-shadow origin-bottom-left text-balance text-headline-md font-normal tracking-tight md:text-headline-lg lg:text-display-sm">
               Join our commitment to making a positive difference in the world.
             </h1>
           </div>
