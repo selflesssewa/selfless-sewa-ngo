@@ -95,8 +95,8 @@ export default async function Home() {
           <div className="flex flex-col items-start gap-2">
             <ul className="flex flex-wrap gap-2">
               <li className="flex items-center gap-1 rounded-[4px] border border-white/10 bg-white/10 px-1 text-body-md tracking-wider backdrop-blur-sm">
-                <MaterialSymbol icon="verified" color="gold" />
-                2A & 80G Certified
+                <MaterialSymbol icon="verified_user" color="gold" />
+                12A & 80G Certified
               </li>
               <li className="flex items-center gap-1 rounded-[4px] border border-white/10 bg-white/10 px-1 text-body-md tracking-wider backdrop-blur-sm">
                 <MaterialSymbol icon="verified" color="gold" />
