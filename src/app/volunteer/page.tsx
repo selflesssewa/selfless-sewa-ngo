@@ -1,7 +1,7 @@
 import { getVolunteerPageContent } from "@/dao";
-import Container from "../components/Container";
-import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
 import Link from "next/link";
+import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
+import Container from "../components/Container";
 
 const departments: Array<{
   icon: SymbolCodepoints;
@@ -46,7 +46,7 @@ const Volunteer = async () => {
   return (
     <main className="min-h-screen">
       <section id="departments" className="scroll-mt-[16vh]">
-        <Container className="my-12 flex flex-col items-center md:my-17">
+        <Container className="mb-21 mt-12 flex flex-col items-center md:my-17">
           <h2 className="mb-12 text-headline-sm tracking-normal max-md:mb-7">
             Our Departments
           </h2>
@@ -73,10 +73,25 @@ const Volunteer = async () => {
               </li>
             ))}
           </ul>
+          <div className="mt-18 flex flex-col items-center justify-center">
+            <p className="max-w-prose text-balance text-center text-title-lg drop-shadow-md">
+              Do any of the departments seem like a good fit for you?
+            </p>
+            <Link
+              href={data.volunteerFormLink}
+              target="_blank"
+              className="mt-4 flex rounded-[0.8rem] bg-blue-30 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
+            >
+              <div className="flex items-center gap-1 rounded-[0.4rem] bg-blue-60 px-3 py-2">
+                <span>Become A सेवक</span>
+                <MaterialSymbol icon="arrow_outward" />
+              </div>
+            </Link>
+          </div>
         </Container>
       </section>
       <section id="rules" className="scroll-mt-[16vh]">
-        <Container className="my-12 flex flex-col items-center md:my-17">
+        <Container className="mb-12 flex flex-col items-center md:mb-17">
           <List title="Volunteering Rules" list={data.volunteerRules} />
         </Container>
         <Container className="my-12 flex flex-col items-center md:my-17">
@@ -84,18 +99,6 @@ const Volunteer = async () => {
             title="Certification Criteria"
             list={data.certificateCriteria}
           />
-        </Container>
-        <Container className="my-18 grid place-items-center">
-          <Link
-            href={data.volunteerFormLink}
-            target="_blank"
-            className="flex rounded-[0.8rem] bg-blue-30 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
-          >
-            <div className="flex items-center gap-1 rounded-[0.4rem] bg-blue-60 px-3 py-2">
-              <span>Become A सेवक</span>
-              <MaterialSymbol icon="arrow_outward" />
-            </div>
-          </Link>
         </Container>
       </section>
     </main>

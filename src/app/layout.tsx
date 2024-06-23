@@ -97,7 +97,7 @@ export default async function RootLayout({
           "font-body text-white",
         )}
       >
-        <div className="pointer-events-none fixed left-[0px] top-[0px] -z-10 h-lvh w-full overflow-hidden bg-gradient-to-b from-blue/95 via-blue/85 via-30% to-green/70 bg-no-repeat">
+        <div className="pointer-events-none fixed left-[0px] top-[0px] -z-10 h-lvh w-full overflow-hidden bg-gradient-to-b from-blue/95 via-blue/85 via-45% to-green/70 bg-no-repeat">
           <div className="relative h-full w-full">
             <div className="absolute inset-[0px] bg-[repeating-radial-gradient(circle_at_center,theme(colors[blue]/7%),0.00015px,theme(colors[blue]/7%),0,theme(colors[white]/7%),0.0003px,theme(colors[white]/7%)_0)]" />
             <div className="blob-1 absolute z-10" />

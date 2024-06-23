@@ -9,6 +9,7 @@ import Container from "../components/Container";
 import { GeneralStatistics } from "../components/GeneralStatistics";
 import { projectIconClasses } from "../page";
 import GlowCard from "../components/GlowCard";
+import CallToActionCard from "../components/CallToActionCard";
 
 const Project = async () => {
   const { donationFormLink, projects } = await getProjectPageContent();
@@ -16,7 +17,7 @@ const Project = async () => {
   return (
     <main className="min-h-screen">
       <section>
-        <Container className="my-4 md:ps-16">
+        <Container className="my-4">
           <h1 className="mb-4 mt-7 text-headline-sm tracking-normal">
             Our Projects
           </h1>
@@ -38,7 +39,7 @@ const Project = async () => {
           </div>
         </Container>
       </section>
-      <Container className="my-14 flex flex-col gap-12 md:my-17 md:gap-16">
+      <Container className="my-14 flex flex-col gap-14 md:my-17 md:gap-20">
         {projects.map((p) => (
           <section
             id={p.slug}
@@ -76,7 +77,7 @@ const Project = async () => {
                 />
               </div>
             </div>
-            <h3 className="font-display text-headline-md tracking-tight md:text-headline-lg">
+            <h3 className="font-display text-headline-md tracking-normal md:text-headline-lg">
               {p.title}
             </h3>
             <p className="font-hindi col-start-2 text-title-lg font-medium max-md:mt-1 md:text-headline-sm">
@@ -88,13 +89,14 @@ const Project = async () => {
                   [BLOCKS.EMBEDDED_ASSET]: (node) => {
                     const data = node.data.target.fields;
                     return (
-                      <GlowCard className="-mx-1 my-3 p-1 drop-shadow-none sm:-mx-2 sm:p-2">
+                      <GlowCard className="relative -mx-1 my-6 overflow-clip p-1 drop-shadow-none first:mt-[0px]">
                         <Image
+                          priority
                           src={"https:" + data.file.url}
                           alt={data.description}
-                          className="w-full max-w-prose rounded object-cover drop-shadow-none"
+                          className="max-h-[70vh] w-full max-w-prose rounded object-cover drop-shadow-none"
                           width={900}
-                          height={600}
+                          height={900}
                         />
                       </GlowCard>
                     );
@@ -116,13 +118,34 @@ const Project = async () => {
             <Link
               href={donationFormLink}
               target="_blank"
-              className="mt-5 rounded-[8px] border border-blue-30 bg-blue-30 p-1 px-3 backdrop-blur-sm transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 max-md:col-span-2 md:col-start-2"
+              className="mt-6 rounded-[8px] border border-blue-30 bg-blue-30 p-1 px-3 backdrop-blur-sm transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 max-md:col-span-2 md:col-start-2"
             >
               Donate
             </Link>
           </section>
         ))}
       </Container>
+      <section>
+        <Container className="my-8 mb-14 flex min-h-[60vh] items-center">
+          <CallToActionCard
+            title="Towards a better tomorrow"
+            body="With compassion and empathy at our core, we strive to make a positive difference in people's lives. This dedication is evident in our volunteer-driven initiatives and collaborative partnerships, aimed at providing education and healthcare to under-served communities. Together, Lets serve before ourselves."
+            imgSrc="/images/IMG_5247.webp"
+            imgAltText="group photo"
+            footer={
+              <Link
+                href={donationFormLink}
+                target="_blank"
+                className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
+              >
+                <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
+                  <span className="text-title-md">Donate</span>
+                </div>
+              </Link>
+            }
+          />
+        </Container>
+      </section>
     </main>
   );
 };

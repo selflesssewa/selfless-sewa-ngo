@@ -1,4 +1,8 @@
-import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
+import {
+  SiGithub,
+  SiInstagram,
+  SiWhatsapp,
+} from "@icons-pack/react-simple-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
@@ -8,15 +12,15 @@ import { TLayoutContent } from "@/types";
 
 const Footer = ({ data }: { data: TLayoutContent }) => {
   return (
-    <footer className="bg-blue-60 backdrop-blur-sm">
+    <footer className="bg-blue-60 backdrop-blur-sm selection:bg-light-text-selection">
       <Container className="max-w-full py-5">
         <div className="flex justify-between gap-8 gap-y-5 max-lg:flex-col lg:items-start">
-          <div className="basis-1/4">
+          <div className="flex basis-1/4 flex-col gap-4 self-stretch">
             <Link href="/" className="flex w-fit flex-col items-start gap-2">
               <div className="w-13">
                 <Image
                   className="h-auto w-full"
-                  alt="Selfless Sewa NGO Logomark"
+                  alt="Selfless Sewa NGO logo-mark"
                   id="logo"
                   src={"/selfless-sewa-logo.svg"}
                   width={20}
@@ -30,8 +34,12 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 Selfless Sewa NGO
               </p>
             </Link>
+            <div className="mt-auto select-text text-body-md font-light tracking-wider opacity-70 duration-150 hover:opacity-100">
+              <p>NITI Aayog Unique ID: UP/2024/0406482</p>
+              <p>80G Certified: ABITS8872MF20241</p>
+            </div>
           </div>
-          <div className="grow">
+          <div className="flex grow flex-col gap-6">
             <div className="grid grid-cols-[repeat(auto-fill,minmax(25ch,1fr))] gap-5 gap-y-4 md:gap-y-6 [&_ul]:flex [&_ul]:flex-col [&_ul]:items-start [&_ul]:gap-2 max-md:[&_ul]:gap-1">
               <div>
                 <p className="font-display mb-2 text-title-md font-light">
@@ -43,9 +51,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                       //@ts-ignore
                       <SiWhatsapp size={18} />
                     }
-                    <span className="select-text selection:bg-light-text-selection">
-                      {data.contactNo}
-                    </span>
+                    <span className="select-text">{data.contactNo}</span>
                     <CopyButton value={data.contactNo} />
                   </li>
                   <li className="flex gap-1">
@@ -130,16 +136,30 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 </ul>
               </div>
             </div>
-            <p className="mt-6 text-body-md tracking-wider opacity-90">
-              <MaterialSymbol
-                icon="copyright"
-                size={16}
-                weight={200}
-                className="translate-y-1"
-              />
-              &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.
-              All&nbsp;rights&nbsp;reserved.
-            </p>
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 text-body-md tracking-wider opacity-80">
+              <p>
+                <MaterialSymbol
+                  icon="copyright"
+                  size={16}
+                  weight={200}
+                  className="translate-y-1"
+                />
+                &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.
+                All&nbsp;rights&nbsp;reserved.
+              </p>
+              <a
+                target="_blank"
+                href="https://github.com/sahilmulla"
+                className="-m-1 -mx-2 flex items-baseline gap-2 text-nowrap rounded-lg p-1 px-2 duration-150 hover:bg-white/10"
+                title="Check out my GitHub profile"
+              >
+                {
+                  //@ts-ignore
+                  <SiGithub size={12} className="translate-y-0" title="" />
+                }
+                Made by Sahil
+              </a>
+            </div>
           </div>
         </div>
       </Container>

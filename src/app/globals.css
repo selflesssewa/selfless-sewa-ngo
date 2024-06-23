@@ -37,7 +37,9 @@
     font-family: var(--font-hindi);
     @apply tracking-normal;
   }
+}
 
+@layer components {
   .blob-1 {
     width: max(70vw, 80vh);
     left: 0;
@@ -48,7 +50,7 @@
     transform-origin: 45% 25%;
     animation: random-1 29s infinite alternate;
     background: radial-gradient(farthest-side,
-        theme(colors[saksham]/25%) 5%,
+        theme(colors[saksham]/20%) 5%,
         transparent);
   }
 
@@ -62,7 +64,7 @@
     transform-origin: 25% 45%;
     animation: random-2 23s infinite alternate;
     background: radial-gradient(farthest-side,
-        theme(colors[chikitsa]/25%) 5%,
+        theme(colors[chikitsa]/20%) 5%,
         transparent);
   }
 }

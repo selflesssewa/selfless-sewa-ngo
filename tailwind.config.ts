@@ -35,10 +35,10 @@ const config: Config = {
     },
     fontSize: {
       "body-sm": ["0.82rem", "1.5"],
-      "body-md": ["1.2rem", "1.5"],
+      "body-md": ["1.1rem", "1.5"],
       "body-lg": ["1.28rem", "1.5"],
-      "title-sm": ["1.6rem", "1.4"],
-      "title-md": ["2rem", "1.35"],
+      "title-sm": ["1.6rem", "1.5"],
+      "title-md": ["2rem", "1.4"],
       "title-lg": ["2.4rem", "1.4"],
       "headline-sm": ["3.2rem", "1.2"],
       "headline-md": ["4rem", "1.2"],

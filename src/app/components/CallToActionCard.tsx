@@ -19,7 +19,7 @@ const CallToActionCard = ({
   return (
     <div className="grid auto-cols-fr gap-2 rounded-[16px] bg-blue-30 p-2 backdrop-blur-xl lg:grid-cols-2">
       <div className="flex flex-col rounded-[8px] bg-white-70 px-3 py-4 md:p-5">
-        <h2 className="mb-3 text-pretty text-headline-sm tracking-normal text-black">
+        <h2 className="mb-3 text-balance text-headline-sm tracking-normal text-black">
           {title}
         </h2>
         <p className="text-pretty text-black">{body}</p>
