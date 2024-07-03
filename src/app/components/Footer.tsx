@@ -137,16 +137,32 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
               </div>
             </div>
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2 text-body-md tracking-wider opacity-80">
-              <p>
-                <MaterialSymbol
-                  icon="copyright"
-                  size={16}
-                  weight={200}
-                  className="translate-y-1"
-                />
-                &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.
-                All&nbsp;rights&nbsp;reserved.
-              </p>
+              <div>
+                <span>
+                  <MaterialSymbol
+                    icon="copyright"
+                    size={16}
+                    weight={200}
+                    className="translate-y-1"
+                  />
+                  &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.&nbsp;All&nbsp;rights&nbsp;reserved.{" "}
+                </span>
+                <a
+                  className="-my-1 py-1 hover:underline"
+                  target="_blank"
+                  href="https://drive.google.com/file/d/1_s8KKDT1bGRpxHjE_hCQk8qhhh6n8cS8/view"
+                >
+                  Terms&nbsp;&&nbsp;Conditions
+                </a>
+                &nbsp;•&nbsp;
+                <a
+                  className="-my-1 py-1 hover:underline"
+                  target="_blank"
+                  href="https://drive.google.com/file/d/1JXkvjBlCJ0163Gv7R_GkeZxQT5XlBFkG/view"
+                >
+                  Privacy&nbsp;Policy
+                </a>
+              </div>
               <a
                 target="_blank"
                 href="https://github.com/sahilmulla"
