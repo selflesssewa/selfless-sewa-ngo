@@ -147,21 +147,19 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                   />
                   &nbsp;2024&nbsp;&#8212;&nbsp;Selfless&nbsp;Sewa&nbsp;NGO.&nbsp;All&nbsp;rights&nbsp;reserved.{" "}
                 </span>
-                <a
+                <Link
                   className="-my-1 py-1 hover:underline"
-                  target="_blank"
-                  href="https://drive.google.com/file/d/1_s8KKDT1bGRpxHjE_hCQk8qhhh6n8cS8/view"
+                  href="/terms-and-conditions"
                 >
                   Terms&nbsp;&&nbsp;Conditions
-                </a>
+                </Link>
                 &nbsp;•&nbsp;
-                <a
+                <Link
                   className="-my-1 py-1 hover:underline"
-                  target="_blank"
-                  href="https://drive.google.com/file/d/1JXkvjBlCJ0163Gv7R_GkeZxQT5XlBFkG/view"
+                  href="/privacy-policy"
                 >
                   Privacy&nbsp;Policy
-                </a>
+                </Link>
               </div>
               <a
                 target="_blank"

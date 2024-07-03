@@ -17,7 +17,7 @@ const Project = async () => {
   return (
     <main className="min-h-screen">
       <section>
-        <Container className="my-4">
+        <Container>
           <h1 className="mb-4 mt-7 text-headline-sm tracking-normal">
             Our Projects
           </h1>
