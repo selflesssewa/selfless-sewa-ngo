@@ -22,8 +22,8 @@ function Page() {
             Rules, 2011 that require publishing the rules and regulations,
             privacy policy and Terms of Use for access or usage of domain name{" "}
             <span className="font-semibold">www.selflesssewango.com</span>{" "}
-            (“Website”), including the related mobile site and mobile
-            application (hereinafter referred to as “Platform”).
+            ("Website"), including the related mobile site and mobile
+            application (hereinafter referred to as "Platform").
           </li>
           <li>
             The Platform is owned by{" "}
@@ -35,7 +35,7 @@ function Page() {
               Naipura, Ward No. 07, Bhati Bhawan, Gajraula, Dhanaura. Amroha,
               Uttar Pradesh (244223)
             </span>{" "}
-            (hereinafter referred to as "Platform Owner", “we”, “us”, “our”).
+            (hereinafter referred to as "Platform Owner", "we", "us", "our").
           </li>
           <li>
             Your use of the Platform and services and tools are governed by the
@@ -48,7 +48,7 @@ function Page() {
             including the policies constitute Your binding obligations, with
             Platform Owner. These Terms of Use relate to your use of our
             website, goods (as applicable) or services (as applicable)
-            (collectively, “Services”). Any terms and conditions proposed by You
+            (collectively, "Services"). Any terms and conditions proposed by You
             which are in addition to or which conflict with these Terms of Use
             are expressly rejected by the Platform Owner and shall be of no
             force or effect. These Terms of Use can be modified at any time
@@ -57,7 +57,7 @@ function Page() {
           </li>
           <li>
             For the purpose of these Terms of Use, wherever the context so
-            requires "you", “your” or "user" shall mean any natural or legal
+            requires "you", "your" or "user" shall mean any natural or legal
             person who has agreed to become a user/buyer on the Platform.
           </li>
           <li>
