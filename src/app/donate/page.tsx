@@ -45,7 +45,6 @@ const Page = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-VERIFY": checksum,
       },
       body: JSON.stringify({
         request: base64Payload,
