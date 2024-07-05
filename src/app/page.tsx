@@ -112,8 +112,9 @@ export default async function Home() {
             </h1>
           </div>
           <Link
-            href={donationFormLink}
-            target="_blank"
+            href="/donate"
+            // href={donationFormLink}
+            // target="_blank"
             className="flex flex-shrink-0 rounded-[0.8rem] bg-green-50 p-1 shadow-xl shadow-blue-30 backdrop-blur-lg transition-[filter,transform] duration-150 ease-in hover:scale-105 hover:saturate-150"
           >
             <div className="flex items-center gap-2 rounded-[0.4rem] bg-green/50 px-4 py-2 ps-3 max-sm:py-0 max-sm:ps-2">
@@ -312,8 +313,9 @@ export default async function Home() {
             imgAltText="group photo"
             footer={
               <Link
-                href={donationFormLink}
-                target="_blank"
+                href="/donate"
+                // href={donationFormLink}
+                // target="_blank"
                 className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
