@@ -1,68 +1,29 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import { redirect } from "next/navigation";
 import Container from "../components/Container";
-import CryptoJS from "crypto-js";
 
-const Page = () => {
-  const [transactionId, setTransactionId] = useState<string>("");
-  const [responseData, setResponseData] = useState<any>(null);
+const Page = ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) => {
+  const txnId = searchParams["t"];
+  const amount = searchParams["a"];
 
-  useEffect(() => {
-    const parseUrlParams = () => {
-      const searchParams = new URLSearchParams(window.location.search);
-      const id = searchParams.get("transactionId");
-      if (id) {
-        setTransactionId(id);
-      }
-    };
-
-    parseUrlParams();
-  }, []);
-
-  useEffect(() => {
-    if (transactionId) {
-      handleSubmit();
-    }
-  }, [transactionId]);
-
-  const handleSubmit = async () => {
-    const merchantId = 'M22GE2J7US8VN';
-    const saltKey = 'fe68dfe6-a825-4479-8b54-9989aec729d6';
-    const saltIndex = '1';
-    const merchantUserId = 'MUID123';
-    const apiUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchantId}/${transactionId}`;
-
-    const checksum = CryptoJS.SHA256(`/v4/transaction/${merchantId}/${transactionId}` + saltKey).toString() + "###" + saltIndex;
-
-    const options = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-VERIFY': checksum,
-      }
-    };
-
-    try {
-      const response = await fetch(apiUrl, options);
-      const responseData = await response.json();
-      setResponseData(responseData);
-      console.log(responseData);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  if (!txnId || !amount) {
+    redirect("/");
+  }
 
   return (
-    <main className="min-h-screen">
-      <Container className="mb-21 mt-12">
-        <p>Transaction ID: {transactionId}</p>
-        {responseData && (
-          <div>
-            <p>Response Data:</p>
-            <pre>{JSON.stringify(responseData, null, 2)}</pre>
-          </div>
-        )}
+    <main>
+      <Container className="flex min-h-[80vh] items-center justify-center">
+        <div>
+          <p className="font-display text-center text-headline-lg font-light">
+            Thank you for donating ₹ {amount}.00
+          </p>
+          <p className="mt-4 text-center text-body-lg font-light tracking-wider">
+            Transaction Id: {txnId}
+          </p>
+        </div>
       </Container>
     </main>
   );

@@ -1,5 +1,6 @@
+import SHA256 from "crypto-js/sha256";
+import { nanoid } from "nanoid";
 import { NextRequest } from "next/server";
-import CryptoJS from "crypto-js";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -9,9 +10,9 @@ export async function GET(request: NextRequest) {
   const merchantId = "M22GE2J7US8VN";
   const saltKey = "fe68dfe6-a825-4479-8b54-9989aec729d6";
   const saltIndex = "1";
-  const merchantTransactionId = "M" + Date.now();
+  const merchantTransactionId = nanoid();
   const merchantUserId = "MUID123";
-  const redirectUrl = `https://selflesssewango.com/payment-status?transactionId=${merchantTransactionId}`;
+  const redirectUrl = `https://selflesssewango.com/payment-status?t=${merchantTransactionId}&a=${amount}`;
 
   const payload = {
     merchantId: merchantId,
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
   const payloadJson = JSON.stringify(payload);
   const base64Payload = btoa(payloadJson);
   const checksum =
-    CryptoJS.SHA256(base64Payload + "/pg/v1/pay" + saltKey).toString() +
+    SHA256(base64Payload + "/pg/v1/pay" + saltKey).toString() +
     "###" +
     saltIndex;
 
@@ -45,6 +46,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await fetch(apiUrl, options);
+
     const responseData = await response.json();
     if (
       responseData.success &&
