@@ -30,9 +30,6 @@ const Page = () => {
     const merchantId = 'M22GE2J7US8VN';
     const saltKey = 'fe68dfe6-a825-4479-8b54-9989aec729d6';
     const saltIndex = '1';
-    // const merchantId = process.env.MERCHANT_ID;
-    // const saltKey = process.env.SALT_KEY;
-    // const saltIndex = process.env.SALT_INDEX;
     const merchantUserId = 'MUID123';
     const apiUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchantId}/${transactionId}`;
 

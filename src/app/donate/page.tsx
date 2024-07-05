@@ -18,13 +18,9 @@ const Page = () => {
     const merchantId = 'M22GE2J7US8VN';
     const saltKey = 'fe68dfe6-a825-4479-8b54-9989aec729d6';
     const saltIndex = '1';
-    // const merchantId = process.env.MERCHANT_ID;
-    // const saltKey = process.env.SALT_KEY;
-    // const saltIndex = process.env.SALT_INDEX;
-    console.log(process.env)
     const merchantTransactionId = 'M' + Date.now();
     const merchantUserId = 'MUID123';
-    const redirectUrl = `http://localhost:3000/payment-status?transactionId=${merchantTransactionId}`;
+    const redirectUrl = `http://selflesssewango.com/payment-status?transactionId=${merchantTransactionId}`;
   
     const payload = {
       merchantId: merchantId,
