@@ -46,7 +46,6 @@ const Page = () => {
       headers: {
         "Content-Type": "application/json",
         "X-VERIFY": checksum,
-        "Access-Control-Allow-Headers": "X-VERIFY",
       },
       body: JSON.stringify({
         request: base64Payload,
