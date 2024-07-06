@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
     "###" +
     saltIndex;
 
-  const options = {
-    method: "GET",
+  const config = {
     headers: {
+      accept: "text/plain",
       "Content-Type": "application/json",
       "X-VERIFY": checksum,
       "X-MERCHANT-ID": merchantId,
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const response = await axios.get(apiUrl);
+    const response = await axios.get(apiUrl, config);
     console.log(response);
     return Response.json(response);
   } catch (error) {

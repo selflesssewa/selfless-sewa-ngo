@@ -4,7 +4,6 @@ import { useDonationStore } from "@/stores/donationStore";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import Container from "../components/Container";
-const POLLING_INTERVAL_MILLIS = 500;
 
 const Page = () => {
   const txnId = useDonationStore((state) => state.txnId);
@@ -17,28 +16,33 @@ const Page = () => {
   >("PENDING");
 
   useEffect(() => {
-    if (paymentStatus !== "PENDING" || !txnId) return;
-    const intervalId = setInterval(() => {
-      checkStatus(txnId);
-    }, POLLING_INTERVAL_MILLIS);
-
-    return () => clearInterval(intervalId);
-  }, [paymentStatus, txnId]);
+    if (!txnId) return;
+    checkStatus();
+  }, [txnId]);
 
   useEffect(() => {
     return () => useDonationStore.persist.clearStorage();
   }, []);
 
-  async function checkStatus(id: string) {
-    try {
-      const response = await axios.get(`/api/status?txnId=${id}`);
-      const data = response.data;
-      console.log(data);
-      setPaymentStatus("DONE");
-    } catch (error) {
-      setPaymentStatus("FAILED");
+  const checkStatus = useCallback(async () => {
+    if (!txnId) return;
+
+    while (true) {
+      try {
+        const delay = new Promise((res) => setTimeout(res, 2000));
+        const response = await axios.get(`/api/status?txnId=${txnId}`);
+        const data = response.data;
+        console.log(data);
+        await delay;
+        setPaymentStatus("DONE");
+        break;
+      } catch (error) {
+        console.error(error);
+        setPaymentStatus("FAILED");
+        break;
+      }
     }
-  }
+  }, [txnId]);
 
   const handleDownload = useCallback(async () => {
     if (!txnId) return;
