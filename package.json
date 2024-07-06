@@ -28,7 +28,8 @@
     "react-simple-maps": "^3.0.0",
     "react-use-measure": "^2.1.1",
     "sharp": "^0.33.3",
-    "tailwind-merge": "^2.2.2"
+    "tailwind-merge": "^2.2.2",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20",
