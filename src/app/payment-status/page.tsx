@@ -7,10 +7,18 @@ import Container from "../components/Container";
 
 const Page = () => {
   const txnId = useDonationStore((state) => state.txnId);
-  const amount = useDonationStore((state) => state.amount);
-
-  console.log({ txnId, amount });
-
+  const { wantsReceipt, name, address, contact, pan } = useDonationStore(
+    (state) => ({
+      wantsReceipt: state.wantsReceipt,
+      name: state.name,
+      address: state.address,
+      contact: state.contact,
+      pan: state.pan,
+    }),
+  );
+  const [amount, setAmount] = useState<number | undefined>();
+  const [isError, setIsError] = useState(false);
+  const [paymentMode, setPaymentMode] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<
     "DONE" | "PENDING" | "FAILED"
   >("PENDING");
@@ -20,25 +28,36 @@ const Page = () => {
     checkStatus();
   }, [txnId]);
 
-  useEffect(() => {
-    return () => useDonationStore.persist.clearStorage();
-  }, []);
-
   const checkStatus = useCallback(async () => {
-    if (!txnId) return;
-
+    let cnt = 0;
+    if (!txnId || isError) return;
+    setIsError(false);
     while (true) {
+      cnt++;
+      if (cnt > 5) {
+        setIsError(true);
+        break;
+      }
       try {
-        const delay = new Promise((res) => setTimeout(res, 2000));
+        const delay = new Promise((res) => setTimeout(res, 5 * 1000));
         const response = await axios.get(`/api/status?txnId=${txnId}`);
         const data = response.data;
-        console.log(data);
+
+        const paymentState = data?.data?.state;
+        if (paymentState === "COMPLETED") {
+          setAmount(data.data.amount / 100);
+          setPaymentStatus("DONE");
+          setPaymentMode(data?.data?.paymentInstrument?.type);
+          break;
+        }
+        if (paymentState === "FAILED") {
+          setPaymentStatus("FAILED");
+          break;
+        }
         await delay;
-        setPaymentStatus("DONE");
-        break;
       } catch (error) {
         console.error(error);
-        setPaymentStatus("FAILED");
+        setIsError(true);
         break;
       }
     }
@@ -47,7 +66,9 @@ const Page = () => {
   const handleDownload = useCallback(async () => {
     if (!txnId) return;
     try {
-      const response = await fetch(`/api/receipt`);
+      const response = await fetch(
+        `/api/receipt?txnId=${txnId}&amount=${amount}&name=${name}&contact=${contact}&address=${address}&pan=${pan}&mode=${paymentMode}`,
+      );
       const blob = await response.blob();
       const fileURL = window.URL.createObjectURL(blob);
       let alink = document.createElement("a");
@@ -60,14 +81,22 @@ const Page = () => {
     }
   }, [txnId]);
 
-  const isError = !txnId || !amount;
-
   return (
     <main>
       <Container className="flex min-h-[80vh] items-center justify-center">
-        <div>
-          {isError ? (
-            <p>Something went wrong!</p>
+        <div className="flex flex-col">
+          {isError || paymentStatus == "FAILED" ? (
+            <p className="text-center">
+              Something went wrong! <br />
+              Please contact us at{" "}
+              <span className="select-text">selflesssewango@gmail.com</span> and
+              mention the transaction id{" "}
+              <span className="select-text">{txnId}</span>
+            </p>
+          ) : paymentStatus === "PENDING" ? (
+            <p className="animate-pulse">
+              Loading... please do NOT refresh or close this window
+            </p>
           ) : (
             <>
               <p className="font-display text-center text-headline-lg font-light">
@@ -76,12 +105,12 @@ const Page = () => {
               <p className="mt-4 text-center text-body-lg font-light tracking-wider">
                 Transaction Id: {txnId}
               </p>
+              {wantsReceipt && (
+                <button onClick={handleDownload}>Download Receipt</button>
+              )}
             </>
           )}
         </div>
-        {/* {!isError && <button onClick={handleDownload}>Download Receipt</button>} */}
-        <button onClick={handleDownload}>Download Receipt</button>
-        <p>{paymentStatus}</p>
       </Container>
     </main>
   );

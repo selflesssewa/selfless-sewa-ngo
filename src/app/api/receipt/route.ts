@@ -1,25 +1,52 @@
 import { readFile } from "fs/promises";
-import { NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { ToWords } from "to-words";
 
-export async function GET(request: NextRequest, response: NextApiResponse) {
-  // const searchParams = request.nextUrl.searchParams;
-  // const amount = searchParams.get("amount")!;
-  // const name = searchParams.get("name")!;
-  // const addr = searchParams.get("addr")!;
-  // const phone = searchParams.get("phone")!;
-  // const pan = searchParams.get("pan")!;
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const merchantTransactionId = searchParams.get("txnId");
+  const amountInRupees = searchParams.get("amount");
+  const name = searchParams.get("name");
+  const contact = searchParams.get("contact");
+  const pan = searchParams.get("pan");
+  const addr = searchParams.get("address");
+  const modeOfPayment = searchParams.get("mode");
 
-  const merchantTransactionId = "adsadad";
-  const pan = "dadsxzczc";
-  const addr = "czxcdvjlj";
-  const phone = "46546546";
-  const name = "john";
+  const toWords = new ToWords({
+    localeCode: "en-IN",
+    converterOptions: {
+      currency: true,
+      ignoreDecimal: false,
+      ignoreZeroCurrency: false,
+      doNotAddOnly: false,
+      currencyOptions: {
+        name: "Rupee",
+        plural: "Rupees",
+        symbol: "₹",
+        fractionalUnit: {
+          name: "Paisa",
+          plural: "Paise",
+          symbol: "",
+        },
+      },
+    },
+  });
+
+  const amountInWords = toWords.convert(Number(amountInRupees));
 
   // if user has entered their details then generate receipt
-  if (name && addr && phone && pan) {
+  if (
+    name &&
+    addr &&
+    contact &&
+    pan &&
+    amountInWords &&
+    amountInRupees &&
+    modeOfPayment &&
+    merchantTransactionId
+  ) {
     console.log(__dirname);
     const pdfPath = path.join(__dirname, "../../../../../receipt.pdf");
     console.log(pdfPath);
@@ -74,7 +101,7 @@ export async function GET(request: NextRequest, response: NextApiResponse) {
       color: rgb(0, 0, 0),
     });
 
-    page.drawText(`${phone}`, {
+    page.drawText(`${contact}`, {
       x: xStart,
       y: yStart - 2 * yOffset,
       size: fontSize,
@@ -86,6 +113,32 @@ export async function GET(request: NextRequest, response: NextApiResponse) {
       x: xStart,
       y: yStart - 3 * yOffset,
       size: fontSize,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText(modeOfPayment, {
+      x: 40,
+      y: yStart - 6.6 * yOffset,
+      size: 20,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText(`Rs. ${amountInRupees}`, {
+      x: 280,
+      y: yStart - 6.6 * yOffset,
+      size: 20,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+
+    page.drawText(amountInWords, {
+      x: 470,
+      y: yStart - 6.6 * yOffset,
+      size: 14,
+      lineHeight: 20,
+      maxWidth: 300,
       font: helveticaFont,
       color: rgb(0, 0, 0),
     });

@@ -24,6 +24,7 @@ const Page = () => {
   const updateName = useDonationStore((state) => state.updateName);
   const setTxnId = useDonationStore((state) => state.setTxnId);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasAcknowledged, setHasAcknowledged] = useState(false);
 
   useLayoutEffect(() => {
     resetFormState();
@@ -34,7 +35,12 @@ const Page = () => {
 
     if (!amount || isSubmitting) return;
 
-    if (wantReceipt && (!name || !contact || !pan)) {
+    if (!hasAcknowledged) {
+      alert("Please confirm the acknowledgement.");
+      return;
+    }
+
+    if (wantReceipt && (!name || !contact || !pan || !address)) {
       alert("Please fill in all details for receipt.");
       return;
     }
@@ -52,6 +58,7 @@ const Page = () => {
       setTxnId(paymentData["txnId"]);
       window.location.href = paymentData["paymentUrl"];
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -81,18 +88,12 @@ const Page = () => {
               />
             </GlowCard>
             <div className="flex items-center gap-2 p-3">
-              {/* <label>
-              I hereby acknowledge that I have willingly made a donation to
-              Selfless Sewa NGO. I understand that my contribution will go
-              towards fulfilling the needs of those in need and for the
-              betterment of society.
-            </label> */}
               <input
                 type="checkbox"
                 id="receipt"
                 checked={wantReceipt}
                 onChange={(e) => toggleWantsReceipt(e.target.checked)}
-                className="rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                className="accent-white"
               />
               <label htmlFor="receipt">Would you like a receipt?</label>
             </div>
@@ -149,7 +150,21 @@ const Page = () => {
                 </GlowCard>
               </>
             )}
-
+            <div className="flex items-start gap-2 p-3">
+              <input
+                type="checkbox"
+                id="acknowledge"
+                checked={hasAcknowledged}
+                onChange={(e) => setHasAcknowledged(e.target.checked)}
+                className="size-4 accent-white"
+              />
+              <label htmlFor="acknowledge">
+                I hereby acknowledge that I have willingly made a donation to
+                Selfless Sewa NGO. I understand that my contribution will go
+                towards fulfilling the needs of those in need and for the
+                betterment of society.
+              </label>
+            </div>
             <button
               type="submit"
               className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"

@@ -1,19 +1,19 @@
 import axios from "axios";
-import SHA256 from "crypto-js/sha256";
-import { nanoid } from "nanoid";
-import { headers } from "next/headers";
 import { NextRequest } from "next/server";
+import crypto from "crypto";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const amount = searchParams.get("amount")!;
 
   const apiUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
-  //const apiUrl = "https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay";
   const merchantId = "M22GE2J7US8VN";
   const saltKey = "fe68dfe6-a825-4479-8b54-9989aec729d6";
   const saltIndex = "1";
-  const merchantTransactionId = crypto.randomUUID();
+  const merchantTransactionId = crypto
+    .randomUUID()
+    .replaceAll("-", "")
+    .toUpperCase();
   const merchantUserId = "MUID123";
   // const redirectUrl = `https://selflesssewango.com/payment-status?t=${merchantTransactionId}&a=${amount}`;
   const redirectUrl = `http://localhost:3000/payment-status`;
@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
   const payloadJson = JSON.stringify(payload);
   const base64Payload = btoa(payloadJson);
   const checksum =
-    SHA256(base64Payload + "/pg/v1/pay" + saltKey).toString() +
+    crypto
+      .createHash("sha256")
+      .update(base64Payload + "/pg/v1/pay" + saltKey)
+      .digest("hex") +
     "###" +
     saltIndex;
 
