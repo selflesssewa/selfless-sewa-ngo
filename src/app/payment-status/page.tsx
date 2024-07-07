@@ -20,7 +20,7 @@ const Page = () => {
   const [isError, setIsError] = useState(false);
   const [paymentMode, setPaymentMode] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<
-    "DONE" | "PENDING" | "FAILED"
+    "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
 
   useEffect(() => {
@@ -34,20 +34,21 @@ const Page = () => {
     setIsError(false);
     while (true) {
       cnt++;
-      if (cnt > 5) {
+      if (cnt > 10) {
         setIsError(true);
         break;
       }
       try {
-        const delay = new Promise((res) => setTimeout(res, 5 * 1000));
+        const delay = new Promise((res) => setTimeout(res, 2 * 1000));
         const response = await axios.get(`/api/status?txnId=${txnId}`);
         const data = response.data;
 
         const paymentState = data?.data?.state;
+        console.log({ paymentState });
         if (paymentState === "COMPLETED") {
-          setAmount(data.data.amount / 100);
-          setPaymentStatus("DONE");
+          setAmount(data?.data?.amount / 100);
           setPaymentMode(data?.data?.paymentInstrument?.type);
+          setPaymentStatus("SUCCESS");
           break;
         }
         if (paymentState === "FAILED") {
@@ -63,8 +64,17 @@ const Page = () => {
     }
   }, [txnId]);
 
-  const handleDownload = useCallback(async () => {
-    if (!txnId) return;
+  const handleDownload = async () => {
+    if (
+      !txnId ||
+      !pan ||
+      !amount ||
+      !name ||
+      !address ||
+      !paymentMode ||
+      !contact
+    )
+      return;
     try {
       const response = await fetch(
         `/api/receipt?txnId=${txnId}&amount=${amount}&name=${name}&contact=${contact}&address=${address}&pan=${pan}&mode=${paymentMode}`,
@@ -79,7 +89,7 @@ const Page = () => {
     } catch (error) {
       console.error(error);
     }
-  }, [txnId]);
+  };
 
   return (
     <main>
@@ -105,9 +115,16 @@ const Page = () => {
               <p className="mt-4 text-center text-body-lg font-light tracking-wider">
                 Transaction Id: {txnId}
               </p>
-              {wantsReceipt && (
-                <button onClick={handleDownload}>Download Receipt</button>
-              )}
+              {wantsReceipt &&
+                txnId &&
+                amount &&
+                name &&
+                pan &&
+                contact &&
+                address &&
+                paymentMode && (
+                  <button onClick={handleDownload}>Download Receipt</button>
+                )}
             </>
           )}
         </div>
