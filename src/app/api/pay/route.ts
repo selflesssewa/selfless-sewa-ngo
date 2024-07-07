@@ -15,8 +15,7 @@ export async function GET(request: NextRequest) {
     .replaceAll("-", "")
     .toUpperCase();
   const merchantUserId = "MUID123";
-  // const redirectUrl = `https://selflesssewango.com/payment-status?t=${merchantTransactionId}&a=${amount}`;
-  const redirectUrl = `http://localhost:3000/payment-status`;
+  const redirectUrl = "https://selflesssewango.com/payment-status";
 
   const payload = {
     merchantId: merchantId,
