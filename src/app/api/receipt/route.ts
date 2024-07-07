@@ -47,8 +47,7 @@ export async function GET(request: NextRequest) {
     modeOfPayment &&
     merchantTransactionId
   ) {
-    console.log(__dirname);
-    const pdfPath = path.join(__dirname, "../../../../../receipt.pdf");
+    const pdfPath = path.join(process.cwd(), "../../../../../receipt.pdf");
     console.log(pdfPath);
     const pdfBuffer = await readFile(pdfPath);
     const pdfDoc = await PDFDocument.load(pdfBuffer);
