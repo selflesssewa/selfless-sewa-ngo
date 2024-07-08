@@ -122,6 +122,9 @@ const Page = () => {
               <p className="mt-4 text-center text-body-lg font-light tracking-wider">
                 Transaction Id: {txnId}
               </p>
+              <p className="mt-4 text-center text-body-lg font-light tracking-wider">
+                Time: {Date.now()}
+              </p>
               {wantsReceipt &&
                 txnId &&
                 amount &&
