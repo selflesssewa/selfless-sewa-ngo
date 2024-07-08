@@ -5,8 +5,6 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import Container from "../components/Container";
 
-let pdfblob = null;
-
 const Page = () => {
   const txnId = useDonationStore((state) => state.txnId);
   const { wantsReceipt, name, address, contact, pan } = useDonationStore(
@@ -24,7 +22,6 @@ const Page = () => {
   const [paymentStatus, setPaymentStatus] = useState<
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
-  const [pdfblob, setPdfblob] = useState<Blob | null>(null);
 
   useEffect(() => {
     if (!txnId) return;
@@ -42,30 +39,12 @@ const Page = () => {
         break;
       }
       try {
-        var response = null;
-
-        if (
-          !txnId ||
-          !pan ||
-          !amount ||
-          !name ||
-          !address ||
-          !paymentMode ||
-          !contact
-        ) {
-          response = await axios.get(`/api/status?txnId=${txnId}`);
-        } else {
-          response = await axios.get(
-            `/api/status?txnId=${txnId}&name=${name}&contact=${contact}&address=${address}&pan=${pan}`,
-          );
-        }
-
         const delay = new Promise((res) => setTimeout(res, 2 * 1000));
-        const { data, blob } = response.data;
-        
-        setPdfblob(blob);
+        const response = await axios.get(`/api/status?txnId=${txnId}`);
+        const data = response.data;
 
         const paymentState = data?.data?.state;
+        console.log({ paymentState });
         if (paymentState === "COMPLETED") {
           setAmount(data?.data?.amount / 100);
           setPaymentMode(data?.data?.paymentInstrument?.type);
@@ -86,13 +65,27 @@ const Page = () => {
   }, [txnId]);
 
   const handleDownload = async () => {
+    if (
+      !txnId ||
+      !pan ||
+      !amount ||
+      !name ||
+      !address ||
+      !paymentMode ||
+      !contact
+    )
+      return;
     try {
-      if (!pdfblob) return;
-      const fileURL = window.URL.createObjectURL(pdfblob);
+      const response = await fetch(
+        `/api/receipt?txnId=${txnId}&amount=${amount}&name=${name}&contact=${contact}&address=${address}&pan=${pan}&mode=${paymentMode}`,
+      );
+      const blob = await response.blob();
+      const fileURL = window.URL.createObjectURL(blob);
       let alink = document.createElement("a");
       alink.href = fileURL;
       alink.download = `receipt_${txnId}.pdf`;
       alink.click();
+      console.log(fileURL);
     } catch (error) {
       console.error(error);
     }
