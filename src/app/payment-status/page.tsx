@@ -23,15 +23,11 @@ const Page = () => {
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
 
-  useEffect(() => {
-    if (!txnId) return;
-    checkStatus();
-  }, [txnId]);
-
   const checkStatus = useCallback(async () => {
-    let cnt = 0;
     if (!txnId || isError) return;
+
     setIsError(false);
+    let cnt = 0;
     while (true) {
       cnt++;
       if (cnt > 10) {
@@ -62,7 +58,11 @@ const Page = () => {
         break;
       }
     }
-  }, [txnId]);
+  }, [txnId, isError]);
+
+  useEffect(() => {
+    checkStatus();
+  }, [checkStatus]);
 
   const handleDownload = async () => {
     if (
@@ -126,7 +126,8 @@ const Page = () => {
                 contact &&
                 address &&
                 paymentMode && (
-                  <button onClick={handleDownload}
+                  <button
+                    onClick={handleDownload}
                     className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                   >
                     <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-3 py-1">
