@@ -123,7 +123,13 @@ const Page = () => {
                 contact &&
                 address &&
                 paymentMode && (
-                  <button onClick={handleDownload}>Download Receipt</button>
+                  <button onClick={handleDownload}
+                    className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
+                  >
+                    <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-3 py-1">
+                      Download Receipt
+                    </div>
+                  </button>
                 )}
             </>
           )}
