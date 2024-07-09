@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
-  const token = searchParams.get("id");
+  const token = searchParams.get("t");
 
   if (!token) return Response.json(null, { status: 401 });
   let payload = null;
