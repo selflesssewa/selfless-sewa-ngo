@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuer("selflesssewa")
     .setIssuedAt()
-    .setExpirationTime("1min")
+    .setExpirationTime("5min")
     .sign(JWT_SECRET);
 
   const redirectUrl =
