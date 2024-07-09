@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   try {
     const { data: statusData } = await callStatusApi(merchantTransactionId);
     const paymentStatus = statusData?.data?.state;
-    if (paymentStatus !== "COMPLETE")
+    if (paymentStatus !== "COMPLETED")
       throw new Error(
         `Payment not complete for txnId: ${merchantTransactionId}`,
       );
