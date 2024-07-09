@@ -2,14 +2,14 @@
 
 import { useDonationStore } from "@/stores/donationStore";
 import { useLayoutEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
 import GlowCard from "../components/GlowCard";
-import { twMerge } from "tailwind-merge";
 
 const Page = () => {
   const resetFormState = useDonationStore((state) => state.resetStore);
   const amount = useDonationStore((state) => state.amount);
-  const wantReceipt = useDonationStore((state) => state.wantsReceipt);
+  const wantsReceipt = useDonationStore((state) => state.wantsReceipt);
   const name = useDonationStore((state) => state.name);
   const contact = useDonationStore((state) => state.contact);
   const pan = useDonationStore((state) => state.pan);
@@ -40,7 +40,7 @@ const Page = () => {
       return;
     }
 
-    if (wantReceipt && (!name || !contact || !pan || !address)) {
+    if (wantsReceipt && (!name || !contact || !pan || !address)) {
       alert("Please fill in all details for receipt.");
       return;
     }
@@ -48,7 +48,12 @@ const Page = () => {
     let response = null;
 
     setIsSubmitting(true);
-    response = await fetch(`/api/pay?amount=${amount}`);
+
+    const query = new URLSearchParams(
+      wantsReceipt ? { pan, name, contact, address, amount } : { amount },
+    );
+
+    response = await fetch(`/api/pay?${query.toString()}`);
 
     const paymentData = await response.json();
 
@@ -66,10 +71,10 @@ const Page = () => {
       <Container className="mb-21 mt-12 flex justify-center">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-[440px] [&_input]:placeholder:text-white-70 [&_textarea]:placeholder:text-white-70"
+          className="w-full max-w-[480px] [&_input]:placeholder:text-white-70 [&_textarea]:placeholder:text-white-70"
         >
           <fieldset
-            className="flex flex-col items-stretch gap-4 [&_label]:text-title-sm"
+            className="flex flex-col items-stretch gap-4 [&_label]:text-title-sm [&_label]:font-medium"
             disabled={isSubmitting}
           >
             <GlowCard className="flex items-center gap-2 p-1 ps-3">
@@ -87,24 +92,24 @@ const Page = () => {
                 className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
               />
             </GlowCard>
-            <div className="flex items-center gap-2 p-3">
+            <label htmlFor="receipt" className="flex items-center gap-2 px-3">
               <input
                 type="checkbox"
                 id="receipt"
-                checked={wantReceipt}
+                checked={wantsReceipt}
                 onChange={(e) => toggleWantsReceipt(e.target.checked)}
-                className="accent-white"
               />
-              <label htmlFor="receipt">Would you like a receipt?</label>
-            </div>
-
-            {wantReceipt && (
+              <span>Would you like a receipt?</span>
+            </label>
+            {wantsReceipt && (
               <>
                 <GlowCard className="flex flex-col gap-2 p-3 pb-1">
                   <label htmlFor="name">Name</label>
                   <input
                     type="text"
                     id="name"
+                    min={2}
+                    max={25}
                     value={name}
                     placeholder="Your name"
                     onChange={(e) => updateName(e.target.value)}
@@ -140,7 +145,8 @@ const Page = () => {
                   <label htmlFor="address">Address</label>
                   <textarea
                     id="pan"
-                    rows={5}
+                    rows={3}
+                    maxLength={35}
                     placeholder="Your address"
                     value={address}
                     onChange={(e) => updateAddress(e.target.value)}
@@ -150,24 +156,28 @@ const Page = () => {
                 </GlowCard>
               </>
             )}
-            <div className="flex items-start gap-2 p-3">
+
+            <label
+              htmlFor="acknowledge"
+              className="flex items-start gap-2 px-3"
+            >
               <input
                 type="checkbox"
                 id="acknowledge"
                 checked={hasAcknowledged}
-                onChange={(e) => setHasAcknowledged(e.target.checked)}
-                className="size-4 accent-white"
+                onChange={(e) => setHasAcknowledged(e.currentTarget.checked)}
+                className="size-4"
               />
-              <label htmlFor="acknowledge">
+              <span className="max-w-prose text-pretty">
                 I hereby acknowledge that I have willingly made a donation to
                 Selfless Sewa NGO. I understand that my contribution will go
                 towards fulfilling the needs of those in need and for the
                 betterment of society.
-              </label>
-            </div>
+              </span>
+            </label>
             <button
               type="submit"
-              className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
+              className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 shadow-sm backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
             >
               <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-3 py-1">
                 <span

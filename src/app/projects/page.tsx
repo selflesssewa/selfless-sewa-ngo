@@ -89,7 +89,7 @@ const Project = async () => {
                   [BLOCKS.EMBEDDED_ASSET]: (node) => {
                     const data = node.data.target.fields;
                     return (
-                      <GlowCard className="relative -mx-1 my-6 overflow-clip p-1 drop-shadow-none first:mt-[0px]">
+                      <GlowCard className="-mx-1 my-6 overflow-clip p-1 shadow-lg drop-shadow-none backdrop-blur-none first:mt-[0px]">
                         <Image
                           priority
                           src={"https:" + data.file.url}

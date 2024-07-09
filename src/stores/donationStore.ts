@@ -19,9 +19,24 @@ type TDonationStore = {
   resetStore: () => void;
 };
 
-export const useDonationStore = create<TDonationStore>()(
-  persist(
-    (set) => ({
+export const useDonationStore = create<TDonationStore>((set) => ({
+  amount: "",
+  wantsReceipt: false,
+  name: "",
+  contact: "",
+  pan: "",
+  address: "",
+  txnId: undefined,
+  toggleWantsReceipt: (checked: boolean) =>
+    set(() => ({ wantsReceipt: checked })),
+  updateAmount: (value: string) => set(() => ({ amount: value })),
+  updateName: (value: string) => set(() => ({ name: value })),
+  updateContact: (value: string) => set(() => ({ contact: value })),
+  updatePan: (value: string) => set(() => ({ pan: value })),
+  updateAddress: (value: string) => set(() => ({ address: value })),
+  setTxnId: (value: string) => set(() => ({ txnId: value })),
+  resetStore: () =>
+    set(() => ({
       amount: "",
       wantsReceipt: false,
       name: "",
@@ -29,28 +44,5 @@ export const useDonationStore = create<TDonationStore>()(
       pan: "",
       address: "",
       txnId: undefined,
-      toggleWantsReceipt: (checked: boolean) =>
-        set(() => ({ wantsReceipt: checked })),
-      updateAmount: (value: string) => set(() => ({ amount: value })),
-      updateName: (value: string) => set(() => ({ name: value })),
-      updateContact: (value: string) => set(() => ({ contact: value })),
-      updatePan: (value: string) => set(() => ({ pan: value })),
-      updateAddress: (value: string) => set(() => ({ address: value })),
-      setTxnId: (value: string) => set(() => ({ txnId: value })),
-      resetStore: () =>
-        set(() => ({
-          amount: "",
-          wantsReceipt: false,
-          name: "",
-          contact: "",
-          pan: "",
-          txnId: undefined,
-          address: "",
-        })),
-    }),
-    {
-      name: "donation-data",
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-);
+    })),
+}));

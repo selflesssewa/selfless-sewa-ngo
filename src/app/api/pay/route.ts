@@ -1,10 +1,20 @@
 import axios from "axios";
 import { NextRequest } from "next/server";
 import crypto from "crypto";
+import { getEnvVariable } from "@/helper";
+import { SignJWT } from "jose";
+
+const JWT_SECRET = new TextEncoder().encode(getEnvVariable("JWT_SECRET"));
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const amount = searchParams.get("amount")!;
+  const amountInRupees = searchParams.get("amount")!;
+
+  // only required for receipt
+  const name = searchParams.get("name");
+  const contact = searchParams.get("contact");
+  const pan = searchParams.get("pan");
+  const address = searchParams.get("address");
 
   const apiUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
   const merchantId = "M22GE2J7US8VN";
@@ -15,13 +25,34 @@ export async function GET(request: NextRequest) {
     .replaceAll("-", "")
     .toUpperCase();
   const merchantUserId = "MUID123";
-  const redirectUrl = "https://selflesssewango.com/payment-status";
+
+  const tokenPayload =
+    address && name && pan && contact
+      ? {
+          id: merchantTransactionId,
+          a: amountInRupees,
+          p: pan,
+          n: name,
+          c: contact,
+          ad: address,
+        }
+      : { id: merchantTransactionId, a: amountInRupees };
+
+  const token = await new SignJWT(tokenPayload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuer("selflesssewa")
+    .setIssuedAt()
+    .setExpirationTime("1min")
+    .sign(JWT_SECRET);
+
+  const redirectUrl =
+    "https://selflesssewango.com/payment-status" + `?t=${token}`;
 
   const payload = {
     merchantId: merchantId,
     merchantTransactionId: merchantTransactionId,
     merchantUserId: merchantUserId,
-    amount: parseInt(amount) * 100,
+    amount: parseInt(amountInRupees) * 100,
     redirectUrl: redirectUrl,
     redirectMode: "REDIRECT",
     paymentInstrument: {

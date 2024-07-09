@@ -1,53 +1,81 @@
 "use client";
 
-import { useDonationStore } from "@/stores/donationStore";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { decodeJwt } from "jose";
+import { redirect, useSearchParams } from "next/navigation";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Container from "../components/Container";
 
 const Page = () => {
-  const txnId = useDonationStore((state) => state.txnId);
-  const { wantsReceipt, name, address, contact, pan } = useDonationStore(
-    (state) => ({
-      wantsReceipt: state.wantsReceipt,
-      name: state.name,
-      address: state.address,
-      contact: state.contact,
-      pan: state.pan,
-    }),
+  return (
+    <Suspense
+      fallback={
+        <main>
+          <Container className="flex min-h-[65vh] flex-col items-center">
+            <p>loading...</p>
+          </Container>
+        </main>
+      }
+    >
+      <PageUI />
+    </Suspense>
   );
-  const [amount, setAmount] = useState<number | undefined>();
+};
+function PageUI() {
+  const time = useMemo(() => {
+    return Intl.DateTimeFormat("en-IN", {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(new Date());
+  }, []);
+  const searchParams = useSearchParams();
+  const token = searchParams.get("t");
+  if (!token) redirect("/");
+
   const [isError, setIsError] = useState(false);
-  const [paymentMode, setPaymentMode] = useState("");
   const [paymentStatus, setPaymentStatus] = useState<
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
 
+  let data = null;
+  try {
+    data = decodeJwt(token);
+  } catch (e) {
+    setIsError(true);
+  }
+
+  const txnId = data.id;
+  const amount = Number(data.a);
+  const wantsReceipt = !!data.p;
+
+  const cnt = useRef(0);
   const checkStatus = useCallback(async () => {
-    if (!txnId || isError) return;
+    if (isError) return;
 
     setIsError(false);
-    let cnt = 0;
     while (true) {
-      cnt++;
-      if (cnt > 10) {
+      cnt.current++;
+      if (cnt.current > 5) {
         setIsError(true);
         break;
       }
       try {
-        const delay = new Promise((res) => setTimeout(res, 2 * 1000));
-        const response = await axios.get(`/api/status?txnId=${txnId}`);
+        const delay = new Promise((res) => setTimeout(res, 5 * 1000));
+        const response = await axios.get(`/api/status?t=${token}`);
         const data = response.data;
 
         const paymentState = data?.data?.state;
-        console.log({ paymentState });
         if (paymentState === "COMPLETED") {
-          setAmount(data?.data?.amount / 100);
-          setPaymentMode(data?.data?.paymentInstrument?.type);
           setPaymentStatus("SUCCESS");
           break;
-        }
-        if (paymentState === "FAILED") {
+        } else if (paymentState === "FAILED") {
           setPaymentStatus("FAILED");
           break;
         }
@@ -58,28 +86,19 @@ const Page = () => {
         break;
       }
     }
-  }, [txnId, isError]);
+  }, [token, isError]);
 
   useEffect(() => {
     checkStatus();
   }, [checkStatus]);
 
   const handleDownload = async () => {
-    if (
-      !txnId ||
-      !pan ||
-      !amount ||
-      !name ||
-      !address ||
-      !paymentMode ||
-      !contact
-    )
-      return;
     try {
-      const response = await fetch(
-        `/api/receipt?txnId=${txnId}&amount=${amount}&name=${name}&contact=${contact}&address=${address}&pan=${pan}&mode=${paymentMode}`,
-      );
-      const blob = await response.blob();
+      const response = await axios.get(`/api/receipt?t=${token}`, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
       const fileURL = window.URL.createObjectURL(blob);
       let alink = document.createElement("a");
       alink.href = fileURL;
@@ -93,15 +112,19 @@ const Page = () => {
 
   return (
     <main>
-      <Container className="flex min-h-[80vh] items-center justify-center">
+      <Container className="flex min-h-[80vh] items-center justify-center py-21 selection:bg-dark-text-selection">
         <div className="flex flex-col">
           {isError || paymentStatus == "FAILED" ? (
             <p className="text-center">
-              Something went wrong! <br />
+              <span className="mb-4 block text-title-lg font-medium">
+                Something went wrong!
+              </span>
               Please contact us at{" "}
               <span className="select-text">selflesssewango@gmail.com</span> and
-              mention the transaction id{" "}
-              <span className="select-text">{txnId}</span>
+              mention the transaction id
+              <span className="mt-2 block select-text font-medium tracking-wider">
+                {txnId}
+              </span>
             </p>
           ) : paymentStatus === "PENDING" ? (
             <p className="animate-pulse">
@@ -109,38 +132,36 @@ const Page = () => {
             </p>
           ) : (
             <>
-              <p className="font-display text-center text-headline-lg font-light">
-                Thank you for donating ₹ {amount}.00
+              <p className="font-display text-balance text-center text-headline-lg font-light leading-none">
+                Thank you for donating ₹{amount.toFixed(2)}
               </p>
               <p className="mt-4 text-center text-body-lg font-light tracking-wider">
                 Transaction Id: {txnId}
               </p>
-              <p className="mt-4 text-center text-body-lg font-light tracking-wider">
-                Time: {Date.now()}
+              <p className="mt-2 text-center text-body-lg font-light tracking-wider">
+                {time}
               </p>
-              {wantsReceipt &&
-                txnId &&
-                amount &&
-                name &&
-                pan &&
-                contact &&
-                address &&
-                paymentMode && (
+              {wantsReceipt && (
+                <div className="mt-8 flex flex-col gap-2">
+                  <p className="text-center text-body-lg font-light tracking-wider">
+                    Please download the receipt, it will not be available later.
+                  </p>
                   <button
                     onClick={handleDownload}
-                    className="mt-4 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
+                    className="flex self-center rounded-[0.8rem] bg-blue-60 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                   >
-                    <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-3 py-1">
+                    <div className="flex items-center gap-1 rounded-[0.4rem] bg-blue px-3 py-1">
                       Download Receipt
                     </div>
                   </button>
-                )}
+                </div>
+              )}
             </>
           )}
         </div>
       </Container>
     </main>
   );
-};
+}
 
 export default Page;
