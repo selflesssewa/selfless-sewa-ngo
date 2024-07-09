@@ -37,7 +37,7 @@ function PageUI() {
   }, []);
   const searchParams = useSearchParams();
   const token = searchParams.get("t");
-  if (!token) redirect("/");
+  if (!token) return redirect("/");
 
   const [isError, setIsError] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
@@ -48,7 +48,9 @@ function PageUI() {
   try {
     data = decodeJwt(token);
   } catch (e) {
+    console.error(e);
     setIsError(true);
+    return redirect("/");
   }
 
   const txnId = data.id;
