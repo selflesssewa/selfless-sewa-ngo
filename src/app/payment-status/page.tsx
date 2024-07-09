@@ -18,7 +18,7 @@ const Page = () => {
     <Suspense
       fallback={
         <main>
-          <Container className="flex min-h-[65vh] flex-col items-center">
+          <Container className="flex min-h-[65vh] flex-col items-center justify-center">
             <p>loading...</p>
           </Container>
         </main>
@@ -29,35 +29,14 @@ const Page = () => {
   );
 };
 function PageUI() {
-  const time = useMemo(() => {
-    return Intl.DateTimeFormat("en-IN", {
-      dateStyle: "long",
-      timeStyle: "short",
-    }).format(new Date());
-  }, []);
   const searchParams = useSearchParams();
   const token = searchParams.get("t");
-  if (!token) return redirect("/");
 
   const [isError, setIsError] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
 
-  let data = null;
-  try {
-    data = decodeJwt(token);
-  } catch (e) {
-    console.error(e);
-    setIsError(true);
-    return redirect("/");
-  }
-
-  const txnId = data.id;
-  const amount = Number(data.a);
-  const wantsReceipt = !!data.p;
-
-  const cnt = useRef(0);
   const checkStatus = useCallback(async () => {
     if (isError) return;
 
@@ -93,6 +72,28 @@ function PageUI() {
   useEffect(() => {
     checkStatus();
   }, [checkStatus]);
+
+  const cnt = useRef(0);
+
+  const time = useMemo(() => {
+    return Intl.DateTimeFormat("en-IN", {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(new Date());
+  }, []);
+
+  if (!token) return redirect("/");
+  let data = null;
+  try {
+    data = decodeJwt(token);
+  } catch (e) {
+    console.error("invalid token");
+    return redirect("/");
+  }
+
+  const txnId = data.id;
+  const amount = Number(data.a);
+  const wantsReceipt = !!data.p;
 
   const handleDownload = async () => {
     try {
