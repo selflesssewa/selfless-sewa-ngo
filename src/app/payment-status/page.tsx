@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { decodeJwt } from "jose";
-import { redirect, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
   useCallback,
@@ -29,6 +29,7 @@ const Page = () => {
   );
 };
 function PageUI() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("t");
 
@@ -82,13 +83,16 @@ function PageUI() {
     }).format(new Date());
   }, []);
 
-  if (!token) return redirect("/");
+  if (!token) {
+    router.replace("/");
+    return null;
+  }
   let data = null;
   try {
     data = decodeJwt(token);
   } catch (e) {
-    console.error("invalid token");
-    return redirect("/");
+    router.replace("/");
+    return null;
   }
 
   const txnId = data.id;
