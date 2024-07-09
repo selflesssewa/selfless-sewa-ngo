@@ -150,6 +150,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 <Link
                   className="-my-1 py-1 hover:underline"
                   href="/terms-and-conditions"
+                  prefetch={false}
                 >
                   Terms&nbsp;&&nbsp;Conditions
                 </Link>
@@ -157,6 +158,7 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                 <Link
                   className="-my-1 py-1 hover:underline"
                   href="/privacy-policy"
+                  prefetch={false}
                 >
                   Privacy&nbsp;Policy
                 </Link>
