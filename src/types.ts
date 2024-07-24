@@ -11,6 +11,7 @@ export type TSewakWithBio = TSewak & { bio: React.ReactNode };
 export type TTeamPageContent = {
   volunteerFormLink: string;
   founder: TSewakWithBio;
+  director: TSewakWithBio;
   team: TSewak[];
 };
 

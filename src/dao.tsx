@@ -192,6 +192,7 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
   const team: TSewak[] = [];
   let founder: TSewakWithBio | undefined;
+  let director: TSewakWithBio | undefined;
 
   entries.items.forEach((el) => {
     const member: TSewak = {
@@ -218,6 +219,8 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
     if (member.role === "Founder Trustee") {
       founder = { ...member, bio: parseBio(el.fields.bio as Document) };
+    } else if (member.role === "Board of Directors") {
+      director = { ...member, bio: parseBio(el.fields.bio as Document) };
     } else {
       team.push(member);
     }
@@ -233,7 +236,8 @@ export async function getTeamPageContent(): Promise<TTeamPageContent> {
 
   return {
     team,
-    founder: founder as TSewakWithBio,
+    founder: founder!,
+    director: director!,
     volunteerFormLink: data.volunteerFormLink as string,
   };
 }

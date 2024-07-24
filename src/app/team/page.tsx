@@ -47,37 +47,67 @@ const Team = async () => {
               act of Sewa.
             </p>
           </div>
-          <h1 className="my-7 text-center tracking-wider">Our Team</h1>
-          <GlowCard className="my-4 mb-14 flex grow rounded-[12px] p-3 backdrop-blur max-sm:flex-col max-sm:gap-y-4">
-            <div className="relative aspect-square overflow-clip rounded-[4px] sm:basis-2/5">
-              <Image
-                fill
-                sizes="500x500"
-                className="h-full w-full -scale-x-100 object-cover"
-                src={data.founder.imgUrl}
-                alt={data.founder.name}
-              />
-            </div>
-            <div className="drop-shadow-md max-sm:pb-2 sm:basis-3/5 sm:p-3 sm:px-4">
-              <p
-                className="text-title-lg font-medium"
-                title={data.founder.name}
-              >
-                {data.founder.name}
-              </p>
-              <p
-                className="overflow-hidden text-ellipsis whitespace-nowrap font-medium tracking-wider"
-                title={data.founder.role}
-              >
-                {data.founder.role}
-              </p>
-              <div className="mt-3 max-w-prose text-pretty">
-                {data.founder.bio}
+          <h1 className="my-7 mt-14 text-center tracking-wider">Our Team</h1>
+          <div className="my-4 mb-14 flex flex-col gap-14">
+            <GlowCard className="flex grow flex-col gap-4 rounded-[12px] p-3 backdrop-blur max-sm:gap-y-4 max-sm:pb-4 sm:flex-row">
+              <div className="relative aspect-square basis-2/5 overflow-clip rounded-[4px]">
+                <Image
+                  fill
+                  sizes="500x500"
+                  className="h-full w-full object-cover"
+                  src={data.founder.imgUrl}
+                  alt={data.founder.name}
+                />
               </div>
-            </div>
-          </GlowCard>
-          <h2 className="text-center tracking-wider">Core Team</h2>
-          <ul className="my-8 grid grid-cols-[repeat(auto-fill,minmax(24rem,1fr))] gap-2 max-md:grid-cols-3 max-sm:grid-cols-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
+              <div className="basis-3/5 drop-shadow-md">
+                <p
+                  className="text-title-lg font-medium"
+                  title={data.founder.name}
+                >
+                  {data.founder.name}
+                </p>
+                <p
+                  className="overflow-hidden text-ellipsis whitespace-nowrap font-medium tracking-wider"
+                  title={data.founder.role}
+                >
+                  {data.founder.role}
+                </p>
+                <div className="mt-3 max-w-prose text-pretty">
+                  {data.founder.bio}
+                </div>
+              </div>
+            </GlowCard>
+            <GlowCard className="flex flex-col gap-4 rounded-[12px] p-3 backdrop-blur max-sm:gap-y-4 sm:flex-row-reverse">
+              <div className="relative aspect-square basis-2/5 overflow-clip rounded-[4px]">
+                <Image
+                  fill
+                  sizes="500x500"
+                  className="h-full w-full -scale-x-100 object-cover"
+                  src={data.director.imgUrl}
+                  alt={data.director.name}
+                />
+              </div>
+              <div className="basis-3/5 drop-shadow-md">
+                <p
+                  className="text-title-lg font-medium"
+                  title={data.director.name}
+                >
+                  {data.director.name}
+                </p>
+                <p
+                  className="overflow-hidden text-ellipsis whitespace-nowrap font-medium tracking-wider"
+                  title={data.director.role}
+                >
+                  {data.director.role}
+                </p>
+                <div className="mt-3 max-w-prose text-pretty">
+                  {data.director.bio}
+                </div>
+              </div>
+            </GlowCard>
+          </div>
+          <h2 className="mt-14 text-center tracking-wider">Core Team</h2>
+          <ul className="my-8 grid grid-cols-[repeat(auto-fill,minmax(22rem,1fr))] gap-2 max-md:grid-cols-3 max-sm:grid-cols-2 sm:gap-3 sm:gap-x-2 md:gap-4 md:gap-x-2">
             {data.team.map((sewak, idx) => (
               <li key={idx}>
                 <GlowCard className="flex flex-col gap-3 p-2">
