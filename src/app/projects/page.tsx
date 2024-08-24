@@ -12,7 +12,7 @@ import GlowCard from "../components/GlowCard";
 import CallToActionCard from "../components/CallToActionCard";
 
 const Project = async () => {
-  const { donationFormLink, projects } = await getProjectPageContent();
+  const { projects } = await getProjectPageContent();
 
   return (
     <main className="min-h-screen">
@@ -117,8 +117,6 @@ const Project = async () => {
             </article>
             <Link
               href="/donate"
-              // href={donationFormLink}
-              // target="_blank"
               className="mt-6 rounded-[8px] border border-blue-30 bg-blue-30 p-1 px-3 backdrop-blur-sm transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 max-md:col-span-2 md:col-start-2"
             >
               Donate
@@ -136,8 +134,6 @@ const Project = async () => {
             footer={
               <Link
                 href="/donate"
-                // href={donationFormLink}
-                // target="_blank"
                 className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">

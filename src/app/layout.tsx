@@ -104,7 +104,7 @@ export default async function RootLayout({
             <div className="blob-2 absolute z-10" />
           </div>
         </div>
-        <Navbar donationFormLink={data.donationFormLink} />
+        <Navbar />
         {children}
         <Footer data={data} />
         <Analytics />

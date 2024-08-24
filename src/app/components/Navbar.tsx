@@ -8,7 +8,7 @@ import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "./Container";
 
-const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
+const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
@@ -66,8 +66,6 @@ const Navbar = ({ donationFormLink }: { donationFormLink: string }) => {
               <li className="flex">
                 <Link
                   href="/donate"
-                  // href={donationFormLink}
-                  // target="_blank"
                   className="ms-3 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                 >
                   <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-2 py-1">

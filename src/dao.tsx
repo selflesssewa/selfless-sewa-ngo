@@ -33,7 +33,6 @@ export async function getLayoutContent(): Promise<TLayoutContent> {
       "fields.collabEmailId",
       "fields.socials",
       "fields.volunteerFormLink",
-      "fields.donationFormLink",
     ],
     limit: 1,
   });
@@ -45,7 +44,6 @@ export async function getLayoutContent(): Promise<TLayoutContent> {
   });
 
   return {
-    donationFormLink: data.donationFormLink as string,
     volunteerFormLink: data.volunteerFormLink as string,
     contactNo: data.contactNo as string,
     contactEmailId: data.contactEmailId as string,
@@ -67,7 +65,6 @@ export async function getHomePageContent(): Promise<THomePageContent> {
       "fields.missionImages",
       "fields.visionImages",
       "fields.locations",
-      "fields.donationFormLink",
       "fields.testimonials",
     ],
     limit: 1,
@@ -135,7 +132,6 @@ export async function getHomePageContent(): Promise<THomePageContent> {
     sliderImgUrls,
     missionImgUrls,
     visionImgUrls,
-    donationFormLink: data.donationFormLink as string,
   };
 }
 
@@ -162,7 +158,7 @@ export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> 
 export async function getProjectPageContent(): Promise<TProjectPageContent> {
   const entries = await contentful.getEntries({
     content_type: "misc",
-    select: ["fields.donationFormLink", "fields.projects"],
+    select: ["fields.projects"],
     limit: 1,
   });
 
@@ -178,7 +174,6 @@ export async function getProjectPageContent(): Promise<TProjectPageContent> {
   });
 
   return {
-    donationFormLink: data.donationFormLink as string,
     projects,
   };
 }
@@ -280,4 +275,5 @@ export const projectIcons: Record<string, SymbolCodepoints> = {
   aahar: "grocery",
   saundarya: "nature",
   "jeev-kalyan": "pets",
+  muskaraahat: "mood",
 };

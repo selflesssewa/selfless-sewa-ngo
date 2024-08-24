@@ -1,4 +1,4 @@
-import { getHomePageContent } from "@/dao";
+import { getHomePageContent, projectIcons } from "@/dao";
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
@@ -24,48 +24,51 @@ const beliefs = [
 
 export const projects = [
   {
-    id: "saksham",
+    slug: "saksham",
     title: "Saksham",
     hindiTitle: "सक्षम",
-    icon: "auto_stories",
     description:
       "Empowering individuals through education and skill development for a brighter future.",
     body: "In Project सक्षम (Saksham), we are committed to breaking the cycle of inequality by providing access to quality education and skill development opportunities. Through our various initiatives, we aim to equip individuals with the knowledge, skills including gross & motor skills and confidence they need to build a better future for themselves and their communities. Our programs range from formal education support, such as scholarships and tutoring, to vocational training in trades like carpentry, sewing, and computer literacy. We believe that education is the key to unlocking potential and creating lasting change, and we are dedicated to ensuring that everyone has the opportunity to thrive.",
   },
   {
-    id: "chikitsa",
+    slug: "chikitsa",
     title: "Chikitsa",
     hindiTitle: "चिकित्सा",
-    icon: "digital_wellbeing",
     description:
       "Promoting healthcare access and menstrual hygiene for holistic well-being.",
     body: "In Project चिकित्सा (Chikitsa) focuses on promoting healthcare access and menstrual hygiene to improve the overall well-being of individuals and communities. We understand the critical importance of access to healthcare services and menstrual hygiene products in ensuring the health and dignity of all individuals, especially women and girls. Through this project, we provide essential healthcare services, including medical camps, health screenings, and vaccinations, as well as distribute menstrual hygiene products and conduct awareness campaigns to break the stigma surrounding menstruation. Our goal is to ensure that everyone has access to the healthcare they need and the resources to maintain their health and hygiene with dignity.",
   },
   {
-    id: "aahar",
+    slug: "aahar",
     title: "Aahar",
     hindiTitle: "आहार",
-    icon: "grocery",
     description:
       "Eradicating hunger by providing nutritious meals and sustainable food solutions.",
     body: "In Project आहार (Aahar), we are dedicated to eradicating hunger and food insecurity by providing nutritious meals and implementing sustainable food solutions. We recognize that access to adequate and nutritious food is a basic human right, yet millions of people around the world suffer from hunger every day. Through our food distribution programs, community kitchens, and agricultural initiatives, we strive to ensure that no one goes hungry. Additionally, we promote sustainable food practices such as organic farming, community gardens, and food waste reduction to create long-term solutions to food insecurity and promote environmental sustainability.",
   },
   {
-    id: "saundarya",
+    slug: "saundarya",
     title: "Saundarya",
     hindiTitle: "सौन्दर्य",
-    icon: "nature",
     description:
       "Nurturing environmental well-being through cleanliness and plantation initiatives.",
     body: "In Project सौन्दर्य (Saundarya) is dedicated to nurturing environmental well-being through cleanliness and plantation initiatives. We understand the importance of preserving and protecting our environment for current and future generations. Through our cleanliness drives, waste management programs, and tree plantation efforts, we work to create clean, green, and sustainable communities. By engaging volunteers and community members in these initiatives, we not only improve the physical environment but also foster a sense of environmental stewardship and responsibility.",
   },
   {
-    id: "jeev-kalyan",
+    slug: "jeev-kalyan",
     title: "Jeev Kalyan",
     hindiTitle: "जीवकल्याण",
-    icon: "pets",
     description:
       "Advocating for Animal Welfare, ensuring compassion for all living being.",
+    body: "In Project जीवकल्याण (Jeev Kalyan), we advocate for animal welfare and work to ensure compassion for all living beings. We believe that animals deserve to be treated with kindness, respect, and dignity, and we are committed to protecting their rights and well-being. Through our animal rescue and rehabilitation efforts, vaccination drives, and advocacy campaigns, we strive to create a world where animals are valued and cared for. Additionally, we promote responsible pet ownership and humane treatment of animals in communities. Our goal is to build a society where humans and animals coexist harmoniously, with compassion and empathy for all living beings.",
+  },
+  {
+    slug: "muskaraahat",
+    title: "Muskaraahat",
+    hindiTitle: "मुस्कराहट",
+    description:
+      "As kind words warm the coldest heart, A kind visit brightens the darkest place. Under Project मुस्कराहट, we aim to build an inclusive society where everyone is kind and compassionate.",
     body: "In Project जीवकल्याण (Jeev Kalyan), we advocate for animal welfare and work to ensure compassion for all living beings. We believe that animals deserve to be treated with kindness, respect, and dignity, and we are committed to protecting their rights and well-being. Through our animal rescue and rehabilitation efforts, vaccination drives, and advocacy campaigns, we strive to create a world where animals are valued and cared for. Additionally, we promote responsible pet ownership and humane treatment of animals in communities. Our goal is to build a society where humans and animals coexist harmoniously, with compassion and empathy for all living beings.",
   },
 ] as const;
@@ -76,6 +79,7 @@ export const projectIconClasses = {
   aahar: "bg-aahar",
   saundarya: "bg-saundarya",
   "jeev-kalyan": "bg-jeev-kalyan",
+  muskaraahat: "bg-muskaraahat",
 } as const;
 
 export default async function Home() {
@@ -85,7 +89,6 @@ export default async function Home() {
     visionImgUrls,
     locations,
     testimonials,
-    donationFormLink,
   } = await getHomePageContent();
 
   return (
@@ -113,8 +116,6 @@ export default async function Home() {
           </div>
           <Link
             href="/donate"
-            // href={donationFormLink}
-            // target="_blank"
             className="flex flex-shrink-0 rounded-[0.8rem] bg-green-50 p-1 shadow-xl shadow-blue-30 backdrop-blur-lg transition-[filter,transform] duration-150 ease-in hover:scale-105 hover:saturate-150"
           >
             <div className="flex items-center gap-2 rounded-[0.4rem] bg-green/50 px-4 py-2 ps-3 max-sm:py-0 max-sm:ps-2">
@@ -242,7 +243,7 @@ export default async function Home() {
             {projects.map((p) => (
               <div
                 className="grid grid-cols-[auto,1fr] items-center justify-items-start gap-x-3 md:gap-x-6"
-                key={p.id}
+                key={p.slug}
               >
                 <span className="font-display col-start-2 italic tracking-wider">
                   Project
@@ -250,23 +251,23 @@ export default async function Home() {
                 <div className="rounded-full border border-white/10 bg-white/10 p-1 shadow-sm shadow-blue-30 backdrop-blur-lg max-md:p-0">
                   <div className="max-md:hidden">
                     <MaterialSymbol
-                      icon={p.icon}
+                      icon={projectIcons[p.slug]}
                       size={32}
                       weight={400}
                       className={twMerge(
                         "rounded-full p-3 text-black/60",
-                        projectIconClasses[p.id],
+                        projectIconClasses[p.slug],
                       )}
                     />
                   </div>
                   <div className="md:hidden">
                     <MaterialSymbol
-                      icon={p.icon}
+                      icon={projectIcons[p.slug]}
                       size={24}
                       weight={400}
                       className={twMerge(
                         "rounded-full p-2 text-black/60",
-                        projectIconClasses[p.id],
+                        projectIconClasses[p.slug],
                       )}
                     />
                   </div>
@@ -281,7 +282,7 @@ export default async function Home() {
                   {p.description}
                 </p>
                 <Link
-                  href={"/projects#" + p.id}
+                  href={"/projects#" + p.slug}
                   className="col-start-2 mt-4 rounded-[8px] border border-white/10 bg-white/10 p-1 px-3 text-body-lg drop-shadow-sm backdrop-blur-sm transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                 >
                   Read more
@@ -314,8 +315,6 @@ export default async function Home() {
             footer={
               <Link
                 href="/donate"
-                // href={donationFormLink}
-                // target="_blank"
                 className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">

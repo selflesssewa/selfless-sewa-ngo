@@ -24,7 +24,6 @@ export type TLayoutContent = {
   contactNo: string;
   contactEmailId: string;
   collabEmailId: string;
-  donationFormLink: string;
   volunteerFormLink: string;
   socials: TSocial[];
 };
@@ -44,7 +43,6 @@ export type TLocation = {
 };
 
 export type THomePageContent = {
-  donationFormLink: string;
   locations: TLocation[];
   testimonials: TTestimonial[];
   sliderImgUrls: string[];
@@ -67,7 +65,6 @@ export type TProject = {
 };
 
 export type TProjectPageContent = {
-  donationFormLink: string;
   projects: Array<TProject>;
 };
 
