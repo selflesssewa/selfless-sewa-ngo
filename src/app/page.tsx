@@ -12,13 +12,31 @@ import GlowCard from "./components/GlowCard";
 import { GeneralStatistics } from "./components/GeneralStatistics";
 
 const beliefs = [
-    "We embrace service as more than just duty, it’s a profound calling that shapes our every action.",
-    "We believe that by placing the needs of others before our own, we can ignite a positive change on a global scale.",
-    "Our motto sums up our ethos, inspiring us to serve with dedication, genuine humility, and boundless compassion.",
-    "Embody these principles, fostering a culture of selflessness and empowerment within ourselves and beyond.",
+    {
+      title: "Serving with our hearts",
+      text: "For us, serving others is not just a duty. It's a way of life. It's our northern star that constantly guides our every action.",
+    },
+    {
+      title: "Love for humanity",
+      text: "We believe in the transforming power of kindness. By prioritizing the needs of others, we try to ignite the sparkle of compassion in the hearts of people.",
+    },
+    {
+      title: "Give from the heart, soul and spirit",
+      text: "When we serve, we give it our all. We serve with genuine humility and compassion. We are dedicated, honest and passionate about our causes.",
+    },
+    {
+      title: "Building a better community",
+      text: "By serving others we create ripples of kindness and compassion, These ripples will foster a culture of selflessness and empowerment within ourselves and beyond.",
+    },
   ] as const,
-  missionText =
-    "Eliminating barriers through education, fostering wellness with healthcare, ensuring sustenance with food security, promoting dignity through menstrual hygiene awareness, nurturing compassion for animal welfare, and safeguarding our planet through environmental sustainability.",
+  missions = [
+    "Liberating minds with education",
+    "Fostering wellness with healthcare",
+    "Nourishing bodies with food security",
+    "Empowering Women with menstrual hygiene",
+    "Nurturing compassion with animal welfare",
+    "Protecting our future with Environmental Sustainability",
+  ],
   visionText =
     "Envisioning a world where barriers to education, healthcare, menstrual hygiene, food security, and holistic well-being are eradicated, nurturing a future where every individual thrives with vitality and embraces well-being.";
 
@@ -150,7 +168,12 @@ export default async function Home() {
           <div className="grid auto-cols-fr auto-rows-auto gap-3 sm:grid-cols-2 md:gap-4">
             {beliefs.map((belief, idx) => (
               <GlowCard key={idx} className="md:max-w-[35ch]">
-                <p className="text-pretty drop-shadow-md">{belief}</p>
+                <p className="text-pretty drop-shadow-md">
+                  <span className="font-medium tracking-wide">
+                    {belief.title}:{" "}
+                  </span>
+                  {belief.text}
+                </p>
               </GlowCard>
             ))}
           </div>
@@ -162,7 +185,11 @@ export default async function Home() {
             <h2 className="mb-3 text-headline-sm tracking-normal">
               Our Mission
             </h2>
-            <p className="text-balance">{missionText}</p>
+            <ul className="ms-3 list-disc">
+              {missions.map((mission, idx) => (
+                <li key={idx}>{mission}</li>
+              ))}
+            </ul>
           </div>
           <div className="relative grow max-md:h-[50vh]">
             <div className="absolute left-[50%] h-[100%] overflow-clip rounded-[16px] shadow-2xl shadow-blue-60 max-md:h-[60%] max-md:w-[calc(100%+1.2rem)] max-md:-translate-x-1/2 md:left-[0px] md:top-[40%] md:w-[60%] md:-translate-y-1/2">
