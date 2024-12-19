@@ -54,6 +54,11 @@ const Navbar = () => {
                 </Link>
               </li>
               <li className="flex rounded-[0.8rem] duration-300 hover:bg-blue-30 max-md:hidden">
+                <Link href="/campaigns" className="px-3 drop-shadow-md">
+                  Campaigns
+                </Link>
+              </li>
+              <li className="flex rounded-[0.8rem] duration-300 hover:bg-blue-30 max-md:hidden">
                 <Link href="/volunteer" className="px-3 drop-shadow-md">
                   Volunteer
                 </Link>
@@ -106,6 +111,11 @@ const Navbar = () => {
               <li>
                 <Link href="/projects" onClick={() => setIsOpen(false)}>
                   Projects
+                </Link>
+              </li>
+              <li>
+                <Link href="/campaigns" onClick={() => setIsOpen(false)}>
+                  Campaigns
                 </Link>
               </li>
               <li>

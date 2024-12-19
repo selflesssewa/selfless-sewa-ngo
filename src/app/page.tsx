@@ -4,12 +4,12 @@ import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import CallToActionCard from "./components/CallToActionCard";
-import Map from "./components/Map";
 import Container from "./components/Container";
-import HeroSlider from "./components/HeroSlider";
-import TestimonialSlider from "./components/TestimonialSlider";
-import GlowCard from "./components/GlowCard";
 import { GeneralStatistics } from "./components/GeneralStatistics";
+import GlowCard from "./components/GlowCard";
+import HeroSlider from "./components/HeroSlider";
+import Map from "./components/Map";
+import TestimonialSlider from "./components/TestimonialSlider";
 
 const beliefs = [
     {
@@ -105,6 +105,7 @@ export default async function Home() {
     sliderImgUrls,
     missionImgUrls,
     visionImgUrls,
+    campaignImgUrls,
     locations,
     testimonials,
   } = await getHomePageContent();
@@ -260,6 +261,55 @@ export default async function Home() {
           <h2 className="mb-8 text-center tracking-wider">Our Impact</h2>
           <div className="mt-6 md:mt-8">
             <GeneralStatistics />
+          </div>
+        </Container>
+      </section>
+      <section>
+        <Container className="my-16 lg:my-20">
+          <div className="mb-2 grid auto-cols-auto grid-cols-1 items-start lg:mb-14 lg:grid-cols-7">
+            <h2 className="font-display col-start-1 mb-4 text-center text-headline-md font-normal tracking-tight lg:col-span-4 lg:mb-12 lg:text-start lg:text-headline-lg lg:tracking-tight">
+              Winter Campaign
+            </h2>
+            <p className="mx-3 -mb-8 text-pretty rounded-2xl border border-white/15 bg-white/10 p-2 px-3 text-title-sm drop-shadow-lg backdrop-blur-xl lg:col-span-3 lg:col-start-1 lg:row-start-2 lg:m-[0px] lg:mt-[15%] lg:p-3 lg:px-4">
+              As the winter chill settles in, many families face hardships,
+              enduring the merciless winter. Thus, as our motto states, "service
+              above self"; we took it upon ourselves to light up their nights,
+              one by one.
+            </p>
+            <div className="h-[60vh] lg:col-span-5 lg:col-start-3 lg:row-start-2">
+              <img
+                src={campaignImgUrls.at(0)}
+                alt=""
+                className="h-full w-full rounded-3xl object-cover"
+              />
+            </div>
+          </div>
+          <div className="grid auto-cols-auto grid-cols-1 grid-rows-1 items-center lg:grid-cols-7">
+            <div className="col-span-3 col-start-1 row-start-1 h-[70vh]">
+              <img
+                src={campaignImgUrls.at(1)}
+                alt=""
+                className="h-full w-full rounded-3xl object-cover"
+              />
+            </div>
+            <div className="mx-3 -mt-8 flex flex-col gap-4 lg:col-span-3 lg:row-start-1 lg:m-[0px] lg:-ms-8 lg:mb-[15%]">
+              <p className="text-pretty rounded-2xl border border-white/15 bg-white/10 p-2 px-3 text-title-sm drop-shadow-lg backdrop-blur-xl lg:p-3 lg:px-4">
+                We are on an ongoing mission of distributing 1000+ winter
+                essentials to the ones with lost homes all across the country,
+                mainly focusing on areas including Delhi, Sirsa, Chandigarh,
+                Dehradun and more. It surely isn't possible without people like
+                you, who, with every small contribution, help us make a huge
+                difference.
+              </p>
+              <Link
+                href="/donate"
+                className="flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 lg:self-end"
+              >
+                <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
+                  <span className="text-title-sm">Donate Now</span>
+                </div>
+              </Link>
+            </div>
           </div>
         </Container>
       </section>

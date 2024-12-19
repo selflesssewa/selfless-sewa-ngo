@@ -2,8 +2,11 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { BLOCKS, Document, Text } from "@contentful/rich-text-types";
 import { createClient, type Asset, type Entry } from "contentful";
 import { cache } from "react";
+import { SymbolCodepoints } from "react-material-symbols";
 import { getEnvVariable } from "./helper";
 import {
+  TCampaign,
+  TCampaignPageContent,
   THomePageContent,
   TLayoutContent,
   TLocation,
@@ -17,7 +20,6 @@ import {
   TTestimonial,
   TVolunteerPageContent,
 } from "./types";
-import { SymbolCodepoints } from "react-material-symbols";
 
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
@@ -64,6 +66,7 @@ export async function getHomePageContent(): Promise<THomePageContent> {
       "fields.sliderImages",
       "fields.missionImages",
       "fields.visionImages",
+      "fields.campaignImages",
       "fields.locations",
       "fields.testimonials",
     ],
@@ -125,6 +128,9 @@ export async function getHomePageContent(): Promise<THomePageContent> {
   const visionImgUrls = (data.visionImages as Asset[]).map(
     (asset) => (`https:` + asset.fields.file?.url) as string,
   );
+  const campaignImgUrls = (data.campaignImages as Asset[]).map(
+    (asset) => (`https:` + asset.fields.file?.url) as string,
+  );
 
   return {
     locations,
@@ -132,6 +138,7 @@ export async function getHomePageContent(): Promise<THomePageContent> {
     sliderImgUrls,
     missionImgUrls,
     visionImgUrls,
+    campaignImgUrls,
   };
 }
 
@@ -152,6 +159,34 @@ export async function getVolunteerPageContent(): Promise<TVolunteerPageContent> 
     volunteerRules: data.volunteerRules as string[],
     certificateCriteria: data.certificateCriteria as string[],
     volunteerFormLink: data.volunteerFormLink as string,
+  };
+}
+
+export async function getCampaignPageContent(): Promise<TCampaignPageContent> {
+  const entries = await contentful.getEntries({
+    content_type: "misc",
+    select: ["fields.campaigns"],
+    limit: 1,
+  });
+
+  const data = entries.items[0].fields;
+  const campaigns = (data.campaigns as Array<Entry>)
+    .map((c) => {
+      const imgUrls = (c.fields.images as Asset[])?.map(
+        (asset) => (`https:` + asset.fields.file?.url) as string,
+      );
+      return {
+        imgUrls,
+        title: c.fields.title,
+        slug: c.fields.slug,
+        active: c.fields.active,
+        content: c.fields.content as Document,
+      } as TCampaign;
+    })
+    .sort((a, b) => (a.active && !b.active ? 1 : 0));
+
+  return {
+    campaigns,
   };
 }
 

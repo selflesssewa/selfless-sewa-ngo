@@ -48,6 +48,7 @@ export type THomePageContent = {
   sliderImgUrls: string[];
   missionImgUrls: string[];
   visionImgUrls: string[];
+  campaignImgUrls: string[];
 };
 
 export type TTestimonial = {
@@ -64,8 +65,20 @@ export type TProject = {
   body: Document;
 };
 
+export type TCampaign = {
+  title: string;
+  slug: string;
+  active: boolean;
+  content: Document;
+  imgUrls?: string[];
+};
+
 export type TProjectPageContent = {
   projects: Array<TProject>;
+};
+
+export type TCampaignPageContent = {
+  campaigns: Array<TCampaign>;
 };
 
 export type TStatistic = {
