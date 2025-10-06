@@ -40,10 +40,17 @@ const Page = () => {
       return;
     }
 
-    if (wantsReceipt && (!name || !contact || !pan || !address)) {
-      alert("Please fill in all details for receipt.");
-      return;
-    }
+    // Always require Name and Contact
+if (!name || !contact) {
+  alert("Please enter your Name and Contact number.");
+  return;
+}
+
+// Only require PAN & Address if wantsReceipt is checked
+if (wantsReceipt && (!pan || !address)) {
+  alert("Please fill in all details for receipt.");
+  return;
+}
 
     let response = null;
 
@@ -101,61 +108,66 @@ const Page = () => {
               />
               <span>Would you like a receipt?</span>
             </label>
-            {wantsReceipt && (
-              <>
-                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
-                  <label htmlFor="name">Name</label>
-                  <input
-                    type="text"
-                    id="name"
-                    min={2}
-                    max={25}
-                    value={name}
-                    placeholder="Your name"
-                    onChange={(e) => updateName(e.target.value)}
-                    required
-                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
-                  />
-                </GlowCard>
-                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
-                  <label htmlFor="pan">PAN</label>
-                  <input
-                    type="text"
-                    id="pan"
-                    placeholder="Your PAN"
-                    value={pan}
-                    onChange={(e) => updatePan(e.target.value)}
-                    required
-                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
-                  />
-                </GlowCard>
-                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
-                  <label htmlFor="contact">Contact</label>
-                  <input
-                    type="tel"
-                    id="contact"
-                    placeholder="Your contact number"
-                    value={contact}
-                    onChange={(e) => updateContact(e.target.value)}
-                    required
-                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
-                  />
-                </GlowCard>
-                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
-                  <label htmlFor="address">Address</label>
-                  <textarea
-                    id="pan"
-                    rows={3}
-                    maxLength={35}
-                    placeholder="Your address"
-                    value={address}
-                    onChange={(e) => updateAddress(e.target.value)}
-                    required
-                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
-                  />
-                </GlowCard>
-              </>
-            )}
+            {/* Always show Name */}
+<GlowCard className="flex flex-col gap-2 p-3 pb-1">
+  <label htmlFor="name">Name</label>
+  <input
+    type="text"
+    id="name"
+    min={2}
+    max={25}
+    value={name}
+    placeholder="Your name"
+    onChange={(e) => updateName(e.target.value)}
+    required
+    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+  />
+</GlowCard>
+
+{/* Always show Contact */}
+<GlowCard className="flex flex-col gap-2 p-3 pb-1">
+  <label htmlFor="contact">Contact</label>
+  <input
+    type="tel"
+    id="contact"
+    placeholder="Your contact number"
+    value={contact}
+    onChange={(e) => updateContact(e.target.value)}
+    required
+    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+  />
+</GlowCard>
+
+{/* PAN & Address only if receipt is ticked */}
+{wantsReceipt && (
+  <>
+    <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+      <label htmlFor="pan">PAN</label>
+      <input
+        type="text"
+        id="pan"
+        placeholder="Your PAN"
+        value={pan}
+        onChange={(e) => updatePan(e.target.value)}
+        required
+        className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+      />
+    </GlowCard>
+    <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+      <label htmlFor="address">Address</label>
+      <textarea
+        id="address"
+        rows={3}
+        maxLength={35}
+        placeholder="Your address"
+        value={address}
+        onChange={(e) => updateAddress(e.target.value)}
+        required
+        className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+      />
+    </GlowCard>
+  </>
+)}
 
             <label
               htmlFor="acknowledge"
