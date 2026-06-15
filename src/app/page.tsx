@@ -13,7 +13,7 @@ import TestimonialSlider from "./components/TestimonialSlider";
 
 const beliefs = [
     {
-      title: "Serving with all our hearts",
+      title: "Serving with our hearts",
       text: "For us, serving others is not just a duty. It's a way of life. It's our northern star that constantly guides our every action.",
     },
     {
@@ -130,7 +130,7 @@ export default async function Home() {
               </li>
             </ul>
             <h1 className="font-display title-drop-shadow origin-bottom-left text-balance text-headline-md font-normal tracking-tight md:text-headline-lg lg:text-display-sm">
-              Join our commitment to making a positive difference in the word!
+              Join our commitment to making a positive difference in the world.
             </h1>
           </div>
           <Link
