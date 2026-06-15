@@ -130,7 +130,7 @@ export default async function Home() {
               </li>
             </ul>
             <h1 className="font-display title-drop-shadow origin-bottom-left text-balance text-headline-md font-normal tracking-tight md:text-headline-lg lg:text-display-sm">
-              Join our commitment to making a positive difference in the world.
+              Join our commitment to making a positive difference in the word!
             </h1>
           </div>
           <Link
