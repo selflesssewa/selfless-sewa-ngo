@@ -13,7 +13,7 @@ import TestimonialSlider from "./components/TestimonialSlider";
 
 const beliefs = [
     {
-      title: "Serving with our hearts",
+      title: "Serving with all our hearts",
       text: "For us, serving others is not just a duty. It's a way of life. It's our northern star that constantly guides our every action.",
     },
     {

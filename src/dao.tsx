@@ -24,6 +24,7 @@ import {
 const contentful = createClient({
   accessToken: getEnvVariable("CONTENTFUL_ACCESS_TOKEN"),
   space: getEnvVariable("CONTENTFUL_SPACE_ID"),
+  environment: process.env.CONTENTFUL_ENVIRONMENT || "master",
 });
 
 export async function getLayoutContent(): Promise<TLayoutContent> {
