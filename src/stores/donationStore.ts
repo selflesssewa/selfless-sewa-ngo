@@ -1,14 +1,20 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+export type TFrequency = "MONTHLY" | "QUARTERLY" | "HALFYEARLY" | "YEARLY";
+
 type TDonationStore = {
   amount: string;
+  isRecurring: boolean;
+  frequency: TFrequency;
   wantsReceipt: boolean;
   name: string;
   contact: string;
   pan: string;
   address: string;
   txnId?: string;
+  setIsRecurring: (value: boolean) => void;
+  setFrequency: (value: TFrequency) => void;
   toggleWantsReceipt: (checked: boolean) => void;
   updateAmount: (value: string) => void;
   updateName: (value: string) => void;
@@ -21,12 +27,16 @@ type TDonationStore = {
 
 export const useDonationStore = create<TDonationStore>((set) => ({
   amount: "",
+  isRecurring: false,
+  frequency: "MONTHLY",
   wantsReceipt: false,
   name: "",
   contact: "",
   pan: "",
   address: "",
   txnId: undefined,
+  setIsRecurring: (value: boolean) => set(() => ({ isRecurring: value })),
+  setFrequency: (value: TFrequency) => set(() => ({ frequency: value })),
   toggleWantsReceipt: (checked: boolean) =>
     set(() => ({ wantsReceipt: checked })),
   updateAmount: (value: string) => set(() => ({ amount: value })),
@@ -38,6 +48,8 @@ export const useDonationStore = create<TDonationStore>((set) => ({
   resetStore: () =>
     set(() => ({
       amount: "",
+      isRecurring: false,
+      frequency: "MONTHLY",
       wantsReceipt: false,
       name: "",
       contact: "",

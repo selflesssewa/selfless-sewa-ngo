@@ -1,6 +1,6 @@
 "use client";
 
-import { useDonationStore } from "@/stores/donationStore";
+import { TFrequency, useDonationStore } from "@/stores/donationStore";
 import { useLayoutEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
@@ -9,6 +9,10 @@ import GlowCard from "../components/GlowCard";
 const Page = () => {
   const resetFormState = useDonationStore((state) => state.resetStore);
   const amount = useDonationStore((state) => state.amount);
+  const isRecurring = useDonationStore((state) => state.isRecurring);
+  const setIsRecurring = useDonationStore((state) => state.setIsRecurring);
+  const frequency = useDonationStore((state) => state.frequency);
+  const setFrequency = useDonationStore((state) => state.setFrequency);
   const wantsReceipt = useDonationStore((state) => state.wantsReceipt);
   const name = useDonationStore((state) => state.name);
   const contact = useDonationStore((state) => state.contact);
@@ -34,6 +38,13 @@ const Page = () => {
     e.preventDefault();
 
     if (!amount || isSubmitting) return;
+
+    if (isRecurring) {
+      alert(
+        "Recurring donations are coming soon. Please choose “Give once” for now.",
+      );
+      return;
+    }
 
     if (!hasAcknowledged) {
       alert("Please confirm the acknowledgement.");
@@ -77,6 +88,54 @@ const Page = () => {
             className="flex flex-col items-stretch gap-4 [&_label]:text-title-sm [&_label]:font-medium"
             disabled={isSubmitting}
           >
+            <div className="flex gap-1 rounded-[0.9rem] bg-blue-30 p-1">
+              <button
+                type="button"
+                onClick={() => setIsRecurring(false)}
+                aria-pressed={!isRecurring}
+                className={twMerge(
+                  "flex-1 rounded-[0.6rem] py-2 text-title-sm font-medium transition-colors",
+                  !isRecurring ? "bg-green-50 text-white" : "text-white-70",
+                )}
+              >
+                Give once
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsRecurring(true)}
+                aria-pressed={isRecurring}
+                className={twMerge(
+                  "flex-1 rounded-[0.6rem] py-2 text-title-sm font-medium transition-colors",
+                  isRecurring ? "bg-green-50 text-white" : "text-white-70",
+                )}
+              >
+                Give recurring
+              </button>
+            </div>
+            {isRecurring && (
+              <>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="frequency">Frequency</label>
+                  <select
+                    id="frequency"
+                    value={frequency}
+                    onChange={(e) =>
+                      setFrequency(e.target.value as TFrequency)
+                    }
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none [&>option]:text-black"
+                  >
+                    <option value="MONTHLY">Monthly</option>
+                    <option value="QUARTERLY">Every 3 months</option>
+                    <option value="HALFYEARLY">Every 6 months</option>
+                    <option value="YEARLY">Annually</option>
+                  </select>
+                </GlowCard>
+                <p className="px-3 text-body-sm text-white-70">
+                  Recurring giving is coming soon. We’ll charge your chosen
+                  amount automatically at the selected frequency once it’s live.
+                </p>
+              </>
+            )}
             <GlowCard className="flex items-center gap-2 p-1 ps-3">
               <label htmlFor="amount">₹</label>
               <input
