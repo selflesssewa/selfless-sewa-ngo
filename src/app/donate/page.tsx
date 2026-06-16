@@ -79,7 +79,17 @@ const Page = () => {
 
   return (
     <main className="min-h-[65vh]">
-      <Container className="mb-21 mt-12 flex justify-center">
+      <Container className="mb-21 mt-12 flex flex-col items-center">
+        <div className="mb-10 flex max-w-prose flex-col items-center text-center">
+          <h1 className="text-headline-sm tracking-normal">
+            Support Our Mission
+          </h1>
+          <p className="mt-4 text-balance text-body-lg font-light tracking-wider text-white-70">
+            Every contribution helps Selfless Sewa bring food, education,
+            healthcare, and dignity to those who need it most. Give once, or set
+            up a recurring donation to sustain our work throughout the year.
+          </p>
+        </div>
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-[480px] [&_input]:placeholder:text-white-70 [&_textarea]:placeholder:text-white-70"
