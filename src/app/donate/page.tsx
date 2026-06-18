@@ -16,6 +16,7 @@ const Page = () => {
   const wantsReceipt = useDonationStore((state) => state.wantsReceipt);
   const name = useDonationStore((state) => state.name);
   const contact = useDonationStore((state) => state.contact);
+  const email = useDonationStore((state) => state.email);
   const pan = useDonationStore((state) => state.pan);
   const address = useDonationStore((state) => state.address);
   const toggleWantsReceipt = useDonationStore(
@@ -23,6 +24,7 @@ const Page = () => {
   );
   const updateAmount = useDonationStore((state) => state.updateAmount);
   const updateContact = useDonationStore((state) => state.updateContact);
+  const updateEmail = useDonationStore((state) => state.updateEmail);
   const updatePan = useDonationStore((state) => state.updatePan);
   const updateAddress = useDonationStore((state) => state.updateAddress);
   const updateName = useDonationStore((state) => state.updateName);
@@ -56,12 +58,19 @@ const Page = () => {
       return;
     }
 
+    if (!wantsReceipt && (!name || !contact)) {
+      alert("Please enter your name and phone number.");
+      return;
+    }
+
     let response = null;
 
     setIsSubmitting(true);
 
     const query = new URLSearchParams(
-      wantsReceipt ? { pan, name, contact, address, amount } : { amount },
+      wantsReceipt
+        ? { pan, name, contact, address, amount }
+        : { name, contact, ...(email ? { email } : {}), amount },
     );
 
     response = await fetch(`/api/pay?${query.toString()}`);
@@ -170,6 +179,50 @@ const Page = () => {
               />
               <span>Would you like a receipt?</span>
             </label>
+            {!wantsReceipt && (
+              <>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    placeholder="Your name"
+                    onChange={(e) => updateName(e.target.value)}
+                    required
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="contact">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="contact"
+                    placeholder="Your phone number"
+                    value={contact}
+                    onChange={(e) => updateContact(e.target.value)}
+                    required
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="email">
+                    Email{" "}
+                    <span className="font-normal text-white-70">
+                      (optional)
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Your email address"
+                    value={email}
+                    onChange={(e) => updateEmail(e.target.value)}
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+              </>
+            )}
             {wantsReceipt && (
               <>
                 <GlowCard className="flex flex-col gap-2 p-3 pb-1">

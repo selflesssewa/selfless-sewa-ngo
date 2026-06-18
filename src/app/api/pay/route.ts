@@ -10,16 +10,17 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const amountInRupees = searchParams.get("amount")!;
 
-  // only required for receipt
   const name = searchParams.get("name");
   const contact = searchParams.get("contact");
+  const email = searchParams.get("email");
+  // only present for the receipt flow
   const pan = searchParams.get("pan");
   const address = searchParams.get("address");
 
   const apiUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
-  const merchantId = "M22GE2J7US8VN";
-  const saltKey = "fe68dfe6-a825-4479-8b54-9989aec729d6";
-  const saltIndex = "1";
+  const merchantId = getEnvVariable("PHONEPE_MERCHANT_ID");
+  const saltKey = getEnvVariable("PHONEPE_SALT_KEY");
+  const saltIndex = getEnvVariable("PHONEPE_SALT_INDEX");
   const merchantTransactionId = crypto
     .randomUUID()
     .replaceAll("-", "")
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
   const merchantUserId = "MUID123";
 
   const tokenPayload =
-    address && name && pan && contact
+    pan && address && name && contact
       ? {
           id: merchantTransactionId,
           a: amountInRupees,
@@ -36,7 +37,15 @@ export async function GET(request: NextRequest) {
           c: contact,
           ad: address,
         }
-      : { id: merchantTransactionId, a: amountInRupees };
+      : name && contact
+        ? {
+            id: merchantTransactionId,
+            a: amountInRupees,
+            n: name,
+            c: contact,
+            ...(email ? { e: email } : {}),
+          }
+        : { id: merchantTransactionId, a: amountInRupees };
 
   const token = await new SignJWT(tokenPayload)
     .setProtectedHeader({ alg: "HS256" })
@@ -55,6 +64,7 @@ export async function GET(request: NextRequest) {
     amount: parseInt(amountInRupees) * 100,
     redirectUrl: redirectUrl,
     redirectMode: "REDIRECT",
+    ...(contact ? { mobileNumber: contact } : {}),
     paymentInstrument: {
       type: "PAY_PAGE",
     },

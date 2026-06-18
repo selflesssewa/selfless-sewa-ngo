@@ -10,6 +10,7 @@ type TDonationStore = {
   wantsReceipt: boolean;
   name: string;
   contact: string;
+  email: string;
   pan: string;
   address: string;
   txnId?: string;
@@ -19,6 +20,7 @@ type TDonationStore = {
   updateAmount: (value: string) => void;
   updateName: (value: string) => void;
   updateContact: (value: string) => void;
+  updateEmail: (value: string) => void;
   updatePan: (value: string) => void;
   updateAddress: (value: string) => void;
   setTxnId: (value: string) => void;
@@ -32,6 +34,7 @@ export const useDonationStore = create<TDonationStore>((set) => ({
   wantsReceipt: false,
   name: "",
   contact: "",
+  email: "",
   pan: "",
   address: "",
   txnId: undefined,
@@ -42,6 +45,7 @@ export const useDonationStore = create<TDonationStore>((set) => ({
   updateAmount: (value: string) => set(() => ({ amount: value })),
   updateName: (value: string) => set(() => ({ name: value })),
   updateContact: (value: string) => set(() => ({ contact: value })),
+  updateEmail: (value: string) => set(() => ({ email: value })),
   updatePan: (value: string) => set(() => ({ pan: value })),
   updateAddress: (value: string) => set(() => ({ address: value })),
   setTxnId: (value: string) => set(() => ({ txnId: value })),
@@ -53,6 +57,7 @@ export const useDonationStore = create<TDonationStore>((set) => ({
       wantsReceipt: false,
       name: "",
       contact: "",
+      email: "",
       pan: "",
       address: "",
       txnId: undefined,
