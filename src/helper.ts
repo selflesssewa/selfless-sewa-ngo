@@ -8,9 +8,9 @@ export function getEnvVariable(name: string): string {
 }
 
 export async function callStatusApi(merchantTransactionId: string) {
-  const merchantId = "M22GE2J7US8VN";
-  const saltKey = "fe68dfe6-a825-4479-8b54-9989aec729d6";
-  const saltIndex = "1";
+  const merchantId = getEnvVariable("PHONEPE_MERCHANT_ID");
+  const saltKey = getEnvVariable("PHONEPE_SALT_KEY");
+  const saltIndex = getEnvVariable("PHONEPE_SALT_INDEX");
   const apiUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${merchantId}/${merchantTransactionId}`;
   const checksum =
     crypto
