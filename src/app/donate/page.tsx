@@ -56,6 +56,8 @@ const Page = () => {
       return;
     }
 
+    let response = null;
+
     setIsSubmitting(true);
 
     // Recurring donation: set up a PhonePe Autopay mandate.
