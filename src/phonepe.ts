@@ -1,11 +1,9 @@
 import axios from "axios";
 import { getEnvVariable } from "./helper";
 
-// PhonePe Standard Checkout v2 (Autopay / Subscriptions) client.
-//
-// NOTE: This is wired to PhonePe's documented v2 spec but is UNTESTED until
-// real credentials with Autopay enabled exist. Verify exact endpoint paths and
-// payload field names against your PhonePe dashboard before going live.
+// PhonePe Standard Checkout v2 — Autopay / Subscriptions.
+// Endpoints verified against:
+// https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/setup-subscription/api-integration
 
 const IS_PROD = process.env.PHONEPE_ENV === "PRODUCTION";
 
@@ -17,7 +15,7 @@ const API_BASE = IS_PROD
   ? "https://api.phonepe.com/apis/pg"
   : "https://api-preprod.phonepe.com/apis/pg-sandbox";
 
-// ---- OAuth token (cached until shortly before expiry) ----
+// ── OAuth token (cached until ~60s before expiry) ──────────────────────────
 
 let cachedToken: { token: string; expiresAtMs: number } | null = null;
 
@@ -37,10 +35,10 @@ async function getAccessToken(): Promise<string> {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   });
 
-  // PhonePe returns access_token + expires_at (epoch seconds).
   cachedToken = {
     token: data.access_token,
-    expiresAtMs: (data.expires_at ?? Math.floor(Date.now() / 1000) + 3000) * 1000,
+    expiresAtMs:
+      (data.expires_at ?? Math.floor(Date.now() / 1000) + 3000) * 1000,
   };
   return cachedToken.token;
 }
@@ -53,23 +51,33 @@ async function authHeaders() {
   };
 }
 
+// ── Types ──────────────────────────────────────────────────────────────────
+
 export type TPhonePeFrequency =
+  | "DAILY"
+  | "WEEKLY"
+  | "FORTNIGHTLY"
   | "MONTHLY"
+  | "BIMONTHLY"
   | "QUARTERLY"
   | "HALFYEARLY"
-  | "YEARLY";
+  | "YEARLY"
+  | "ON_DEMAND";
+
+// ── Phase 1: Setup subscription ────────────────────────────────────────────
+// Endpoint: POST /checkout/v2/pay
+// Docs: https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/setup-subscription/api-integration
 
 export type TSetupParams = {
-  merchantOrderId: string;
-  merchantSubscriptionId: string;
-  amountPaise: number; // per-cycle amount, in paise
-  maxAmountPaise: number; // mandate ceiling, in paise
+  merchantOrderId: string;          // max 63 chars, unique
+  merchantSubscriptionId: string;   // max 63 chars, unique
+  amountPaise: number;              // per-cycle / first-debit amount in paise
+  maxAmountPaise: number;           // mandate ceiling in paise (max 1,500,000 = ₹15,000)
   frequency: TPhonePeFrequency;
   redirectUrl: string;
-  expireAtMs: number; // mandate validity (epoch ms)
+  expireAtEpochMs?: number;         // mandate validity (optional, max 30 years)
 };
 
-// Phase 1 — create the mandate. Returns the PhonePe checkout redirect URL.
 export async function setupSubscription(p: TSetupParams): Promise<{
   redirectUrl: string;
   orderId?: string;
@@ -78,58 +86,76 @@ export async function setupSubscription(p: TSetupParams): Promise<{
   const payload = {
     merchantOrderId: p.merchantOrderId,
     amount: p.amountPaise,
-    expireAt: p.expireAtMs,
     paymentFlow: {
-      type: "SUBSCRIPTION_SETUP",
-      merchantSubscriptionId: p.merchantSubscriptionId,
-      authWorkflowType: "TRANSACTION",
-      amountType: "FIXED",
-      maxAmount: p.maxAmountPaise,
-      frequency: p.frequency,
-      expireAt: p.expireAtMs,
+      type: "SUBSCRIPTION_CHECKOUT_SETUP",
+      merchantUrls: {
+        redirectUrl: p.redirectUrl,
+      },
+      subscriptionDetails: {
+        subscriptionType: "RECURRING",
+        merchantSubscriptionId: p.merchantSubscriptionId,
+        authWorkflowType: "TRANSACTION",
+        amountType: "FIXED",
+        maxAmount: p.maxAmountPaise,
+        frequency: p.frequency,
+        productType: "UPI_MANDATE",
+        ...(p.expireAtEpochMs
+          ? { expireAt: Math.floor(p.expireAtEpochMs / 1000) }
+          : {}),
+      },
     },
-    // For Standard Checkout (hosted redirect):
-    redirectUrl: p.redirectUrl,
   };
 
-  const { data } = await axios.post(
-    `${API_BASE}/subscriptions/v2/setup`,
-    payload,
-    { headers: await authHeaders() },
-  );
+  const { data } = await axios.post(`${API_BASE}/checkout/v2/pay`, payload, {
+    headers: await authHeaders(),
+  });
 
-  const redirectUrl =
-    data?.redirectUrl ?? data?.data?.redirectUrl ?? data?.data?.instrumentResponse?.redirectInfo?.url;
-
-  return { redirectUrl, orderId: data?.orderId ?? data?.data?.orderId, raw: data };
+  // Response: { orderId, state, expireAt, redirectUrl }
+  return {
+    redirectUrl: data?.redirectUrl ?? data?.data?.redirectUrl,
+    orderId: data?.orderId ?? data?.data?.orderId,
+    raw: data,
+  };
 }
 
-// Check the setup transaction's status.
+// ── Order status (after mandate setup redirect) ────────────────────────────
+// Endpoint: GET /checkout/v2/order/{merchantOrderId}/status
+// Docs: https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/order-status
+
 export async function getOrderStatus(merchantOrderId: string) {
   const { data } = await axios.get(
-    `${API_BASE}/subscriptions/v2/order/${merchantOrderId}/status`,
+    `${API_BASE}/checkout/v2/order/${merchantOrderId}/status`,
     { headers: await authHeaders() },
   );
+  // state: PENDING | COMPLETED | FAILED
   return data;
 }
 
-// Check the mandate/subscription status.
+// ── Subscription (mandate) status ─────────────────────────────────────────
+// Endpoint: GET /checkout/v2/subscriptions/{merchantSubscriptionId}/status
+// Docs: https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/subscription-status
+
 export async function getSubscriptionStatus(merchantSubscriptionId: string) {
   const { data } = await axios.get(
-    `${API_BASE}/subscriptions/v2/${merchantSubscriptionId}/status`,
+    `${API_BASE}/checkout/v2/subscriptions/${merchantSubscriptionId}/status`,
     { headers: await authHeaders() },
   );
+  // state: ACTIVE | CANCELLED | REVOKED
   return data;
 }
 
-// Phase 2a — notify (24–48h before debit). Returns a notificationId.
+// ── Phase 2a: Notify (pre-debit notification) ──────────────────────────────
+// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
+// The docs page for this endpoint returned 404 during fetch; path below is
+// based on the v2 URL pattern. Confirm before going live.
+
 export async function notifyRedemption(params: {
   merchantOrderId: string;
   merchantSubscriptionId: string;
   amountPaise: number;
 }): Promise<{ notificationId: string; raw: unknown }> {
   const { data } = await axios.post(
-    `${API_BASE}/subscriptions/v2/notify`,
+    `${API_BASE}/checkout/v2/subscriptions/notify`,
     {
       merchantOrderId: params.merchantOrderId,
       merchantSubscriptionId: params.merchantSubscriptionId,
@@ -143,13 +169,16 @@ export async function notifyRedemption(params: {
   };
 }
 
-// Phase 2b — redeem (actually debit) against a notificationId.
+// ── Phase 2b: Execute redemption (debit) ──────────────────────────────────
+// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
+// Same caveat as notifyRedemption above.
+
 export async function redeem(params: {
   merchantOrderId: string;
   notificationId: string;
 }): Promise<unknown> {
   const { data } = await axios.post(
-    `${API_BASE}/subscriptions/v2/redeem`,
+    `${API_BASE}/checkout/v2/subscriptions/redeem`,
     {
       merchantOrderId: params.merchantOrderId,
       notificationId: params.notificationId,
@@ -159,12 +188,15 @@ export async function redeem(params: {
   return data;
 }
 
-// Cancel a mandate.
+// ── Cancel subscription ────────────────────────────────────────────────────
+// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
+// The cancel/revoke page returned 404 during fetch; path below follows v2 pattern.
+
 export async function cancelSubscription(
   merchantSubscriptionId: string,
 ): Promise<unknown> {
   const { data } = await axios.post(
-    `${API_BASE}/subscriptions/v2/${merchantSubscriptionId}/cancel`,
+    `${API_BASE}/checkout/v2/subscriptions/${merchantSubscriptionId}/cancel`,
     {},
     { headers: await authHeaders() },
   );
