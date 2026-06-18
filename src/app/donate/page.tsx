@@ -41,13 +41,6 @@ const Page = () => {
 
     if (!amount || isSubmitting) return;
 
-    if (isRecurring) {
-      alert(
-        "Recurring donations are coming soon. Please choose “Give once” for now.",
-      );
-      return;
-    }
-
     if (!hasAcknowledged) {
       alert("Please confirm the acknowledgement.");
       return;
@@ -63,22 +56,48 @@ const Page = () => {
       return;
     }
 
-    let response = null;
-
     setIsSubmitting(true);
 
+    // Recurring donation: set up a PhonePe Autopay mandate.
+    if (isRecurring) {
+      try {
+        const res = await fetch("/api/subscription/setup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount,
+            frequency,
+            name,
+            contact,
+            ...(email ? { email } : {}),
+            ...(wantsReceipt ? { pan, address } : {}),
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data?.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else {
+          alert(data?.error ?? "Could not start the recurring donation.");
+        }
+      } catch {
+        alert("Could not start the recurring donation. Please try again.");
+      }
+      setIsSubmitting(false);
+      return;
+    }
+
+    // One-time donation.
     const query = new URLSearchParams(
       wantsReceipt
         ? { pan, name, contact, address, amount }
         : { name, contact, ...(email ? { email } : {}), amount },
     );
 
-    response = await fetch(`/api/pay?${query.toString()}`);
-
+    const response = await fetch(`/api/pay?${query.toString()}`);
     const paymentData = await response.json();
 
     if (paymentData == null) {
-      console.log("error");
+      alert("Could not start the donation. Please try again.");
     } else {
       setTxnId(paymentData["txnId"]);
       window.location.href = paymentData["paymentUrl"];
@@ -150,8 +169,9 @@ const Page = () => {
                   </select>
                 </GlowCard>
                 <p className="px-3 text-body-sm text-white-70">
-                  Recurring giving is coming soon. We’ll charge your chosen
-                  amount automatically at the selected frequency once it’s live.
+                  You’ll approve a one-time UPI mandate, then your chosen amount
+                  is charged automatically at the selected frequency. You can
+                  cancel anytime.
                 </p>
               </>
             )}
