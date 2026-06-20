@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import { getEnvVariable } from "@/helper";
+import { insertPendingDonation } from "@/db";
 import { SignJWT } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(getEnvVariable("JWT_SECRET"));
@@ -99,6 +100,25 @@ export async function GET(request: NextRequest) {
       responseData.data.instrumentResponse.redirectInfo
     ) {
       const paymentUrl = responseData.data.instrumentResponse.redirectInfo.url;
+
+      // Record a PENDING donation so the owner has a record of every attempt,
+      // even if the donor closes the tab. Finalized on confirmation / reconcile.
+      // Never let a ledger write break the payment redirect.
+      try {
+        await insertPendingDonation({
+          txnId: merchantTransactionId,
+          amount: parseInt(amountInRupees),
+          wantsReceipt: Boolean(pan && address),
+          donorName: name,
+          donorContact: contact,
+          donorEmail: email,
+          donorPan: pan,
+          donorAddress: address,
+        });
+      } catch (e) {
+        console.error("Ledger insert failed (non-fatal):", e);
+      }
+
       return Response.json({ paymentUrl, txnId: merchantTransactionId });
     } else {
       console.error("Payment initiation failed:", responseData.message);

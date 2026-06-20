@@ -205,3 +205,105 @@ export function addFrequency(from: Date, frequency: TFrequency): Date {
   }
   return d;
 }
+
+// ---- One-time donations (donor ledger, #9A) ----
+
+export type TDonationStatus = "PENDING" | "COMPLETED" | "FAILED";
+
+export type TDonation = {
+  id: string;
+  txn_id: string;
+  amount: number;
+  status: TDonationStatus;
+  donor_name: string | null;
+  donor_contact: string | null;
+  donor_email: string | null;
+  donor_pan: string | null;
+  donor_address: string | null;
+  wants_receipt: boolean;
+  payment_mode: string | null;
+  receipt_no: string | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type TNewDonation = {
+  txnId: string;
+  amount: number;
+  wantsReceipt: boolean;
+  donorName?: string | null;
+  donorContact?: string | null;
+  donorEmail?: string | null;
+  donorPan?: string | null;
+  donorAddress?: string | null;
+};
+
+// Insert a PENDING row when a payment is initiated. Idempotent on txn_id.
+export async function insertPendingDonation(d: TNewDonation): Promise<void> {
+  await getPool().query(
+    `INSERT INTO donations
+       (txn_id, amount, wants_receipt,
+        donor_name, donor_contact, donor_email, donor_pan, donor_address)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+     ON CONFLICT (txn_id) DO NOTHING`,
+    [
+      d.txnId,
+      d.amount,
+      d.wantsReceipt,
+      d.donorName ?? null,
+      d.donorContact ?? null,
+      d.donorEmail ?? null,
+      d.donorPan ?? null,
+      d.donorAddress ?? null,
+    ],
+  );
+}
+
+// Finalize a donation once PhonePe confirms the outcome. Only moves a row out
+// of PENDING (so repeated status polls / the cron stay idempotent).
+export async function finalizeDonation(
+  txnId: string,
+  status: "COMPLETED" | "FAILED",
+  paymentMode: string | null,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations
+       SET status = $2,
+           payment_mode = COALESCE($3, payment_mode),
+           updated_at = now()
+     WHERE txn_id = $1 AND status = 'PENDING'`,
+    [txnId, status, paymentMode],
+  );
+}
+
+export async function getDonationByTxnId(
+  txnId: string,
+): Promise<TDonation | null> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations WHERE txn_id = $1`,
+    [txnId],
+  );
+  return rows[0] ?? null;
+}
+
+export async function listDonations(limit = 200): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations ORDER BY created_at DESC LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// PENDING rows older than `minAgeMinutes` that the reconcile cron should check.
+export async function getStalePendingDonations(
+  minAgeMinutes = 15,
+): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations
+     WHERE status = 'PENDING' AND created_at < now() - ($1 || ' minutes')::interval
+     ORDER BY created_at ASC
+     LIMIT 100`,
+    [String(minAgeMinutes)],
+  );
+  return rows;
+}

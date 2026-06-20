@@ -4,6 +4,31 @@
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- for gen_random_uuid()
 
+-- One row per one-time donation (the donor ledger, #9A).
+-- Written PENDING when a payment starts, finalized COMPLETED/FAILED on
+-- confirmation (status page or the reconcile cron). Receipts are regenerated
+-- on demand from the row, so no PDF files are stored.
+CREATE TABLE IF NOT EXISTS donations (
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  txn_id         text UNIQUE NOT NULL,            -- PhonePe merchantTransactionId
+  amount         integer NOT NULL,               -- rupees
+  status         text NOT NULL DEFAULT 'PENDING', -- PENDING | COMPLETED | FAILED
+  donor_name     text,
+  donor_contact  text,
+  donor_email    text,
+  donor_pan      text,                            -- receipt flow only
+  donor_address  text,                            -- receipt flow only
+  wants_receipt  boolean NOT NULL DEFAULT false,
+  payment_mode   text,                            -- from PhonePe status
+  receipt_no     text,
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_donations_pending
+  ON donations (created_at)
+  WHERE status = 'PENDING';
+
 -- One row per recurring-donation mandate.
 CREATE TABLE IF NOT EXISTS subscriptions (
   id                        uuid PRIMARY KEY DEFAULT gen_random_uuid(),

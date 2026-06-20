@@ -1,5 +1,6 @@
-// Run once: node db/migrate.mjs
-// Applies db/schema.sql to the database in DATABASE_URL.
+// Run: npm run db:migrate   (loads .env.local via --env-file)
+// Applies db/schema.sql to the database. Prefers the direct (unpooled)
+// connection for DDL, falling back to the pooled URL.
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -9,8 +10,15 @@ const { Client } = pkg;
 const __dir = dirname(fileURLToPath(import.meta.url));
 const sql = readFileSync(join(__dir, "schema.sql"), "utf8");
 
+const connectionString =
+  process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL;
+if (!connectionString) {
+  console.error("No DATABASE_URL(_UNPOOLED) set. Did .env.local load?");
+  process.exit(1);
+}
+
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: { rejectUnauthorized: false },
 });
 
