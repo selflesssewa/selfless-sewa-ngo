@@ -7,6 +7,6 @@ export async function GET(request: NextRequest) {
   if (!isAdmin(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const donations = await listDonations();
+  const donations = await listDonations(2000);
   return Response.json({ donations });
 }
