@@ -21,13 +21,27 @@ CREATE TABLE IF NOT EXISTS donations (
   wants_receipt  boolean NOT NULL DEFAULT false,
   payment_mode   text,                            -- from PhonePe status
   receipt_no     text,
+  -- Google Drive archive (receipt PDF for receipt donors, acknowledgment otherwise)
+  drive_file_id   text,
+  drive_file_link text,
+  archive_error   text,
   created_at     timestamptz NOT NULL DEFAULT now(),
   updated_at     timestamptz NOT NULL DEFAULT now()
 );
 
+-- Backfill columns on databases where `donations` already existed.
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS drive_file_id   text;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS drive_file_link text;
+ALTER TABLE donations ADD COLUMN IF NOT EXISTS archive_error   text;
+
 CREATE INDEX IF NOT EXISTS idx_donations_pending
   ON donations (created_at)
   WHERE status = 'PENDING';
+
+-- COMPLETED donations not yet archived to Drive (for the retry sweep).
+CREATE INDEX IF NOT EXISTS idx_donations_unarchived
+  ON donations (created_at)
+  WHERE status = 'COMPLETED' AND drive_file_id IS NULL;
 
 -- One row per recurring-donation mandate.
 CREATE TABLE IF NOT EXISTS subscriptions (

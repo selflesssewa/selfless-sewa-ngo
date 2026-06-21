@@ -223,6 +223,9 @@ export type TDonation = {
   wants_receipt: boolean;
   payment_mode: string | null;
   receipt_no: string | null;
+  drive_file_id: string | null;
+  drive_file_link: string | null;
+  archive_error: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -304,6 +307,47 @@ export async function getStalePendingDonations(
      ORDER BY created_at ASC
      LIMIT 100`,
     [String(minAgeMinutes)],
+  );
+  return rows;
+}
+
+// Record a successful Drive archive on the donation row.
+export async function setDonationArchive(
+  txnId: string,
+  driveFileId: string,
+  driveFileLink: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations
+       SET drive_file_id = $2, drive_file_link = $3,
+           archive_error = NULL, updated_at = now()
+     WHERE txn_id = $1`,
+    [txnId, driveFileId, driveFileLink],
+  );
+}
+
+// Record an archive failure (so the retry sweep can see what went wrong).
+export async function setDonationArchiveError(
+  txnId: string,
+  error: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations SET archive_error = $2, updated_at = now()
+     WHERE txn_id = $1`,
+    [txnId, error.slice(0, 500)],
+  );
+}
+
+// COMPLETED donations not yet archived to Drive (for the retry sweep).
+export async function getUnarchivedDonations(
+  limit = 50,
+): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations
+     WHERE status = 'COMPLETED' AND drive_file_id IS NULL
+     ORDER BY created_at ASC
+     LIMIT $1`,
+    [limit],
   );
   return rows;
 }

@@ -14,6 +14,7 @@ type TDonation = {
   donor_address: string | null;
   wants_receipt: boolean;
   payment_mode: string | null;
+  drive_file_link: string | null;
   created_at: string;
 };
 
@@ -349,12 +350,13 @@ const Page = () => {
                 <th scope="col">Phone</th>
                 <th scope="col">Email</th>
                 <th scope="col">Receipt</th>
+                <th scope="col">Drive</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-6 text-center text-white-70">
+                  <td colSpan={8} className="py-6 text-center text-white-70">
                     No donations match these filters.
                   </td>
                 </tr>
@@ -379,6 +381,20 @@ const Page = () => {
                         </a>
                       ) : d.wants_receipt ? (
                         "Requested"
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      {d.drive_file_link ? (
+                        <a
+                          className="text-blue-300 underline"
+                          href={d.drive_file_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Open
+                        </a>
                       ) : (
                         "—"
                       )}

@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
           state,
           data?.data?.paymentInstrument?.type ?? null,
         );
+        // Archiving is handled separately by /api/cron/archive.
         results.push({ txnId: d.txn_id, state });
       } else {
         results.push({ txnId: d.txn_id, state: state ?? "PENDING" });

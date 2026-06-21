@@ -24,6 +24,8 @@ export async function GET(request: NextRequest) {
     // Idempotent (only updates PENDING rows); never break the status response.
     const state: string | undefined = data?.data?.state;
     if (state === "COMPLETED" || state === "FAILED") {
+      // Finalize only — never do slow work (Drive upload) in the donor's poll
+      // path. Archiving happens out-of-band in /api/cron/archive.
       try {
         await finalizeDonation(
           payload.id as string,
