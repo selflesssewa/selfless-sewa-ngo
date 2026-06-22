@@ -94,21 +94,23 @@ function PageUI() {
     }).format(new Date());
   }, []);
 
-  if (!token) {
+  if (!token && !subscriptionId) {
     router.replace("/");
     return null;
   }
   let data = null;
-  try {
-    data = decodeJwt(token);
-  } catch (e) {
-    router.replace("/");
-    return null;
+  if (token) {
+    try {
+      data = decodeJwt(token);
+    } catch (e) {
+      router.replace("/");
+      return null;
+    }
   }
 
-  const txnId = data.id;
-  const amount = Number(data.a);
-  const wantsReceipt = !!data.p;
+  const txnId = data?.id ?? subscriptionId;
+  const amount = Number(data?.a) || 0;
+  const wantsReceipt = !!data?.p;
 
   const handleDownload = async () => {
     try {
