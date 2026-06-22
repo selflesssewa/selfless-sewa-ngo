@@ -75,7 +75,7 @@ export type TSetupParams = {
   maxAmountPaise: number;           // mandate ceiling in paise (max 1,500,000 = ₹15,000)
   frequency: TPhonePeFrequency;
   redirectUrl: string;
-  expireAtEpochMs?: number;         // mandate validity (optional, max 30 years)
+  expireAtMs?: number;              // mandate validity in ms (optional, max 30 years)
 };
 
 export async function setupSubscription(p: TSetupParams): Promise<{
@@ -99,8 +99,8 @@ export async function setupSubscription(p: TSetupParams): Promise<{
         maxAmount: p.maxAmountPaise,
         frequency: p.frequency,
         productType: "UPI_MANDATE",
-        ...(p.expireAtEpochMs
-          ? { expireAt: Math.floor(p.expireAtEpochMs / 1000) }
+        ...(p.expireAtMs
+          ? { expireAt: Math.floor(p.expireAtMs / 1000) }
           : {}),
       },
     },

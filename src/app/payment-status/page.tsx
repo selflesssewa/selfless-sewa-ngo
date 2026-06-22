@@ -32,6 +32,7 @@ function PageUI() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("t");
+  const subscriptionId = searchParams.get("sub");
 
   const [isError, setIsError] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
@@ -42,6 +43,11 @@ function PageUI() {
     if (isError) return;
 
     setIsError(false);
+    const isRecurring = !!subscriptionId;
+    const endpoint = isRecurring
+      ? `/api/subscription/status?sub=${subscriptionId}`
+      : `/api/status?t=${token}`;
+
     while (true) {
       cnt.current++;
       if (cnt.current > 5) {
@@ -50,14 +56,19 @@ function PageUI() {
       }
       try {
         const delay = new Promise((res) => setTimeout(res, 5 * 1000));
-        const response = await axios.get(`/api/status?t=${token}`);
+        const response = await axios.get(endpoint);
         const data = response.data;
 
-        const paymentState = data?.data?.state;
-        if (paymentState === "COMPLETED") {
+        // One-time: check data?.data?.state
+        // Recurring: check data?.status (or data?.state)
+        const state = isRecurring
+          ? data?.status ?? data?.state
+          : data?.data?.state;
+
+        if (state === "COMPLETED" || state === "ACTIVE") {
           setPaymentStatus("SUCCESS");
           break;
-        } else if (paymentState === "FAILED") {
+        } else if (state === "FAILED") {
           setPaymentStatus("FAILED");
           break;
         }
@@ -68,7 +79,7 @@ function PageUI() {
         break;
       }
     }
-  }, [token, isError]);
+  }, [token, subscriptionId, isError]);
 
   useEffect(() => {
     checkStatus();

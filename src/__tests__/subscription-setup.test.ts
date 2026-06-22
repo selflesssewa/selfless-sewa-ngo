@@ -1,6 +1,6 @@
 // Unit tests for the /api/subscription/setup route validation.
 // Mocks DB + PhonePe so they never hit the network.
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 
 vi.mock("@/db", () => ({
   createSubscription: vi.fn().mockResolvedValue({ id: "db-id" }),
@@ -13,8 +13,8 @@ vi.mock("@/phonepe", () => ({
   }),
 }));
 
-// Must import AFTER the mocks are declared.
-const { POST } = await import("../app/api/subscription/setup/route");
+// Import deferred until test runs (mocks must be declared first).
+let POST: any;
 
 function makeRequest(body: unknown) {
   return new Request("http://localhost/api/subscription/setup", {
@@ -25,6 +25,11 @@ function makeRequest(body: unknown) {
 }
 
 beforeEach(() => vi.clearAllMocks());
+
+beforeAll(async () => {
+  const mod = await import("../app/api/subscription/setup/route");
+  POST = mod.POST;
+});
 
 describe("POST /api/subscription/setup — validation", () => {
   it("rejects a negative amount", async () => {
@@ -98,7 +103,7 @@ describe("POST /api/subscription/setup — validation", () => {
 
   it("returns 502 when PhonePe returns no redirectUrl", async () => {
     const { setupSubscription } = await import("@/phonepe");
-    vi.mocked(setupSubscription).mockResolvedValue({ redirectUrl: undefined, raw: {} });
+    vi.mocked(setupSubscription).mockResolvedValue({ redirectUrl: undefined as any, raw: {} });
     const res = await POST(
       makeRequest({ amount: 500, frequency: "MONTHLY" }),
     );
