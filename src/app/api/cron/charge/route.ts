@@ -23,7 +23,12 @@ export async function GET(request: NextRequest) {
   }
 
   const due = await getDueSubscriptions();
-  const results: Array<{ sub: string; ok: boolean; error?: string }> = [];
+  const results: Array<{
+    sub: string;
+    ok: boolean;
+    error?: string;
+    redemptionId?: string;
+  }> = [];
 
   for (const sub of due) {
     const merchantOrderId = crypto
@@ -38,29 +43,41 @@ export async function GET(request: NextRequest) {
         sub.amount,
       );
 
-      const { notificationId } = await notifyRedemption({
+      // Notify the donor of the upcoming charge (48-24h before debit per NPCI).
+      // MVP: we do notify + redeem in one pass; production should split into two cron runs.
+      const notifyRes = await notifyRedemption({
         merchantOrderId,
         merchantSubscriptionId: sub.merchant_subscription_id,
         amountPaise: sub.amount * 100,
       });
+      const notificationId = notifyRes?.notificationId;
+      if (!notificationId) {
+        throw new Error(`Notify failed: no notificationId in response`);
+      }
       await setRedemptionNotified(redemptionId, notificationId);
 
-      await redeem({ merchantOrderId, notificationId });
-      // Final SUCCESS/FAILED is confirmed via the webhook / order status;
-      // mark NOTIFIED here and let the webhook finalize. For now, optimistic.
-      await setRedemptionState(redemptionId, "SUCCESS");
+      // Execute the debit.
+      const redeemRes = await redeem({ merchantOrderId, notificationId });
+      // PhonePe responds synchronously for UPI redeems, but final state (SUCCESS/FAILED)
+      // comes via webhook. For now, mark NOTIFIED and let webhook finalize.
+      // TODO: add webhook endpoint to finalize based on PhonePe callback.
+      await setRedemptionState(redemptionId, "NOTIFIED");
 
       // Schedule the next cycle.
       const next = addFrequency(sub.next_charge_at ?? new Date(), sub.frequency);
       await bumpNextChargeAt(sub.id, next);
 
-      results.push({ sub: sub.merchant_subscription_id, ok: true });
+      results.push({
+        sub: sub.merchant_subscription_id,
+        ok: true,
+        redemptionId,
+      });
     } catch (e) {
       console.error("Charge error for", sub.merchant_subscription_id, e);
       results.push({
         sub: sub.merchant_subscription_id,
         ok: false,
-        error: "charge_failed",
+        error: e instanceof Error ? e.message : "charge_failed",
       });
     }
   }
