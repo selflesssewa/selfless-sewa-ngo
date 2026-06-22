@@ -131,6 +131,58 @@ export async function getOrderStatus(merchantOrderId: string) {
   return data;
 }
 
+// ── One-time payment (v2 Standard Checkout) ────────────────────────────────
+// Endpoint: POST /checkout/v2/pay with a PG_CHECKOUT flow. Uses the same OAuth
+// credentials as autopay — no separate v1 salt-key needed.
+
+export async function createPayment(p: {
+  merchantOrderId: string;
+  amountPaise: number;
+  redirectUrl: string;
+}): Promise<{ redirectUrl: string; orderId?: string; raw: unknown }> {
+  const payload = {
+    merchantOrderId: p.merchantOrderId,
+    amount: p.amountPaise,
+    paymentFlow: {
+      type: "PG_CHECKOUT",
+      merchantUrls: { redirectUrl: p.redirectUrl },
+    },
+  };
+
+  const { data } = await axios.post(`${API_BASE}/checkout/v2/pay`, payload, {
+    headers: await authHeaders(),
+  });
+
+  // Response: { orderId, state, redirectUrl }
+  return {
+    redirectUrl: data?.redirectUrl ?? data?.data?.redirectUrl,
+    orderId: data?.orderId ?? data?.data?.orderId,
+    raw: data,
+  };
+}
+
+// One-time payment status, normalized to the v1-compatible shape the existing
+// callers (status route, reconcile cron, receipt route) already expect:
+//   { data: { data: { state, paymentInstrument: { type } } } }
+// so they keep working unchanged after the v1 -> v2 migration.
+export async function callStatusApi(merchantOrderId: string) {
+  const order = await getOrderStatus(merchantOrderId);
+  const state = order?.state ?? order?.data?.state;
+  const paymentMode =
+    order?.paymentDetails?.[0]?.paymentMode ??
+    order?.data?.paymentDetails?.[0]?.paymentMode ??
+    null;
+  return {
+    data: {
+      success: state === "COMPLETED",
+      data: {
+        state,
+        paymentInstrument: { type: paymentMode },
+      },
+    },
+  };
+}
+
 // ── Subscription (mandate) status ─────────────────────────────────────────
 // Endpoint: GET /checkout/v2/subscriptions/{merchantSubscriptionId}/status
 // Docs: https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/subscription-status

@@ -6,6 +6,7 @@ import {
   setRedemptionState,
   type TSubscription,
 } from "./db";
+import { archiveRedemption } from "./archive";
 import { notifyRedemption, redeem } from "./phonepe";
 import crypto from "crypto";
 
@@ -84,4 +85,22 @@ export async function chargeSubscription(
       error: e instanceof Error ? e.message : "charge_failed",
     };
   }
+}
+
+// The mandate setup uses authWorkflowType TRANSACTION, so PhonePe debits the
+// first installment during authorization — the setup order IS the first charge.
+// Record it as a SUCCESS redemption (keyed by the unique setup_order_id, which
+// makes this idempotent) and generate + archive its receipt. Does NOT perform a
+// second debit. The caller sets next_charge_at one cycle out at activation.
+export async function recordSetupCharge(sub: TSubscription): Promise<void> {
+  const redemptionId = await createRedemption(
+    sub.id,
+    sub.setup_order_id,
+    sub.amount,
+  );
+  await setRedemptionState(redemptionId, "SUCCESS");
+  // Owner's receipt copy; the receipt retry cron backstops Drive hiccups.
+  archiveRedemption(redemptionId, sub.setup_order_id).catch((e) =>
+    console.error("Setup-charge archive failed (non-fatal):", e),
+  );
 }

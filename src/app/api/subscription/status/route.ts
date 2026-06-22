@@ -1,12 +1,13 @@
 import {
   activateSubscription,
+  addFrequency,
   getSubscriptionByMerchantId,
 } from "@/db";
 import {
   getOrderStatus,
   getSubscriptionStatus,
 } from "@/phonepe";
-import { chargeSubscription } from "@/charge";
+import { recordSetupCharge } from "@/charge";
 import { NextRequest } from "next/server";
 
 // After the donor authorizes a mandate on PhonePe, they redirect back with ?sub=merchantSubscriptionId.
@@ -48,21 +49,23 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Activate (atomic PENDING -> ACTIVE). Set next_charge_at to NOW so the
-      // first installment is charged immediately; chargeSubscription then rolls
-      // it forward one cycle. activateSubscription returns true only for the
-      // poll that actually flipped the state, so we charge exactly once.
+      // Activate (atomic PENDING -> ACTIVE). The mandate setup (authWorkflowType
+      // TRANSACTION) already debited the first installment during authorization,
+      // so the NEXT charge is one cycle out — we do NOT debit again here.
+      // activateSubscription returns true only for the poll that actually flipped
+      // the state, so the setup charge is recorded exactly once.
       const now = new Date();
+      const nextCharge = addFrequency(now, local.frequency);
       const didActivate = await activateSubscription(
         merchantSubscriptionId,
         local.merchant_subscription_id,
-        now,
+        nextCharge,
       );
 
       if (didActivate) {
-        // Charge the first installment right away (money moves at signup).
-        // The receipt is generated + archived when the PhonePe webhook confirms.
-        await chargeSubscription({ ...local, next_charge_at: now });
+        // Record the setup transaction as the first charge + archive its receipt.
+        // No second debit — PhonePe already took the first installment at setup.
+        await recordSetupCharge(local);
       }
 
       const fresh = await getSubscriptionByMerchantId(merchantSubscriptionId);

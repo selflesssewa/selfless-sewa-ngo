@@ -1,12 +1,15 @@
-import axios from "axios";
 import { NextRequest } from "next/server";
 import crypto from "crypto";
 import { getEnvVariable } from "@/helper";
+import { createPayment } from "@/phonepe";
 import { insertPendingDonation } from "@/db";
 import { SignJWT } from "jose";
 
 const JWT_SECRET = new TextEncoder().encode(getEnvVariable("JWT_SECRET"));
+const SITE_URL = process.env.SITE_URL ?? "https://selflesssewango.com";
 
+// One-time donation via PhonePe Standard Checkout v2 (OAuth — same credentials
+// as autopay). Creates a PG_CHECKOUT order and returns its hosted payment URL.
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const amountInRupees = searchParams.get("amount")!;
@@ -18,16 +21,12 @@ export async function GET(request: NextRequest) {
   const pan = searchParams.get("pan");
   const address = searchParams.get("address");
 
-  const apiUrl = "https://api.phonepe.com/apis/hermes/pg/v1/pay";
-  const merchantId = getEnvVariable("PHONEPE_MERCHANT_ID");
-  const saltKey = getEnvVariable("PHONEPE_SALT_KEY");
-  const saltIndex = getEnvVariable("PHONEPE_SALT_INDEX");
   const merchantTransactionId = crypto
     .randomUUID()
     .replaceAll("-", "")
     .toUpperCase();
-  const merchantUserId = "MUID123";
 
+  // The token carries donor details to the status/receipt pages (5-min expiry).
   const tokenPayload =
     pan && address && name && contact
       ? {
@@ -55,75 +54,39 @@ export async function GET(request: NextRequest) {
     .setExpirationTime("5min")
     .sign(JWT_SECRET);
 
-  const redirectUrl =
-    "https://selflesssewango.com/payment-status" + `?t=${token}`;
-
-  const payload = {
-    merchantId: merchantId,
-    merchantTransactionId: merchantTransactionId,
-    merchantUserId: merchantUserId,
-    amount: parseInt(amountInRupees) * 100,
-    redirectUrl: redirectUrl,
-    redirectMode: "REDIRECT",
-    ...(contact ? { mobileNumber: contact } : {}),
-    paymentInstrument: {
-      type: "PAY_PAGE",
-    },
-  };
-
-  const payloadJson = JSON.stringify(payload);
-  const base64Payload = btoa(payloadJson);
-  const checksum =
-    crypto
-      .createHash("sha256")
-      .update(base64Payload + "/pg/v1/pay" + saltKey)
-      .digest("hex") +
-    "###" +
-    saltIndex;
-
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      "X-VERIFY": checksum,
-    },
-  };
-  const body = JSON.stringify({
-    request: base64Payload,
-  });
+  const redirectUrl = `${SITE_URL}/payment-status?t=${token}`;
 
   try {
-    const response = await axios.post(apiUrl, body, config);
+    const { redirectUrl: paymentUrl } = await createPayment({
+      merchantOrderId: merchantTransactionId,
+      amountPaise: parseInt(amountInRupees) * 100,
+      redirectUrl,
+    });
 
-    const responseData = response.data;
-    if (
-      responseData.success &&
-      responseData.data.instrumentResponse.redirectInfo
-    ) {
-      const paymentUrl = responseData.data.instrumentResponse.redirectInfo.url;
-
-      // Record a PENDING donation so the owner has a record of every attempt,
-      // even if the donor closes the tab. Finalized on confirmation / reconcile.
-      // Never let a ledger write break the payment redirect.
-      try {
-        await insertPendingDonation({
-          txnId: merchantTransactionId,
-          amount: parseInt(amountInRupees),
-          wantsReceipt: Boolean(pan && address),
-          donorName: name,
-          donorContact: contact,
-          donorEmail: email,
-          donorPan: pan,
-          donorAddress: address,
-        });
-      } catch (e) {
-        console.error("Ledger insert failed (non-fatal):", e);
-      }
-
-      return Response.json({ paymentUrl, txnId: merchantTransactionId });
-    } else {
-      console.error("Payment initiation failed:", responseData.message);
+    if (!paymentUrl) {
+      console.error("Payment initiation failed: no redirectUrl from PhonePe");
       return Response.json(null);
     }
+
+    // Record a PENDING donation so the owner has a record of every attempt,
+    // even if the donor closes the tab. Finalized on confirmation / reconcile.
+    // Never let a ledger write break the payment redirect.
+    try {
+      await insertPendingDonation({
+        txnId: merchantTransactionId,
+        amount: parseInt(amountInRupees),
+        wantsReceipt: Boolean(pan && address),
+        donorName: name,
+        donorContact: contact,
+        donorEmail: email,
+        donorPan: pan,
+        donorAddress: address,
+      });
+    } catch (e) {
+      console.error("Ledger insert failed (non-fatal):", e);
+    }
+
+    return Response.json({ paymentUrl, txnId: merchantTransactionId });
   } catch (error) {
     console.error("Error:", error);
   }

@@ -180,8 +180,9 @@ function PageUI() {
                 {recurringAmount ? ` of ₹${recurringAmount}` : ""} is set up!
               </p>
               <p className="mt-4 text-balance text-center text-body-lg font-light tracking-wider text-white-70">
-                Thank you for your ongoing support. The first charge happens on
-                the next cycle, and you can cancel anytime.
+                Thank you for your ongoing support. Your first contribution has
+                been received; you&apos;ll be charged automatically each month
+                and can cancel anytime.
               </p>
               <p className="mt-4 text-center text-body-lg font-light tracking-wider">
                 Reference Id: {txnId}
@@ -217,6 +218,14 @@ function PageUI() {
                 </div>
               )}
             </>
+          )}
+          {paymentStatus === "SUCCESS" && !isError && (
+            <a
+              href="/"
+              className="mt-10 self-center rounded-[0.8rem] border border-white-30 px-5 py-2 text-body-lg font-light tracking-wider transition-colors hover:bg-white-10"
+            >
+              Back to Home
+            </a>
           )}
         </div>
       </Container>

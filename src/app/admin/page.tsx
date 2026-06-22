@@ -15,6 +15,8 @@ type TDonation = {
   wants_receipt: boolean;
   payment_mode: string | null;
   drive_file_link: string | null;
+  drive_file_id: string | null;
+  archive_error: string | null;
   created_at: string;
 };
 
@@ -30,8 +32,10 @@ type TSubscription = {
   next_charge_at: string | null;
   created_at: string;
   charges_count: number;
+  failed_count: number;
   total_collected: number;
   last_charge_at: string | null;
+  archive_pending: number;
 };
 
 type TReceiptFilter = "all" | "with" | "without";
@@ -152,6 +156,59 @@ const Page = () => {
     [subscriptions],
   );
 
+  // ---- Summary metrics (across ALL data, ignoring the one-time filters) ----
+  const summary = useMemo(() => {
+    const all = donations ?? [];
+    const nowMonth = localYMD(new Date().toISOString()).slice(0, 7); // YYYY-MM
+
+    const oneTimeCompleted = all.filter((d) => d.status === "COMPLETED");
+    const oneTimeTotal = oneTimeCompleted.reduce((s, d) => s + d.amount, 0);
+    const oneTimeThisMonth = oneTimeCompleted
+      .filter((d) => localYMD(d.created_at).startsWith(nowMonth))
+      .reduce((s, d) => s + d.amount, 0);
+
+    const recurringTotal = subscriptions.reduce(
+      (s, x) => s + (x.total_collected ?? 0),
+      0,
+    );
+    const activeSubs = subscriptions.filter((s) => s.status === "ACTIVE");
+    // All mandates are monthly, so MRR = sum of active monthly amounts.
+    const mrr = activeSubs.reduce((s, x) => s + x.amount, 0);
+
+    return {
+      totalRaised: oneTimeTotal + recurringTotal,
+      thisMonth: oneTimeThisMonth, // recurring charge dates roll monthly; approx via one-time
+      activeDonors: activeSubs.length,
+      mrr,
+      pending: all.filter((d) => d.status === "PENDING").length,
+    };
+  }, [donations, subscriptions]);
+
+  // ---- Needs attention ----
+  const attention = useMemo(() => {
+    const all = donations ?? [];
+    const now = Date.now();
+    const DAY = 24 * 60 * 60 * 1000;
+
+    const failedCharges = subscriptions.filter((s) => s.failed_count > 0);
+    const archiveStuck = [
+      ...all.filter((d) => d.status === "COMPLETED" && d.archive_error),
+      ...subscriptions.filter((s) => s.archive_pending > 0 && s.failed_count === 0),
+    ];
+    // One-time payments stuck PENDING for more than a day (donor likely dropped).
+    const stalePending = all.filter(
+      (d) =>
+        d.status === "PENDING" && now - new Date(d.created_at).getTime() > DAY,
+    );
+
+    return { failedCharges, archiveStuck, stalePending };
+  }, [donations, subscriptions]);
+
+  const attentionCount =
+    attention.failedCharges.length +
+    attention.archiveStuck.length +
+    attention.stalePending.length;
+
   const clearFilters = () => {
     setSearch("");
     setStatusFilter("all");
@@ -201,6 +258,80 @@ const Page = () => {
     a.download = `donations_${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportRecurringCsv = () => {
+    const head = [
+      "Started",
+      "Merchant subscription ID",
+      "Name",
+      "Phone",
+      "Email",
+      "Amount",
+      "Frequency",
+      "Status",
+      "Successful charges",
+      "Failed charges",
+      "Total collected",
+      "Next charge",
+    ];
+    const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+    const rows = subscriptions.map((s) =>
+      [
+        fmt(s.created_at),
+        s.merchant_subscription_id,
+        s.donor_name,
+        s.donor_contact,
+        s.donor_email,
+        s.amount,
+        FREQUENCY_LABEL[s.frequency] ?? s.frequency,
+        s.status,
+        s.charges_count,
+        s.failed_count,
+        s.total_collected,
+        s.next_charge_at ? fmt(s.next_charge_at) : "",
+      ]
+        .map(esc)
+        .join(","),
+    );
+    const csv = [head.map(esc).join(","), ...rows].join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `recurring_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const cancelMandate = async (merchantSubscriptionId: string, name: string) => {
+    if (
+      !confirm(
+        `Cancel the recurring donation from ${name || "this donor"}? They will not be charged again.`,
+      )
+    )
+      return;
+    setCancelling(merchantSubscriptionId);
+    try {
+      const res = await fetch("/api/admin/subscriptions/cancel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${key}`,
+        },
+        body: JSON.stringify({ merchantSubscriptionId }),
+      });
+      if (res.ok) {
+        await fetchSubscriptions(key);
+      } else {
+        alert("Could not cancel. Please try again.");
+      }
+    } catch {
+      alert("Could not cancel. Please try again.");
+    }
+    setCancelling(null);
   };
 
   const fmt = (iso: string) =>
@@ -292,7 +423,7 @@ const Page = () => {
             >
               Refresh
             </button>
-            {tab === "onetime" && (
+            {tab === "onetime" ? (
               <button
                 onClick={exportCsv}
                 disabled={filtered.length === 0}
@@ -300,9 +431,103 @@ const Page = () => {
               >
                 Export CSV
               </button>
+            ) : (
+              <button
+                onClick={exportRecurringCsv}
+                disabled={subscriptions.length === 0}
+                className="rounded-[0.6rem] bg-green-50 px-3 py-2 text-body-sm font-medium disabled:opacity-50"
+              >
+                Export CSV
+              </button>
             )}
           </div>
         </div>
+
+        {/* Summary cards */}
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {[
+            {
+              label: "Total raised",
+              value: `₹${summary.totalRaised.toLocaleString("en-IN")}`,
+            },
+            {
+              label: "One-time this month",
+              value: `₹${summary.thisMonth.toLocaleString("en-IN")}`,
+            },
+            {
+              label: "Recurring / month",
+              value: `₹${summary.mrr.toLocaleString("en-IN")}`,
+            },
+            {
+              label: "Active recurring",
+              value: summary.activeDonors.toLocaleString("en-IN"),
+            },
+            {
+              label: "Pending",
+              value: summary.pending.toLocaleString("en-IN"),
+            },
+          ].map((c) => (
+            <div
+              key={c.label}
+              className="rounded-[0.8rem] border border-white-30 px-4 py-3"
+            >
+              <p className="text-body-sm text-white-70">{c.label}</p>
+              <p className="mt-1 text-title-lg font-medium">{c.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Needs attention */}
+        {attentionCount > 0 && (
+          <details className="mb-6 rounded-[0.8rem] border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
+            <summary className="cursor-pointer text-body-sm font-medium text-yellow-200">
+              ⚠ {attentionCount} item{attentionCount === 1 ? "" : "s"} need
+              attention
+            </summary>
+            <div className="mt-3 flex flex-col gap-3 text-body-sm">
+              {attention.failedCharges.length > 0 && (
+                <div>
+                  <p className="font-medium text-yellow-100">
+                    Failed recurring charges ({attention.failedCharges.length})
+                  </p>
+                  <ul className="mt-1 list-inside list-disc text-white-70">
+                    {attention.failedCharges.map((s) => (
+                      <li key={s.id}>
+                        {s.donor_name ?? "—"} · ₹{s.amount} ·{" "}
+                        {s.failed_count} failed
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {attention.archiveStuck.length > 0 && (
+                <div>
+                  <p className="font-medium text-yellow-100">
+                    Receipts not yet in Drive ({attention.archiveStuck.length})
+                  </p>
+                  <p className="mt-1 text-white-70">
+                    Usually self-heals via the archive cron. If it persists,
+                    check Drive credentials.
+                  </p>
+                </div>
+              )}
+              {attention.stalePending.length > 0 && (
+                <div>
+                  <p className="font-medium text-yellow-100">
+                    One-time payments stuck pending ({attention.stalePending.length})
+                  </p>
+                  <ul className="mt-1 list-inside list-disc text-white-70">
+                    {attention.stalePending.slice(0, 10).map((d) => (
+                      <li key={d.txn_id}>
+                        {d.donor_name ?? "—"} · ₹{d.amount} · {fmt(d.created_at)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </details>
+        )}
 
         {/* Tabs */}
         <div className="mb-6 flex gap-1 rounded-[0.9rem] bg-blue-30 p-1 sm:w-fit">
@@ -340,12 +565,13 @@ const Page = () => {
                   <th scope="col">Charges</th>
                   <th scope="col">Collected</th>
                   <th scope="col">Next charge</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {subscriptions.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-6 text-center text-white-70">
+                    <td colSpan={11} className="py-6 text-center text-white-70">
                       No recurring donors yet.
                     </td>
                   </tr>
@@ -358,13 +584,42 @@ const Page = () => {
                       <td>{s.donor_email ?? "—"}</td>
                       <td>₹{s.amount.toLocaleString("en-IN")}</td>
                       <td>{FREQUENCY_LABEL[s.frequency] ?? s.frequency}</td>
-                      <td>{s.status}</td>
+                      <td>
+                        {s.status}
+                        {s.failed_count > 0 && (
+                          <span className="ml-1 text-yellow-300">
+                            ⚠ {s.failed_count}
+                          </span>
+                        )}
+                      </td>
                       <td>{s.charges_count}</td>
                       <td>₹{s.total_collected.toLocaleString("en-IN")}</td>
                       <td className="whitespace-nowrap">
                         {s.status === "ACTIVE" && s.next_charge_at
                           ? fmt(s.next_charge_at)
                           : "—"}
+                      </td>
+                      <td>
+                        {s.status === "ACTIVE" ? (
+                          <button
+                            onClick={() =>
+                              cancelMandate(
+                                s.merchant_subscription_id,
+                                s.donor_name ?? "",
+                              )
+                            }
+                            disabled={
+                              cancelling === s.merchant_subscription_id
+                            }
+                            className="text-red-300 underline disabled:opacity-50"
+                          >
+                            {cancelling === s.merchant_subscription_id
+                              ? "Cancelling…"
+                              : "Cancel"}
+                          </button>
+                        ) : (
+                          "—"
+                        )}
                       </td>
                     </tr>
                   ))

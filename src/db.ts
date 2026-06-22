@@ -359,8 +359,10 @@ export async function listDonations(limit = 200): Promise<TDonation[]> {
 // Admin view of recurring mandates, each with a summary of its charges so far.
 export type TSubscriptionWithCharges = TSubscription & {
   charges_count: number; // successful charges
+  failed_count: number; // failed charges (needs attention)
   total_collected: number; // rupees from successful charges
   last_charge_at: Date | null;
+  archive_pending: number; // SUCCESS charges whose receipt hasn't reached Drive
 };
 
 export async function listSubscriptions(
@@ -369,8 +371,10 @@ export async function listSubscriptions(
   const { rows } = await getPool().query<TSubscriptionWithCharges>(
     `SELECT s.*,
             COUNT(r.id) FILTER (WHERE r.state = 'SUCCESS')::int AS charges_count,
+            COUNT(r.id) FILTER (WHERE r.state = 'FAILED')::int AS failed_count,
             COALESCE(SUM(r.amount) FILTER (WHERE r.state = 'SUCCESS'), 0)::int AS total_collected,
-            MAX(r.completed_at) FILTER (WHERE r.state = 'SUCCESS') AS last_charge_at
+            MAX(r.completed_at) FILTER (WHERE r.state = 'SUCCESS') AS last_charge_at,
+            COUNT(r.id) FILTER (WHERE r.state = 'SUCCESS' AND r.drive_file_id IS NULL)::int AS archive_pending
        FROM subscriptions s
        LEFT JOIN redemptions r ON r.subscription_id = s.id
       GROUP BY s.id
@@ -379,6 +383,18 @@ export async function listSubscriptions(
     [limit],
   );
   return rows;
+}
+
+// Mark a mandate cancelled in our ledger (after PhonePe confirms the cancel).
+export async function setSubscriptionCancelled(
+  merchantSubscriptionId: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE subscriptions
+        SET status = 'CANCELLED', updated_at = now()
+      WHERE merchant_subscription_id = $1`,
+    [merchantSubscriptionId],
+  );
 }
 
 // PENDING rows older than `minAgeMinutes` that the reconcile cron should check.
