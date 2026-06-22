@@ -2,6 +2,10 @@ import {
   getDonationByTxnId,
   setDonationArchive,
   setDonationArchiveError,
+  getRedemptionByMerchantOrderId,
+  setRedemptionArchive,
+  setRedemptionArchiveError,
+  getPool,
 } from "./db";
 import { uploadPdfToDrive } from "./drive";
 import { generateAcknowledgmentPdf, generateReceiptPdf } from "./receipt";
@@ -56,6 +60,56 @@ export async function archiveDonation(txnId: string): Promise<void> {
   } catch (e) {
     await setDonationArchiveError(
       d.txn_id,
+      e instanceof Error ? e.message : String(e),
+    );
+  }
+}
+
+// Archive a single redemption's receipt to Drive (Phase 3c).
+// Called when redemption state transitions to SUCCESS. Idempotent.
+export async function archiveRedemption(
+  redemptionId: string,
+  merchantOrderId: string,
+): Promise<void> {
+  const r = await getRedemptionByMerchantOrderId(merchantOrderId);
+  if (!r || r.state !== "SUCCESS" || r.drive_file_id || r.id !== redemptionId)
+    return;
+
+  try {
+    // Get subscription details for receipt
+    const pool = getPool();
+
+    const subResult = await pool.query(
+      `SELECT donor_name, donor_pan, donor_contact, donor_address, amount
+       FROM subscriptions WHERE id = $1`,
+      [r.subscription_id],
+    );
+    const sub = subResult.rows[0];
+    if (!sub) throw new Error("Subscription not found");
+
+    const date = new Date(r.attempted_at || new Date())
+      .toISOString()
+      .slice(0, 10);
+    const amount = String(sub.amount);
+    const txnId = merchantOrderId;
+
+    // Generate receipt (recurring subscriptions always have full details)
+    const pdf = await generateReceiptPdf({
+      txnId,
+      name: sub.donor_name || "Anonymous",
+      pan: sub.donor_pan || "-",
+      contact: sub.donor_contact || "-",
+      address: sub.donor_address || "-",
+      paymentMode: "UPI Recurring Mandate",
+      amountInRupees: amount,
+    });
+
+    const filename = `recurring_receipt_${date}_${safeName(sub.donor_name)}_${txnId}.pdf`;
+    const { fileId, link } = await uploadPdfToDrive(pdf, filename);
+    await setRedemptionArchive(redemptionId, fileId, link);
+  } catch (e) {
+    await setRedemptionArchiveError(
+      redemptionId,
       e instanceof Error ? e.message : String(e),
     );
   }

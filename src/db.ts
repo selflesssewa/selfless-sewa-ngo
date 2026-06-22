@@ -8,7 +8,7 @@ declare global {
   var _pgPool: Pool | undefined;
 }
 
-function getPool(): Pool {
+export function getPool(): Pool {
   if (!global._pgPool) {
     global._pgPool = new Pool({
       connectionString: getEnvVariable("DATABASE_URL"),
@@ -149,6 +149,22 @@ export type TRedemptionState =
   | "SUCCESS"
   | "FAILED";
 
+export type TRedemption = {
+  id: string;
+  subscription_id: string;
+  merchant_order_id: string;
+  notification_id?: string;
+  amount: number;
+  state: TRedemptionState;
+  receipt_issued: boolean;
+  drive_file_id?: string;
+  drive_file_link?: string;
+  ledger_appended?: boolean;
+  archive_error?: string;
+  attempted_at?: string;
+  completed_at?: string;
+};
+
 export async function createRedemption(
   subscriptionId: string,
   merchantOrderId: string,
@@ -173,6 +189,16 @@ export async function setRedemptionNotified(
   );
 }
 
+export async function getRedemptionByMerchantOrderId(
+  merchantOrderId: string,
+): Promise<TRedemption | null> {
+  const result = await getPool().query(
+    `SELECT * FROM redemptions WHERE merchant_order_id = $1`,
+    [merchantOrderId],
+  );
+  return result.rows[0] || null;
+}
+
 export async function setRedemptionState(
   redemptionId: string,
   state: TRedemptionState,
@@ -183,6 +209,34 @@ export async function setRedemptionState(
            completed_at = CASE WHEN $2 IN ('SUCCESS','FAILED') THEN now() ELSE completed_at END
      WHERE id = $1`,
     [redemptionId, state],
+  );
+}
+
+export async function setRedemptionArchive(
+  redemptionId: string,
+  driveFileId: string,
+  driveFileLink: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions
+       SET receipt_issued = true,
+           drive_file_id = $2,
+           drive_file_link = $3,
+           archive_error = NULL
+     WHERE id = $1`,
+    [redemptionId, driveFileId, driveFileLink],
+  );
+}
+
+export async function setRedemptionArchiveError(
+  redemptionId: string,
+  error: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions
+       SET archive_error = $2
+     WHERE id = $1`,
+    [redemptionId, error],
   );
 }
 
@@ -346,6 +400,21 @@ export async function getUnarchivedDonations(
     `SELECT * FROM donations
      WHERE status = 'COMPLETED' AND drive_file_id IS NULL
      ORDER BY created_at ASC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// Successful recurring charges whose receipt hasn't reached Drive yet
+// (transient Drive errors during the webhook's background archive).
+export async function getUnarchivedRedemptions(
+  limit = 50,
+): Promise<TRedemption[]> {
+  const { rows } = await getPool().query<TRedemption>(
+    `SELECT * FROM redemptions
+     WHERE state = 'SUCCESS' AND drive_file_id IS NULL
+     ORDER BY attempted_at ASC
      LIMIT $1`,
     [limit],
   );
