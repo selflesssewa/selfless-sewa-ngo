@@ -1,6 +1,6 @@
 "use client";
 
-import { TFrequency, useDonationStore } from "@/stores/donationStore";
+import { useDonationStore } from "@/stores/donationStore";
 import { useLayoutEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
@@ -12,7 +12,6 @@ const Page = () => {
   const isRecurring = useDonationStore((state) => state.isRecurring);
   const setIsRecurring = useDonationStore((state) => state.setIsRecurring);
   const frequency = useDonationStore((state) => state.frequency);
-  const setFrequency = useDonationStore((state) => state.setFrequency);
   const wantsReceipt = useDonationStore((state) => state.wantsReceipt);
   const name = useDonationStore((state) => state.name);
   const contact = useDonationStore((state) => state.contact);
@@ -152,26 +151,15 @@ const Page = () => {
             </div>
             {isRecurring && (
               <>
-                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
-                  <label htmlFor="frequency">Frequency</label>
-                  <select
-                    id="frequency"
-                    value={frequency}
-                    onChange={(e) =>
-                      setFrequency(e.target.value as TFrequency)
-                    }
-                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none [&>option]:text-black"
-                  >
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="QUARTERLY">Every 3 months</option>
-                    <option value="HALFYEARLY">Every 6 months</option>
-                    <option value="YEARLY">Annually</option>
-                  </select>
+                <GlowCard className="flex items-center justify-between gap-2 p-3">
+                  <span className="text-title-sm font-medium">Frequency</span>
+                  <span className="text-title-sm font-medium text-white-70">
+                    Monthly
+                  </span>
                 </GlowCard>
                 <p className="px-3 text-body-sm text-white-70">
                   You’ll approve a one-time UPI mandate, then your chosen amount
-                  is charged automatically at the selected frequency. You can
-                  cancel anytime.
+                  is charged automatically every month. You can cancel anytime.
                 </p>
               </>
             )}

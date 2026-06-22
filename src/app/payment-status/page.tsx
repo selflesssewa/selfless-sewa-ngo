@@ -34,16 +34,22 @@ function PageUI() {
   const token = searchParams.get("t");
   const subscriptionId = searchParams.get("sub");
 
+  const isRecurring = !!subscriptionId;
+
   const [isError, setIsError] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
+  // Recurring-only details, fetched from the subscription status endpoint.
+  const [recurringAmount, setRecurringAmount] = useState<number | null>(null);
+  const [recurringFrequency, setRecurringFrequency] = useState<string | null>(
+    null,
+  );
 
   const checkStatus = useCallback(async () => {
     if (isError) return;
 
     setIsError(false);
-    const isRecurring = !!subscriptionId;
     const endpoint = isRecurring
       ? `/api/subscription/status?sub=${subscriptionId}`
       : `/api/status?t=${token}`;
@@ -65,6 +71,12 @@ function PageUI() {
           ? data?.status ?? data?.state
           : data?.data?.state;
 
+        if (isRecurring) {
+          if (typeof data?.amount === "number") setRecurringAmount(data.amount);
+          if (typeof data?.frequency === "string")
+            setRecurringFrequency(data.frequency);
+        }
+
         if (state === "COMPLETED" || state === "ACTIVE") {
           setPaymentStatus("SUCCESS");
           break;
@@ -79,7 +91,7 @@ function PageUI() {
         break;
       }
     }
-  }, [token, subscriptionId, isError]);
+  }, [token, subscriptionId, isError, isRecurring]);
 
   useEffect(() => {
     checkStatus();
@@ -111,6 +123,13 @@ function PageUI() {
   const txnId = data?.id ?? subscriptionId;
   const amount = Number(data?.a) || 0;
   const wantsReceipt = !!data?.p;
+
+  const frequencyLabel: Record<string, string> = {
+    MONTHLY: "monthly",
+    QUARTERLY: "every 3 months",
+    HALFYEARLY: "every 6 months",
+    YEARLY: "yearly",
+  };
 
   const handleDownload = async () => {
     try {
@@ -150,6 +169,27 @@ function PageUI() {
             <p className="animate-pulse">
               Loading... please do NOT refresh or close this window
             </p>
+          ) : isRecurring ? (
+            <>
+              <p className="font-display text-balance text-center text-headline-lg font-light leading-none">
+                Your{" "}
+                {recurringFrequency
+                  ? frequencyLabel[recurringFrequency] ?? "recurring"
+                  : "recurring"}{" "}
+                donation
+                {recurringAmount ? ` of ₹${recurringAmount}` : ""} is set up!
+              </p>
+              <p className="mt-4 text-balance text-center text-body-lg font-light tracking-wider text-white-70">
+                Thank you for your ongoing support. The first charge happens on
+                the next cycle, and you can cancel anytime.
+              </p>
+              <p className="mt-4 text-center text-body-lg font-light tracking-wider">
+                Reference Id: {txnId}
+              </p>
+              <p className="mt-2 text-center text-body-lg font-light tracking-wider">
+                {time}
+              </p>
+            </>
           ) : (
             <>
               <p className="font-display text-balance text-center text-headline-lg font-light leading-none">

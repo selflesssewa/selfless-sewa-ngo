@@ -6,6 +6,7 @@ import {
   getOrderStatus,
   getSubscriptionStatus,
 } from "@/phonepe";
+import { chargeSubscription } from "@/charge";
 import { NextRequest } from "next/server";
 
 // After the donor authorizes a mandate on PhonePe, they redirect back with ?sub=merchantSubscriptionId.
@@ -47,36 +48,30 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      // Activate: either order was COMPLETED, or we're in sandbox (no orderId check available)
-      const frequencyDays: Record<string, number> = {
-        DAILY: 1,
-        WEEKLY: 7,
-        FORTNIGHTLY: 14,
-        MONTHLY: 30,
-        BIMONTHLY: 60,
-        QUARTERLY: 90,
-        HALFYEARLY: 180,
-        YEARLY: 365,
-      };
-      const daysUntilNextCharge =
-        frequencyDays[local.frequency] ?? 30;
-      const nextChargeAt = new Date(
-        Date.now() + daysUntilNextCharge * 24 * 60 * 60 * 1000
-      );
-
-      // Use subscription ID as phonepeSubscriptionId (will be updated by webhook in prod)
-      await activateSubscription(
+      // Activate (atomic PENDING -> ACTIVE). Set next_charge_at to NOW so the
+      // first installment is charged immediately; chargeSubscription then rolls
+      // it forward one cycle. activateSubscription returns true only for the
+      // poll that actually flipped the state, so we charge exactly once.
+      const now = new Date();
+      const didActivate = await activateSubscription(
         merchantSubscriptionId,
         local.merchant_subscription_id,
-        nextChargeAt,
+        now,
       );
 
+      if (didActivate) {
+        // Charge the first installment right away (money moves at signup).
+        // The receipt is generated + archived when the PhonePe webhook confirms.
+        await chargeSubscription({ ...local, next_charge_at: now });
+      }
+
+      const fresh = await getSubscriptionByMerchantId(merchantSubscriptionId);
       return Response.json({
         status: "ACTIVE",
         amount: local.amount,
         frequency: local.frequency,
-        nextChargeAt,
-        message: "Mandate activated! Recurring donations will start next cycle.",
+        nextChargeAt: fresh?.next_charge_at ?? null,
+        message: "Donation set up! Your first contribution is being processed.",
       });
     }
 

@@ -91,20 +91,25 @@ export async function getSubscriptionByMerchantId(
   return rows[0] ?? null;
 }
 
+// Flip a mandate PENDING -> ACTIVE. Returns true only if THIS call performed the
+// transition (rowCount === 1); concurrent/repeat polls get false, so the caller
+// can safely trigger a one-time side effect (e.g. the immediate first charge)
+// exactly once.
 export async function activateSubscription(
   merchantSubscriptionId: string,
   phonepeSubscriptionId: string | null,
   nextChargeAt: Date,
-): Promise<void> {
-  await getPool().query(
+): Promise<boolean> {
+  const { rowCount } = await getPool().query(
     `UPDATE subscriptions
        SET status = 'ACTIVE',
            phonepe_subscription_id = COALESCE($2, phonepe_subscription_id),
            next_charge_at = $3,
            updated_at = now()
-     WHERE merchant_subscription_id = $1`,
+     WHERE merchant_subscription_id = $1 AND status = 'PENDING'`,
     [merchantSubscriptionId, phonepeSubscriptionId, nextChargeAt],
   );
+  return (rowCount ?? 0) > 0;
 }
 
 export async function setSubscriptionStatus(
@@ -346,6 +351,31 @@ export async function getDonationByTxnId(
 export async function listDonations(limit = 200): Promise<TDonation[]> {
   const { rows } = await getPool().query<TDonation>(
     `SELECT * FROM donations ORDER BY created_at DESC LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// Admin view of recurring mandates, each with a summary of its charges so far.
+export type TSubscriptionWithCharges = TSubscription & {
+  charges_count: number; // successful charges
+  total_collected: number; // rupees from successful charges
+  last_charge_at: Date | null;
+};
+
+export async function listSubscriptions(
+  limit = 2000,
+): Promise<TSubscriptionWithCharges[]> {
+  const { rows } = await getPool().query<TSubscriptionWithCharges>(
+    `SELECT s.*,
+            COUNT(r.id) FILTER (WHERE r.state = 'SUCCESS')::int AS charges_count,
+            COALESCE(SUM(r.amount) FILTER (WHERE r.state = 'SUCCESS'), 0)::int AS total_collected,
+            MAX(r.completed_at) FILTER (WHERE r.state = 'SUCCESS') AS last_charge_at
+       FROM subscriptions s
+       LEFT JOIN redemptions r ON r.subscription_id = s.id
+      GROUP BY s.id
+      ORDER BY s.created_at DESC
+      LIMIT $1`,
     [limit],
   );
   return rows;

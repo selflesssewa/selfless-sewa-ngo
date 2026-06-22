@@ -18,8 +18,32 @@ type TDonation = {
   created_at: string;
 };
 
+type TSubscription = {
+  id: string;
+  merchant_subscription_id: string;
+  donor_name: string | null;
+  donor_contact: string | null;
+  donor_email: string | null;
+  amount: number;
+  frequency: string;
+  status: string;
+  next_charge_at: string | null;
+  created_at: string;
+  charges_count: number;
+  total_collected: number;
+  last_charge_at: string | null;
+};
+
 type TReceiptFilter = "all" | "with" | "without";
 type TStatusFilter = "all" | "COMPLETED" | "PENDING" | "FAILED";
+type TTab = "onetime" | "recurring";
+
+const FREQUENCY_LABEL: Record<string, string> = {
+  MONTHLY: "Monthly",
+  QUARTERLY: "Every 3 months",
+  HALFYEARLY: "Every 6 months",
+  YEARLY: "Yearly",
+};
 
 // Local YYYY-MM-DD for a timestamp (so day/month filters match the dates shown).
 const localYMD = (iso: string) => {
@@ -34,6 +58,8 @@ const STORAGE_KEY = "ss_admin_key";
 const Page = () => {
   const [key, setKey] = useState("");
   const [donations, setDonations] = useState<TDonation[] | null>(null);
+  const [subscriptions, setSubscriptions] = useState<TSubscription[]>([]);
+  const [tab, setTab] = useState<TTab>("onetime");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -60,11 +86,27 @@ const Page = () => {
         const data = await res.json();
         setDonations(data.donations ?? []);
         sessionStorage.setItem(STORAGE_KEY, adminKey);
+        fetchSubscriptions(adminKey);
       }
     } catch {
       setError("Could not load donations.");
     }
     setLoading(false);
+  };
+
+  const fetchSubscriptions = async (adminKey: string) => {
+    if (!adminKey) return;
+    try {
+      const res = await fetch("/api/admin/subscriptions", {
+        headers: { Authorization: `Bearer ${adminKey}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSubscriptions(data.subscriptions ?? []);
+      }
+    } catch {
+      // Non-fatal: the one-time view still works without subscriptions.
+    }
   };
 
   // Stay logged in for the session.
@@ -103,6 +145,11 @@ const Page = () => {
         .filter((d) => d.status === "COMPLETED")
         .reduce((sum, d) => sum + d.amount, 0),
     [filtered],
+  );
+
+  const recurringCollected = useMemo(
+    () => subscriptions.reduce((sum, s) => sum + (s.total_collected ?? 0), 0),
+    [subscriptions],
   );
 
   const clearFilters = () => {
@@ -218,11 +265,24 @@ const Page = () => {
           <div>
             <h1 className="text-headline-sm">Donations</h1>
             <p className="mt-1 text-body-sm text-white-70">
-              {filtered.length} of {donations.length} shown ·{" "}
-              <span className="font-medium text-white">
-                ₹{totalReceived.toLocaleString("en-IN")}
-              </span>{" "}
-              received
+              {tab === "onetime" ? (
+                <>
+                  {filtered.length} of {donations.length} shown ·{" "}
+                  <span className="font-medium text-white">
+                    ₹{totalReceived.toLocaleString("en-IN")}
+                  </span>{" "}
+                  received
+                </>
+              ) : (
+                <>
+                  {subscriptions.length} recurring{" "}
+                  {subscriptions.length === 1 ? "donor" : "donors"} ·{" "}
+                  <span className="font-medium text-white">
+                    ₹{recurringCollected.toLocaleString("en-IN")}
+                  </span>{" "}
+                  collected so far
+                </>
+              )}
             </p>
           </div>
           <div className="flex gap-2">
@@ -232,16 +292,88 @@ const Page = () => {
             >
               Refresh
             </button>
-            <button
-              onClick={exportCsv}
-              disabled={filtered.length === 0}
-              className="rounded-[0.6rem] bg-green-50 px-3 py-2 text-body-sm font-medium disabled:opacity-50"
-            >
-              Export CSV
-            </button>
+            {tab === "onetime" && (
+              <button
+                onClick={exportCsv}
+                disabled={filtered.length === 0}
+                className="rounded-[0.6rem] bg-green-50 px-3 py-2 text-body-sm font-medium disabled:opacity-50"
+              >
+                Export CSV
+              </button>
+            )}
           </div>
         </div>
 
+        {/* Tabs */}
+        <div className="mb-6 flex gap-1 rounded-[0.9rem] bg-blue-30 p-1 sm:w-fit">
+          <button
+            onClick={() => setTab("onetime")}
+            className={`rounded-[0.6rem] px-4 py-2 text-body-sm font-medium transition-colors ${
+              tab === "onetime" ? "bg-green-50 text-white" : "text-white-70"
+            }`}
+          >
+            One-time
+          </button>
+          <button
+            onClick={() => setTab("recurring")}
+            className={`rounded-[0.6rem] px-4 py-2 text-body-sm font-medium transition-colors ${
+              tab === "recurring" ? "bg-green-50 text-white" : "text-white-70"
+            }`}
+          >
+            Recurring ({subscriptions.length})
+          </button>
+        </div>
+
+        {tab === "recurring" ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-body-sm [&_td]:border-b [&_td]:border-white-30 [&_td]:px-2 [&_td]:py-2 [&_th]:border-b [&_th]:border-white-30 [&_th]:px-2 [&_th]:py-2 [&_th]:text-left">
+              <caption className="sr-only">List of recurring donors</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Started</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Phone</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Frequency</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Charges</th>
+                  <th scope="col">Collected</th>
+                  <th scope="col">Next charge</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="py-6 text-center text-white-70">
+                      No recurring donors yet.
+                    </td>
+                  </tr>
+                ) : (
+                  subscriptions.map((s) => (
+                    <tr key={s.id}>
+                      <td className="whitespace-nowrap">{fmt(s.created_at)}</td>
+                      <td>{s.donor_name ?? "—"}</td>
+                      <td>{s.donor_contact ?? "—"}</td>
+                      <td>{s.donor_email ?? "—"}</td>
+                      <td>₹{s.amount.toLocaleString("en-IN")}</td>
+                      <td>{FREQUENCY_LABEL[s.frequency] ?? s.frequency}</td>
+                      <td>{s.status}</td>
+                      <td>{s.charges_count}</td>
+                      <td>₹{s.total_collected.toLocaleString("en-IN")}</td>
+                      <td className="whitespace-nowrap">
+                        {s.status === "ACTIVE" && s.next_charge_at
+                          ? fmt(s.next_charge_at)
+                          : "—"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+        <>
         {/* Filters */}
         <fieldset className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
           <legend className="sr-only">Filters</legend>
@@ -405,6 +537,8 @@ const Page = () => {
             </tbody>
           </table>
         </div>
+        </>
+        )}
       </Container>
     </main>
   );
