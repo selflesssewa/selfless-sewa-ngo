@@ -64,8 +64,9 @@ CONTENTFUL_ACCESS_TOKEN
   Vercel runtime; run migrations from your machine (see step 2).
 - `PHONEPE_MERCHANT_ID` / `PHONEPE_SALT_KEY` / `PHONEPE_SALT_INDEX` — **removed**
   (old v1 salt-key auth). Do not add.
-- `PHONEPE_WEBHOOK_USERNAME` / `PHONEPE_WEBHOOK_PASSWORD` — reserved for webhook
-  Basic-auth. ⚠️ The webhook route does not verify them yet (see step 4).
+- `PHONEPE_WEBHOOK_USERNAME` / `PHONEPE_WEBHOOK_PASSWORD` — **required in
+  production** (the webhook fails closed without them). Set the same pair here
+  and in the PhonePe dashboard. See step 4.
 
 ---
 
@@ -104,11 +105,13 @@ They're protected by `CRON_SECRET`, which Vercel sends automatically.
 - Activate **production** OAuth credentials for **both** PG Checkout (one-time)
   and **Autopay** (recurring).
 - Register the webhook URL `https://selflesssewango.com/api/webhook/phonepe` in
-  the PhonePe dashboard.
-- ⚠️ **Add webhook verification before relying on recurring in production.** The
-  route currently trusts the payload. Configure `PHONEPE_WEBHOOK_USERNAME` /
-  `PHONEPE_WEBHOOK_PASSWORD` in both the dashboard and Vercel, and verify the
-  incoming Basic-auth header in `/api/webhook/phonepe`.
+  the PhonePe dashboard, with a username + password.
+- **Webhook verification IS implemented.** The route checks
+  `Authorization: SHA256(username:password)` against
+  `PHONEPE_WEBHOOK_USERNAME` / `PHONEPE_WEBHOOK_PASSWORD`. You **must** set these
+  (same values in the dashboard and in Vercel) — in `PRODUCTION` the route
+  **rejects** webhooks if they're unset (fail-closed). In `SANDBOX` they're
+  optional (so local testing can POST freely).
 - Confirm the first-charge behaviour with one small real mandate: the setup
   transaction (authWorkflowType `TRANSACTION`) debits the first installment, and
   the app records that setup order as the first charge (it does **not** debit
@@ -116,12 +119,55 @@ They're protected by `CRON_SECRET`, which Vercel sends automatically.
 
 ---
 
-## 5. Deploy
+## 5. Safe rollout (production deploys from `main`)
 
-- Push the branch and deploy via Vercel (or merge to the deployed branch).
-- **Commit author:** on the Hobby plan, the deploy only runs if the commit
-  author maps to the project owner's GitHub identity — confirm this before
-  expecting an auto-deploy.
+All payment work lives on `feat/autopay`; production deploys from `main`. The
+code now needs the **v2 OAuth** env vars, so the code and its environment must go
+live together. Recommended sequence:
+
+### 5a. Test the production *build* on a Vercel Preview (no real money)
+
+A Preview runs the exact prod build, but pointed at **sandbox PhonePe + a
+throwaway database** — catching build/env problems before they touch `main`.
+
+```bash
+vercel            # creates a Preview deployment (not --prod)
+```
+
+(`vercel.json` has `git.deploymentEnabled: false`, so git pushes don't
+auto-deploy — the CLI does it regardless.)
+
+Set **Preview-scoped** env vars: `PHONEPE_ENV=SANDBOX` + sandbox creds, a
+**separate** `DATABASE_URL` (see 5b), `SITE_URL` = the preview URL, plus the
+other secrets. Then run the full flow (one-time + recurring + `/admin`) on the
+preview URL.
+
+### 5b. Use a separate database for testing ⚠️
+
+Do **not** point Preview at the production DB. Create a **Neon branch** off prod
+(Neon → Branches → New branch) — instant copy, separate URL — and use it for the
+Preview's `DATABASE_URL`. Discard it afterwards.
+
+### 5c. Prepare production (while `main` is still the old code)
+
+1. Set **Production-scoped** env vars (section 1) — prod PhonePe creds,
+   `PHONEPE_ENV=PRODUCTION`, live `SITE_URL`, prod `DATABASE_URL`, webhook
+   username/password.
+2. Run the migration against the prod DB (section 2).
+
+### 5d. Merge & deploy
+
+- Open a PR `feat/autopay → main` and merge.
+- **Commit author:** on the Hobby plan the deploy only runs if the merge commit
+  author maps to the project owner's GitHub identity — confirm this, or Vercel
+  blocks the deploy.
+- If git deployments are disabled, trigger prod manually: `vercel --prod`.
+
+### 5e. Rollback plan
+
+If prod misbehaves: Vercel → Deployments → the previous working deployment →
+**Promote to Production**. Instant revert to the old `main`. Know where this is
+before deploying.
 
 ---
 
