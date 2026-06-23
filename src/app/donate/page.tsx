@@ -135,7 +135,7 @@ const Page = () => {
                   !isRecurring ? "bg-green-50 text-white" : "text-white-70",
                 )}
               >
-                Give once
+                Donate once
               </button>
               <button
                 type="button"
@@ -146,7 +146,7 @@ const Page = () => {
                   isRecurring ? "bg-green-50 text-white" : "text-white-70",
                 )}
               >
-                Give recurring
+                Donate monthly
               </button>
             </div>
             {isRecurring && (
