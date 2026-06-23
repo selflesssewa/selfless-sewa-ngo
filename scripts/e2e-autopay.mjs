@@ -139,7 +139,9 @@ async function main() {
       [merchantOrderId],
     );
     row = fin.rows[0];
-    if (row?.drive_file_id || row?.archive_error || SKIP_ARCHIVE) break;
+    // 'PENDING' is the in-flight archive claim, not a finished upload — keep waiting.
+    const done = row?.drive_file_id && row.drive_file_id !== "PENDING";
+    if (done || row?.archive_error || SKIP_ARCHIVE) break;
   }
   ok(row?.state === "SUCCESS", `redemption finalized SUCCESS (got ${row?.state})`);
 
@@ -193,7 +195,7 @@ async function main() {
       [merchantOrderId],
     );
     recovered = q.rows[0];
-    if (recovered?.drive_file_id) break;
+    if (recovered?.drive_file_id && recovered.drive_file_id !== "PENDING") break;
   }
   ok(!!recovered?.drive_file_id, "drive_file_id re-populated by retry cron");
   ok(recovered?.receipt_issued === true, "receipt_issued = true after retry");

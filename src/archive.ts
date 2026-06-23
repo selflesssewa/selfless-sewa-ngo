@@ -1,8 +1,10 @@
 import {
   getDonationByTxnId,
+  claimDonationForArchive,
   setDonationArchive,
   setDonationArchiveError,
   getRedemptionByMerchantOrderId,
+  claimRedemptionForArchive,
   setRedemptionArchive,
   setRedemptionArchiveError,
   getPool,
@@ -18,7 +20,12 @@ const safeName = (s: string | null | undefined) =>
 // failure so the retry cron can re-attempt. Never throws.
 export async function archiveDonation(txnId: string): Promise<void> {
   const d = await getDonationByTxnId(txnId);
-  if (!d || d.status !== "COMPLETED" || d.drive_file_id) return;
+  if (!d || d.status !== "COMPLETED") return;
+  // Already archived to a real Drive file? Nothing to do.
+  if (d.drive_file_id && d.drive_file_id !== "PENDING") return;
+
+  // Atomic claim: only one concurrent caller proceeds; the rest skip.
+  if (!(await claimDonationForArchive(txnId))) return;
 
   try {
     const date = new Date(d.created_at).toISOString().slice(0, 10);
@@ -72,8 +79,12 @@ export async function archiveRedemption(
   merchantOrderId: string,
 ): Promise<void> {
   const r = await getRedemptionByMerchantOrderId(merchantOrderId);
-  if (!r || r.state !== "SUCCESS" || r.drive_file_id || r.id !== redemptionId)
-    return;
+  if (!r || r.state !== "SUCCESS" || r.id !== redemptionId) return;
+  // Already archived to a real Drive file? Nothing to do.
+  if (r.drive_file_id && r.drive_file_id !== "PENDING") return;
+
+  // Atomic claim: only one concurrent caller proceeds; the rest skip.
+  if (!(await claimRedemptionForArchive(redemptionId))) return;
 
   try {
     // Get subscription details for receipt

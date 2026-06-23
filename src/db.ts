@@ -217,6 +217,24 @@ export async function setRedemptionState(
   );
 }
 
+// Atomically claim a SUCCESS redemption for archiving so the webhook and the
+// receipt-retry cron can't both upload the same receipt. Flips drive_file_id
+// NULL -> 'PENDING' for one winner; reclaims a stale 'PENDING' after 10 min.
+export async function claimRedemptionForArchive(
+  redemptionId: string,
+): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    `UPDATE redemptions
+        SET drive_file_id = 'PENDING'
+      WHERE id = $1 AND state = 'SUCCESS'
+        AND (drive_file_id IS NULL
+             OR (drive_file_id = 'PENDING'
+                 AND completed_at < now() - interval '10 minutes'))`,
+    [redemptionId],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
 export async function setRedemptionArchive(
   redemptionId: string,
   driveFileId: string,
@@ -233,13 +251,15 @@ export async function setRedemptionArchive(
   );
 }
 
+// Record an archive failure and release the claim (drive_file_id -> NULL) so the
+// receipt-retry cron re-attempts it.
 export async function setRedemptionArchiveError(
   redemptionId: string,
   error: string,
 ): Promise<void> {
   await getPool().query(
     `UPDATE redemptions
-       SET archive_error = $2
+       SET archive_error = $2, drive_file_id = NULL
      WHERE id = $1`,
     [redemptionId, error],
   );
@@ -412,6 +432,25 @@ export async function getStalePendingDonations(
 }
 
 // Record a successful Drive archive on the donation row.
+// Atomically claim a donation for archiving so concurrent callers (the status
+// poll firing twice, or a poll overlapping the cron) can't both upload the same
+// receipt. Flips drive_file_id NULL -> 'PENDING' for exactly one winner; also
+// reclaims a stale 'PENDING' (a crash mid-upload) after 10 min. Returns true if
+// THIS caller won the claim and should proceed.
+export const ARCHIVE_PENDING = "PENDING";
+export async function claimDonationForArchive(txnId: string): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    `UPDATE donations
+        SET drive_file_id = '${ARCHIVE_PENDING}', updated_at = now()
+      WHERE txn_id = $1 AND status = 'COMPLETED'
+        AND (drive_file_id IS NULL
+             OR (drive_file_id = '${ARCHIVE_PENDING}'
+                 AND updated_at < now() - interval '10 minutes'))`,
+    [txnId],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
 export async function setDonationArchive(
   txnId: string,
   driveFileId: string,
@@ -426,25 +465,31 @@ export async function setDonationArchive(
   );
 }
 
-// Record an archive failure (so the retry sweep can see what went wrong).
+// Record an archive failure and release the claim (drive_file_id -> NULL) so the
+// retry sweep re-attempts it.
 export async function setDonationArchiveError(
   txnId: string,
   error: string,
 ): Promise<void> {
   await getPool().query(
-    `UPDATE donations SET archive_error = $2, updated_at = now()
-     WHERE txn_id = $1`,
+    `UPDATE donations
+        SET archive_error = $2, drive_file_id = NULL, updated_at = now()
+      WHERE txn_id = $1`,
     [txnId, error.slice(0, 500)],
   );
 }
 
-// COMPLETED donations not yet archived to Drive (for the retry sweep).
+// COMPLETED donations not yet archived to Drive (for the retry sweep). Includes
+// stale 'PENDING' claims so a crashed upload still gets retried.
 export async function getUnarchivedDonations(
   limit = 50,
 ): Promise<TDonation[]> {
   const { rows } = await getPool().query<TDonation>(
     `SELECT * FROM donations
-     WHERE status = 'COMPLETED' AND drive_file_id IS NULL
+     WHERE status = 'COMPLETED'
+       AND (drive_file_id IS NULL
+            OR (drive_file_id = '${ARCHIVE_PENDING}'
+                AND updated_at < now() - interval '10 minutes'))
      ORDER BY created_at ASC
      LIMIT $1`,
     [limit],
@@ -459,7 +504,10 @@ export async function getUnarchivedRedemptions(
 ): Promise<TRedemption[]> {
   const { rows } = await getPool().query<TRedemption>(
     `SELECT * FROM redemptions
-     WHERE state = 'SUCCESS' AND drive_file_id IS NULL
+     WHERE state = 'SUCCESS'
+       AND (drive_file_id IS NULL
+            OR (drive_file_id = 'PENDING'
+                AND completed_at < now() - interval '10 minutes'))
      ORDER BY attempted_at ASC
      LIMIT $1`,
     [limit],
