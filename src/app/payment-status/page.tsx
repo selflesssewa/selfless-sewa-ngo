@@ -32,16 +32,28 @@ function PageUI() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("t");
+  const subscriptionId = searchParams.get("sub");
+
+  const isRecurring = !!subscriptionId;
 
   const [isError, setIsError] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<
     "SUCCESS" | "PENDING" | "FAILED"
   >("PENDING");
+  // Recurring-only details, fetched from the subscription status endpoint.
+  const [recurringAmount, setRecurringAmount] = useState<number | null>(null);
+  const [recurringFrequency, setRecurringFrequency] = useState<string | null>(
+    null,
+  );
 
   const checkStatus = useCallback(async () => {
     if (isError) return;
 
     setIsError(false);
+    const endpoint = isRecurring
+      ? `/api/subscription/status?sub=${subscriptionId}`
+      : `/api/status?t=${token}`;
+
     while (true) {
       cnt.current++;
       if (cnt.current > 5) {
@@ -50,14 +62,25 @@ function PageUI() {
       }
       try {
         const delay = new Promise((res) => setTimeout(res, 5 * 1000));
-        const response = await axios.get(`/api/status?t=${token}`);
+        const response = await axios.get(endpoint);
         const data = response.data;
 
-        const paymentState = data?.data?.state;
-        if (paymentState === "COMPLETED") {
+        // One-time: check data?.data?.state
+        // Recurring: check data?.status (or data?.state)
+        const state = isRecurring
+          ? data?.status ?? data?.state
+          : data?.data?.state;
+
+        if (isRecurring) {
+          if (typeof data?.amount === "number") setRecurringAmount(data.amount);
+          if (typeof data?.frequency === "string")
+            setRecurringFrequency(data.frequency);
+        }
+
+        if (state === "COMPLETED" || state === "ACTIVE") {
           setPaymentStatus("SUCCESS");
           break;
-        } else if (paymentState === "FAILED") {
+        } else if (state === "FAILED") {
           setPaymentStatus("FAILED");
           break;
         }
@@ -68,7 +91,7 @@ function PageUI() {
         break;
       }
     }
-  }, [token, isError]);
+  }, [token, subscriptionId, isError, isRecurring]);
 
   useEffect(() => {
     checkStatus();
@@ -83,21 +106,30 @@ function PageUI() {
     }).format(new Date());
   }, []);
 
-  if (!token) {
+  if (!token && !subscriptionId) {
     router.replace("/");
     return null;
   }
   let data = null;
-  try {
-    data = decodeJwt(token);
-  } catch (e) {
-    router.replace("/");
-    return null;
+  if (token) {
+    try {
+      data = decodeJwt(token);
+    } catch (e) {
+      router.replace("/");
+      return null;
+    }
   }
 
-  const txnId = data.id;
-  const amount = Number(data.a);
-  const wantsReceipt = !!data.p;
+  const txnId = data?.id ?? subscriptionId;
+  const amount = Number(data?.a) || 0;
+  const wantsReceipt = !!data?.p;
+
+  const frequencyLabel: Record<string, string> = {
+    MONTHLY: "monthly",
+    QUARTERLY: "every 3 months",
+    HALFYEARLY: "every 6 months",
+    YEARLY: "yearly",
+  };
 
   const handleDownload = async () => {
     try {
@@ -137,6 +169,28 @@ function PageUI() {
             <p className="animate-pulse">
               Loading... please do NOT refresh or close this window
             </p>
+          ) : isRecurring ? (
+            <>
+              <p className="font-display text-balance text-center text-headline-lg font-light leading-none">
+                Your{" "}
+                {recurringFrequency
+                  ? frequencyLabel[recurringFrequency] ?? "recurring"
+                  : "recurring"}{" "}
+                donation
+                {recurringAmount ? ` of ₹${recurringAmount}` : ""} is set up!
+              </p>
+              <p className="mt-4 text-balance text-center text-body-lg font-light tracking-wider text-white-70">
+                Thank you for your ongoing support. Your first contribution has
+                been received; you&apos;ll be charged automatically each month
+                and can cancel anytime.
+              </p>
+              <p className="mt-4 text-center text-body-lg font-light tracking-wider">
+                Reference Id: {txnId}
+              </p>
+              <p className="mt-2 text-center text-body-lg font-light tracking-wider">
+                {time}
+              </p>
+            </>
           ) : (
             <>
               <p className="font-display text-balance text-center text-headline-lg font-light leading-none">
@@ -164,6 +218,14 @@ function PageUI() {
                 </div>
               )}
             </>
+          )}
+          {paymentStatus === "SUCCESS" && !isError && (
+            <a
+              href="/"
+              className="mt-10 self-center rounded-[0.8rem] border border-white-30 px-5 py-2 text-body-lg font-light tracking-wider transition-colors hover:bg-white-10"
+            >
+              Back to Home
+            </a>
           )}
         </div>
       </Container>

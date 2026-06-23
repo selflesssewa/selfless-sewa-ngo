@@ -1,8 +1,4 @@
-import {
-  SiGithub,
-  SiInstagram,
-  SiWhatsapp,
-} from "@icons-pack/react-simple-icons";
+import { SiInstagram, SiWhatsapp } from "@icons-pack/react-simple-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { MaterialSymbol } from "react-material-symbols";
@@ -163,18 +159,6 @@ const Footer = ({ data }: { data: TLayoutContent }) => {
                   Privacy&nbsp;Policy
                 </Link>
               </div>
-              <a
-                target="_blank"
-                href="https://github.com/sahilmulla"
-                className="-m-1 -mx-2 flex items-baseline gap-2 text-nowrap rounded-lg p-1 px-2 duration-150 hover:bg-white/10"
-                title="Check out my GitHub profile"
-              >
-                {
-                  //@ts-ignore
-                  <SiGithub size={12} className="translate-y-0" title="" />
-                }
-                Made by Sahil
-              </a>
             </div>
           </div>
         </div>

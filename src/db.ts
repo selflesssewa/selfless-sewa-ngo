@@ -1,0 +1,516 @@
+import { Pool } from "pg";
+import { getEnvVariable } from "./helper";
+import type { TFrequency } from "./stores/donationStore";
+
+// Single pooled connection, reused across serverless invocations.
+declare global {
+  // eslint-disable-next-line no-var
+  var _pgPool: Pool | undefined;
+}
+
+export function getPool(): Pool {
+  if (!global._pgPool) {
+    global._pgPool = new Pool({
+      connectionString: getEnvVariable("DATABASE_URL"),
+      // Most hosted Postgres (Supabase/Neon/Vercel) require SSL.
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+    });
+  }
+  return global._pgPool;
+}
+
+export type TSubscriptionStatus =
+  | "PENDING"
+  | "ACTIVE"
+  | "PAUSED"
+  | "CANCELLED"
+  | "FAILED";
+
+export type TSubscription = {
+  id: string;
+  merchant_subscription_id: string;
+  phonepe_subscription_id: string | null;
+  setup_order_id: string;
+  donor_name: string | null;
+  donor_contact: string | null;
+  donor_email: string | null;
+  donor_pan: string | null;
+  donor_address: string | null;
+  amount: number;
+  frequency: TFrequency;
+  status: TSubscriptionStatus;
+  next_charge_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type TNewSubscription = {
+  merchantSubscriptionId: string;
+  setupOrderId: string;
+  amount: number;
+  frequency: TFrequency;
+  donorName?: string;
+  donorContact?: string;
+  donorEmail?: string;
+  donorPan?: string;
+  donorAddress?: string;
+};
+
+export async function createSubscription(
+  s: TNewSubscription,
+): Promise<TSubscription> {
+  const { rows } = await getPool().query<TSubscription>(
+    `INSERT INTO subscriptions
+       (merchant_subscription_id, setup_order_id, amount, frequency,
+        donor_name, donor_contact, donor_email, donor_pan, donor_address)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+     RETURNING *`,
+    [
+      s.merchantSubscriptionId,
+      s.setupOrderId,
+      s.amount,
+      s.frequency,
+      s.donorName ?? null,
+      s.donorContact ?? null,
+      s.donorEmail ?? null,
+      s.donorPan ?? null,
+      s.donorAddress ?? null,
+    ],
+  );
+  return rows[0];
+}
+
+export async function getSubscriptionByMerchantId(
+  merchantSubscriptionId: string,
+): Promise<TSubscription | null> {
+  const { rows } = await getPool().query<TSubscription>(
+    `SELECT * FROM subscriptions WHERE merchant_subscription_id = $1`,
+    [merchantSubscriptionId],
+  );
+  return rows[0] ?? null;
+}
+
+// Flip a mandate PENDING -> ACTIVE. Returns true only if THIS call performed the
+// transition (rowCount === 1); concurrent/repeat polls get false, so the caller
+// can safely trigger a one-time side effect (e.g. the immediate first charge)
+// exactly once.
+export async function activateSubscription(
+  merchantSubscriptionId: string,
+  phonepeSubscriptionId: string | null,
+  nextChargeAt: Date,
+): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    `UPDATE subscriptions
+       SET status = 'ACTIVE',
+           phonepe_subscription_id = COALESCE($2, phonepe_subscription_id),
+           next_charge_at = $3,
+           updated_at = now()
+     WHERE merchant_subscription_id = $1 AND status = 'PENDING'`,
+    [merchantSubscriptionId, phonepeSubscriptionId, nextChargeAt],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
+export async function setSubscriptionStatus(
+  merchantSubscriptionId: string,
+  status: TSubscriptionStatus,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE subscriptions SET status = $2, updated_at = now()
+     WHERE merchant_subscription_id = $1`,
+    [merchantSubscriptionId, status],
+  );
+}
+
+// Active subscriptions whose next charge is due (used by the cron).
+export async function getDueSubscriptions(
+  limit = 50,
+): Promise<TSubscription[]> {
+  const { rows } = await getPool().query<TSubscription>(
+    `SELECT * FROM subscriptions
+       WHERE status = 'ACTIVE' AND next_charge_at <= now()
+       ORDER BY next_charge_at ASC
+       LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+export async function bumpNextChargeAt(
+  subscriptionId: string,
+  nextChargeAt: Date,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE subscriptions SET next_charge_at = $2, updated_at = now()
+     WHERE id = $1`,
+    [subscriptionId, nextChargeAt],
+  );
+}
+
+export type TRedemptionState =
+  | "CREATED"
+  | "NOTIFIED"
+  | "SUCCESS"
+  | "FAILED";
+
+export type TRedemption = {
+  id: string;
+  subscription_id: string;
+  merchant_order_id: string;
+  notification_id?: string;
+  amount: number;
+  state: TRedemptionState;
+  receipt_issued: boolean;
+  drive_file_id?: string;
+  drive_file_link?: string;
+  ledger_appended?: boolean;
+  archive_error?: string;
+  attempted_at?: string;
+  completed_at?: string;
+};
+
+export async function createRedemption(
+  subscriptionId: string,
+  merchantOrderId: string,
+  amount: number,
+): Promise<string> {
+  const { rows } = await getPool().query<{ id: string }>(
+    `INSERT INTO redemptions (subscription_id, merchant_order_id, amount)
+     VALUES ($1,$2,$3) RETURNING id`,
+    [subscriptionId, merchantOrderId, amount],
+  );
+  return rows[0].id;
+}
+
+export async function setRedemptionNotified(
+  redemptionId: string,
+  notificationId: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions SET state = 'NOTIFIED', notification_id = $2
+     WHERE id = $1`,
+    [redemptionId, notificationId],
+  );
+}
+
+export async function getRedemptionByMerchantOrderId(
+  merchantOrderId: string,
+): Promise<TRedemption | null> {
+  const result = await getPool().query(
+    `SELECT * FROM redemptions WHERE merchant_order_id = $1`,
+    [merchantOrderId],
+  );
+  return result.rows[0] || null;
+}
+
+export async function setRedemptionState(
+  redemptionId: string,
+  state: TRedemptionState,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions
+       SET state = $2,
+           completed_at = CASE WHEN $2 IN ('SUCCESS','FAILED') THEN now() ELSE completed_at END
+     WHERE id = $1`,
+    [redemptionId, state],
+  );
+}
+
+// Atomically claim a SUCCESS redemption for archiving so the webhook and the
+// receipt-retry cron can't both upload the same receipt. Flips drive_file_id
+// NULL -> 'PENDING' for one winner; reclaims a stale 'PENDING' after 10 min.
+export async function claimRedemptionForArchive(
+  redemptionId: string,
+): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    `UPDATE redemptions
+        SET drive_file_id = 'PENDING'
+      WHERE id = $1 AND state = 'SUCCESS'
+        AND (drive_file_id IS NULL
+             OR (drive_file_id = 'PENDING'
+                 AND completed_at < now() - interval '10 minutes'))`,
+    [redemptionId],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
+export async function setRedemptionArchive(
+  redemptionId: string,
+  driveFileId: string,
+  driveFileLink: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions
+       SET receipt_issued = true,
+           drive_file_id = $2,
+           drive_file_link = $3,
+           archive_error = NULL
+     WHERE id = $1`,
+    [redemptionId, driveFileId, driveFileLink],
+  );
+}
+
+// Record an archive failure and release the claim (drive_file_id -> NULL) so the
+// receipt-retry cron re-attempts it.
+export async function setRedemptionArchiveError(
+  redemptionId: string,
+  error: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE redemptions
+       SET archive_error = $2, drive_file_id = NULL
+     WHERE id = $1`,
+    [redemptionId, error],
+  );
+}
+
+// Compute the next charge date for a given frequency.
+export function addFrequency(from: Date, frequency: TFrequency): Date {
+  const d = new Date(from);
+  switch (frequency) {
+    case "MONTHLY":
+      d.setMonth(d.getMonth() + 1);
+      break;
+    case "QUARTERLY":
+      d.setMonth(d.getMonth() + 3);
+      break;
+    case "HALFYEARLY":
+      d.setMonth(d.getMonth() + 6);
+      break;
+    case "YEARLY":
+      d.setFullYear(d.getFullYear() + 1);
+      break;
+  }
+  return d;
+}
+
+// ---- One-time donations (donor ledger, #9A) ----
+
+export type TDonationStatus = "PENDING" | "COMPLETED" | "FAILED";
+
+export type TDonation = {
+  id: string;
+  txn_id: string;
+  amount: number;
+  status: TDonationStatus;
+  donor_name: string | null;
+  donor_contact: string | null;
+  donor_email: string | null;
+  donor_pan: string | null;
+  donor_address: string | null;
+  wants_receipt: boolean;
+  payment_mode: string | null;
+  receipt_no: string | null;
+  drive_file_id: string | null;
+  drive_file_link: string | null;
+  archive_error: string | null;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type TNewDonation = {
+  txnId: string;
+  amount: number;
+  wantsReceipt: boolean;
+  donorName?: string | null;
+  donorContact?: string | null;
+  donorEmail?: string | null;
+  donorPan?: string | null;
+  donorAddress?: string | null;
+};
+
+// Insert a PENDING row when a payment is initiated. Idempotent on txn_id.
+export async function insertPendingDonation(d: TNewDonation): Promise<void> {
+  await getPool().query(
+    `INSERT INTO donations
+       (txn_id, amount, wants_receipt,
+        donor_name, donor_contact, donor_email, donor_pan, donor_address)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+     ON CONFLICT (txn_id) DO NOTHING`,
+    [
+      d.txnId,
+      d.amount,
+      d.wantsReceipt,
+      d.donorName ?? null,
+      d.donorContact ?? null,
+      d.donorEmail ?? null,
+      d.donorPan ?? null,
+      d.donorAddress ?? null,
+    ],
+  );
+}
+
+// Finalize a donation once PhonePe confirms the outcome. Only moves a row out
+// of PENDING (so repeated status polls / the cron stay idempotent).
+export async function finalizeDonation(
+  txnId: string,
+  status: "COMPLETED" | "FAILED",
+  paymentMode: string | null,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations
+       SET status = $2,
+           payment_mode = COALESCE($3, payment_mode),
+           updated_at = now()
+     WHERE txn_id = $1 AND status = 'PENDING'`,
+    [txnId, status, paymentMode],
+  );
+}
+
+export async function getDonationByTxnId(
+  txnId: string,
+): Promise<TDonation | null> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations WHERE txn_id = $1`,
+    [txnId],
+  );
+  return rows[0] ?? null;
+}
+
+export async function listDonations(limit = 200): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations ORDER BY created_at DESC LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// Admin view of recurring mandates, each with a summary of its charges so far.
+export type TSubscriptionWithCharges = TSubscription & {
+  charges_count: number; // successful charges
+  failed_count: number; // failed charges (needs attention)
+  total_collected: number; // rupees from successful charges
+  last_charge_at: Date | null;
+  archive_pending: number; // SUCCESS charges whose receipt hasn't reached Drive
+};
+
+export async function listSubscriptions(
+  limit = 2000,
+): Promise<TSubscriptionWithCharges[]> {
+  const { rows } = await getPool().query<TSubscriptionWithCharges>(
+    `SELECT s.*,
+            COUNT(r.id) FILTER (WHERE r.state = 'SUCCESS')::int AS charges_count,
+            COUNT(r.id) FILTER (WHERE r.state = 'FAILED')::int AS failed_count,
+            COALESCE(SUM(r.amount) FILTER (WHERE r.state = 'SUCCESS'), 0)::int AS total_collected,
+            MAX(r.completed_at) FILTER (WHERE r.state = 'SUCCESS') AS last_charge_at,
+            COUNT(r.id) FILTER (WHERE r.state = 'SUCCESS' AND r.drive_file_id IS NULL)::int AS archive_pending
+       FROM subscriptions s
+       LEFT JOIN redemptions r ON r.subscription_id = s.id
+      GROUP BY s.id
+      ORDER BY s.created_at DESC
+      LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// Mark a mandate cancelled in our ledger (after PhonePe confirms the cancel).
+export async function setSubscriptionCancelled(
+  merchantSubscriptionId: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE subscriptions
+        SET status = 'CANCELLED', updated_at = now()
+      WHERE merchant_subscription_id = $1`,
+    [merchantSubscriptionId],
+  );
+}
+
+// PENDING rows older than `minAgeMinutes` that the reconcile cron should check.
+export async function getStalePendingDonations(
+  minAgeMinutes = 15,
+): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations
+     WHERE status = 'PENDING' AND created_at < now() - ($1 || ' minutes')::interval
+     ORDER BY created_at ASC
+     LIMIT 100`,
+    [String(minAgeMinutes)],
+  );
+  return rows;
+}
+
+// Record a successful Drive archive on the donation row.
+// Atomically claim a donation for archiving so concurrent callers (the status
+// poll firing twice, or a poll overlapping the cron) can't both upload the same
+// receipt. Flips drive_file_id NULL -> 'PENDING' for exactly one winner; also
+// reclaims a stale 'PENDING' (a crash mid-upload) after 10 min. Returns true if
+// THIS caller won the claim and should proceed.
+export const ARCHIVE_PENDING = "PENDING";
+export async function claimDonationForArchive(txnId: string): Promise<boolean> {
+  const { rowCount } = await getPool().query(
+    `UPDATE donations
+        SET drive_file_id = '${ARCHIVE_PENDING}', updated_at = now()
+      WHERE txn_id = $1 AND status = 'COMPLETED'
+        AND (drive_file_id IS NULL
+             OR (drive_file_id = '${ARCHIVE_PENDING}'
+                 AND updated_at < now() - interval '10 minutes'))`,
+    [txnId],
+  );
+  return (rowCount ?? 0) > 0;
+}
+
+export async function setDonationArchive(
+  txnId: string,
+  driveFileId: string,
+  driveFileLink: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations
+       SET drive_file_id = $2, drive_file_link = $3,
+           archive_error = NULL, updated_at = now()
+     WHERE txn_id = $1`,
+    [txnId, driveFileId, driveFileLink],
+  );
+}
+
+// Record an archive failure and release the claim (drive_file_id -> NULL) so the
+// retry sweep re-attempts it.
+export async function setDonationArchiveError(
+  txnId: string,
+  error: string,
+): Promise<void> {
+  await getPool().query(
+    `UPDATE donations
+        SET archive_error = $2, drive_file_id = NULL, updated_at = now()
+      WHERE txn_id = $1`,
+    [txnId, error.slice(0, 500)],
+  );
+}
+
+// COMPLETED donations not yet archived to Drive (for the retry sweep). Includes
+// stale 'PENDING' claims so a crashed upload still gets retried.
+export async function getUnarchivedDonations(
+  limit = 50,
+): Promise<TDonation[]> {
+  const { rows } = await getPool().query<TDonation>(
+    `SELECT * FROM donations
+     WHERE status = 'COMPLETED'
+       AND (drive_file_id IS NULL
+            OR (drive_file_id = '${ARCHIVE_PENDING}'
+                AND updated_at < now() - interval '10 minutes'))
+     ORDER BY created_at ASC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
+// Successful recurring charges whose receipt hasn't reached Drive yet
+// (transient Drive errors during the webhook's background archive).
+export async function getUnarchivedRedemptions(
+  limit = 50,
+): Promise<TRedemption[]> {
+  const { rows } = await getPool().query<TRedemption>(
+    `SELECT * FROM redemptions
+     WHERE state = 'SUCCESS'
+       AND (drive_file_id IS NULL
+            OR (drive_file_id = 'PENDING'
+                AND completed_at < now() - interval '10 minutes'))
+     ORDER BY attempted_at ASC
+     LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}

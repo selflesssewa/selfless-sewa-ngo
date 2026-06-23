@@ -9,9 +9,13 @@ import GlowCard from "../components/GlowCard";
 const Page = () => {
   const resetFormState = useDonationStore((state) => state.resetStore);
   const amount = useDonationStore((state) => state.amount);
+  const isRecurring = useDonationStore((state) => state.isRecurring);
+  const setIsRecurring = useDonationStore((state) => state.setIsRecurring);
+  const frequency = useDonationStore((state) => state.frequency);
   const wantsReceipt = useDonationStore((state) => state.wantsReceipt);
   const name = useDonationStore((state) => state.name);
   const contact = useDonationStore((state) => state.contact);
+  const email = useDonationStore((state) => state.email);
   const pan = useDonationStore((state) => state.pan);
   const address = useDonationStore((state) => state.address);
   const toggleWantsReceipt = useDonationStore(
@@ -19,6 +23,7 @@ const Page = () => {
   );
   const updateAmount = useDonationStore((state) => state.updateAmount);
   const updateContact = useDonationStore((state) => state.updateContact);
+  const updateEmail = useDonationStore((state) => state.updateEmail);
   const updatePan = useDonationStore((state) => state.updatePan);
   const updateAddress = useDonationStore((state) => state.updateAddress);
   const updateName = useDonationStore((state) => state.updateName);
@@ -45,20 +50,53 @@ const Page = () => {
       return;
     }
 
-    let response = null;
+    if (!wantsReceipt && (!name || !contact)) {
+      alert("Please enter your name and phone number.");
+      return;
+    }
 
     setIsSubmitting(true);
 
+    // Recurring donation: set up a PhonePe Autopay mandate.
+    if (isRecurring) {
+      try {
+        const res = await fetch("/api/subscription/setup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount,
+            frequency,
+            name,
+            contact,
+            ...(email ? { email } : {}),
+            ...(wantsReceipt ? { pan, address } : {}),
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data?.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else {
+          alert(data?.error ?? "Could not start the recurring donation.");
+        }
+      } catch {
+        alert("Could not start the recurring donation. Please try again.");
+      }
+      setIsSubmitting(false);
+      return;
+    }
+
+    // One-time donation.
     const query = new URLSearchParams(
-      wantsReceipt ? { pan, name, contact, address, amount } : { amount },
+      wantsReceipt
+        ? { pan, name, contact, address, amount }
+        : { name, contact, ...(email ? { email } : {}), amount },
     );
 
-    response = await fetch(`/api/pay?${query.toString()}`);
-
+    const response = await fetch(`/api/pay?${query.toString()}`);
     const paymentData = await response.json();
 
     if (paymentData == null) {
-      console.log("error");
+      alert("Could not start the donation. Please try again.");
     } else {
       setTxnId(paymentData["txnId"]);
       window.location.href = paymentData["paymentUrl"];
@@ -68,7 +106,17 @@ const Page = () => {
 
   return (
     <main className="min-h-[65vh]">
-      <Container className="mb-21 mt-12 flex justify-center">
+      <Container className="mb-21 mt-12 flex flex-col items-center">
+        <div className="mb-10 flex max-w-prose flex-col items-center text-center">
+          <h1 className="text-headline-sm tracking-normal">
+            Support Our Mission
+          </h1>
+          <p className="mt-4 text-balance text-body-lg font-light tracking-wider text-white-70">
+            Every contribution helps Selfless Sewa bring food, education,
+            healthcare, and dignity to those who need it most. Give once, or set
+            up a recurring donation to sustain our work throughout the year.
+          </p>
+        </div>
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-[480px] [&_input]:placeholder:text-white-70 [&_textarea]:placeholder:text-white-70"
@@ -77,6 +125,44 @@ const Page = () => {
             className="flex flex-col items-stretch gap-4 [&_label]:text-title-sm [&_label]:font-medium"
             disabled={isSubmitting}
           >
+            <div className="flex gap-1 rounded-[0.9rem] bg-blue-30 p-1">
+              <button
+                type="button"
+                onClick={() => setIsRecurring(false)}
+                aria-pressed={!isRecurring}
+                className={twMerge(
+                  "flex-1 rounded-[0.6rem] py-2 text-title-sm font-medium transition-colors",
+                  !isRecurring ? "bg-green-50 text-white" : "text-white-70",
+                )}
+              >
+                Give once
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsRecurring(true)}
+                aria-pressed={isRecurring}
+                className={twMerge(
+                  "flex-1 rounded-[0.6rem] py-2 text-title-sm font-medium transition-colors",
+                  isRecurring ? "bg-green-50 text-white" : "text-white-70",
+                )}
+              >
+                Give recurring
+              </button>
+            </div>
+            {isRecurring && (
+              <>
+                <GlowCard className="flex items-center justify-between gap-2 p-3">
+                  <span className="text-title-sm font-medium">Frequency</span>
+                  <span className="text-title-sm font-medium text-white-70">
+                    Monthly
+                  </span>
+                </GlowCard>
+                <p className="px-3 text-body-sm text-white-70">
+                  You’ll approve a one-time UPI mandate, then your chosen amount
+                  is charged automatically every month. You can cancel anytime.
+                </p>
+              </>
+            )}
             <GlowCard className="flex items-center gap-2 p-1 ps-3">
               <label htmlFor="amount">₹</label>
               <input
@@ -101,6 +187,50 @@ const Page = () => {
               />
               <span>Would you like a receipt?</span>
             </label>
+            {!wantsReceipt && (
+              <>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    placeholder="Your name"
+                    onChange={(e) => updateName(e.target.value)}
+                    required
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="contact">Phone Number</label>
+                  <input
+                    type="tel"
+                    id="contact"
+                    placeholder="Your phone number"
+                    value={contact}
+                    onChange={(e) => updateContact(e.target.value)}
+                    required
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+                <GlowCard className="flex flex-col gap-2 p-3 pb-1">
+                  <label htmlFor="email">
+                    Email{" "}
+                    <span className="font-normal text-white-70">
+                      (optional)
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Your email address"
+                    value={email}
+                    onChange={(e) => updateEmail(e.target.value)}
+                    className="w-full rounded-[0.8rem] bg-transparent py-2 text-white focus-within:outline-none"
+                  />
+                </GlowCard>
+              </>
+            )}
             {wantsReceipt && (
               <>
                 <GlowCard className="flex flex-col gap-2 p-3 pb-1">
