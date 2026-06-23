@@ -99,9 +99,9 @@ export async function setupSubscription(p: TSetupParams): Promise<{
         maxAmount: p.maxAmountPaise,
         frequency: p.frequency,
         productType: "UPI_MANDATE",
-        ...(p.expireAtMs
-          ? { expireAt: Math.floor(p.expireAtMs / 1000) }
-          : {}),
+        // PhonePe expects epoch MILLISECONDS here (not seconds). Sending seconds
+        // is read as a 1970 date -> INVALID_SUBSCRIPTION_EXPIRY in production.
+        ...(p.expireAtMs ? { expireAt: p.expireAtMs } : {}),
       },
     },
   };
