@@ -3,6 +3,10 @@ import { finalizeDonation } from "@/db";
 import { archiveDonation } from "@/archive";
 import { decodeJwt } from "jose";
 import { NextRequest } from "next/server";
+import { waitUntil } from "@vercel/functions";
+
+// Give the slow Apps Script Drive upload room to finish (Hobby allows up to 60s).
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -40,8 +44,12 @@ export async function GET(request: NextRequest) {
       // donor's poll response. /api/cron/archive remains the fallback for any
       // that don't finish (closed tab, transient Drive error). Idempotent.
       if (state === "COMPLETED") {
-        archiveDonation(payload.id as string).catch((e) =>
-          console.error("Archive failed in status route (non-fatal):", e),
+        // waitUntil keeps the function alive until the Drive upload finishes, so
+        // we capture the fileId/link instead of the request being frozen mid-flight.
+        waitUntil(
+          archiveDonation(payload.id as string).catch((e) =>
+            console.error("Archive failed in status route (non-fatal):", e),
+          ),
         );
       }
     }

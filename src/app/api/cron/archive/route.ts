@@ -2,6 +2,8 @@ import { getUnarchivedDonations } from "@/db";
 import { archiveDonation } from "@/archive";
 import { NextRequest } from "next/server";
 
+export const maxDuration = 60;
+
 // Vercel Cron. Retries archiving COMPLETED donations whose Drive upload hasn't
 // succeeded yet (closed-tab finalizations, transient Drive errors). Protected
 // by CRON_SECRET. archiveDonation is idempotent and never throws.

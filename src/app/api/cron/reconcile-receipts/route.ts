@@ -2,6 +2,8 @@ import { getUnarchivedRedemptions } from "@/db";
 import { archiveRedemption } from "@/archive";
 import { NextRequest } from "next/server";
 
+export const maxDuration = 60;
+
 // Vercel Cron. Retries archiving SUCCESS redemptions whose receipt Drive upload
 // hasn't landed yet (transient Drive errors during the webhook's background
 // archive). Protected by CRON_SECRET. archiveRedemption is idempotent and never throws.
