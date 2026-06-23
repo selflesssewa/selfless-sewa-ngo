@@ -34,8 +34,8 @@ function isAuthentic(request: NextRequest): boolean {
     .digest("hex");
   const received = request.headers.get("authorization") ?? "";
 
-  const a = Buffer.from(received);
-  const b = Buffer.from(expected);
+  const a = new Uint8Array(Buffer.from(received));
+  const b = new Uint8Array(Buffer.from(expected));
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
@@ -48,14 +48,25 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
 
-  // PhonePe sends: { merchantOrderId, status, transactionId, ...other fields }
-  const { merchantOrderId, status } = body;
+  // PhonePe v2 webhooks are nested: { event, payload: { merchantOrderId, state, ... } }.
+  // Our tests / manual posts use a flat { merchantOrderId, status }. Accept both.
+  const p = body?.payload ?? body;
+  const merchantOrderId = p?.merchantOrderId ?? body?.merchantOrderId;
+  const rawState: string | undefined = p?.state ?? p?.status ?? body?.status;
 
-  if (!merchantOrderId || !status) {
+  if (!merchantOrderId || !rawState) {
     return Response.json(
-      { error: "Missing merchantOrderId or status" },
+      { error: "Missing merchantOrderId or state" },
       { status: 400 }
     );
+  }
+
+  // Map PhonePe's terminal states. Ignore non-terminal (e.g. PENDING) callbacks.
+  const isSuccess = rawState === "COMPLETED" || rawState === "SUCCESS";
+  const isFailed =
+    rawState === "FAILED" || rawState === "FAILURE" || rawState === "DECLINED";
+  if (!isSuccess && !isFailed) {
+    return Response.json({ success: true, ignored: true, state: rawState });
   }
 
   try {
@@ -65,9 +76,9 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Redemption not found" }, { status: 404 });
     }
 
-    // Map PhonePe status to our state (idempotent: only update if not already finalized)
+    // Idempotent: only update if not already finalized.
     if (redemption.state === "NOTIFIED" || redemption.state === "CREATED") {
-      const state = status === "SUCCESS" ? "SUCCESS" : "FAILED";
+      const state = isSuccess ? "SUCCESS" : "FAILED";
       await setRedemptionState(redemption.id, state);
 
       // If successful, queue receipt archiving (Phase 3b & 3c)
