@@ -10,6 +10,9 @@ import {
 import { recordSetupCharge } from "@/charge";
 import { NextRequest } from "next/server";
 
+// Allow time for the first-charge receipt's Drive upload (waitUntil) to finish.
+export const maxDuration = 60;
+
 // After the donor authorizes a mandate on PhonePe, they redirect back with ?sub=merchantSubscriptionId.
 // This endpoint checks the authorization status and activates the subscription if authorized.
 export async function GET(request: NextRequest) {

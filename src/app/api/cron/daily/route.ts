@@ -10,6 +10,9 @@ import { archiveDonation, archiveRedemption } from "@/archive";
 import { callStatusApi } from "@/phonepe";
 import { NextRequest } from "next/server";
 
+// Runs several Drive uploads + PhonePe calls in sequence — needs headroom.
+export const maxDuration = 60;
+
 // Single daily maintenance cron — the Vercel Hobby plan only allows daily cron
 // jobs (and a small number of them), so we run all four sweeps in one pass:
 //   1. charge due recurring mandates

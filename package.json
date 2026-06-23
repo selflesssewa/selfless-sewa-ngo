@@ -20,6 +20,7 @@
     "@icons-pack/react-simple-icons": "^9.4.0",
     "@types/react-simple-maps": "^3.0.4",
     "@vercel/analytics": "^1.2.2",
+    "@vercel/functions": "^3.7.2",
     "axios": "^1.7.2",
     "contentful": "^10.8.7",
     "framer-motion": "^11.2.10",

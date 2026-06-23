@@ -4,7 +4,11 @@ import {
 } from "@/db";
 import { archiveRedemption } from "@/archive";
 import { NextRequest } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import crypto from "crypto";
+
+// Give the slow Apps Script Drive upload room to finish (Hobby allows up to 60s).
+export const maxDuration = 60;
 
 // Verify the webhook really came from PhonePe. PhonePe sends
 // `Authorization: SHA256(username:password)` (hex), using the credentials you
@@ -81,11 +85,13 @@ export async function POST(request: NextRequest) {
       const state = isSuccess ? "SUCCESS" : "FAILED";
       await setRedemptionState(redemption.id, state);
 
-      // If successful, queue receipt archiving (Phase 3b & 3c)
+      // If successful, archive the receipt. waitUntil keeps the function alive
+      // until the Drive upload completes so we capture the link.
       if (state === "SUCCESS") {
-        // Fire and forget: archive in background
-        archiveRedemption(redemption.id, merchantOrderId).catch((e) =>
-          console.error("Archive failed in webhook", e)
+        waitUntil(
+          archiveRedemption(redemption.id, merchantOrderId).catch((e) =>
+            console.error("Archive failed in webhook", e)
+          )
         );
       }
 

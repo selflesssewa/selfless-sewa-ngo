@@ -8,6 +8,7 @@ import {
 } from "./db";
 import { archiveRedemption } from "./archive";
 import { notifyRedemption, redeem } from "./phonepe";
+import { waitUntil } from "@vercel/functions";
 import crypto from "crypto";
 
 export type TChargeResult = {
@@ -99,8 +100,11 @@ export async function recordSetupCharge(sub: TSubscription): Promise<void> {
     sub.amount,
   );
   await setRedemptionState(redemptionId, "SUCCESS");
-  // Owner's receipt copy; the receipt retry cron backstops Drive hiccups.
-  archiveRedemption(redemptionId, sub.setup_order_id).catch((e) =>
-    console.error("Setup-charge archive failed (non-fatal):", e),
+  // Owner's receipt copy; waitUntil keeps the function alive until the Drive
+  // upload completes. The receipt retry cron backstops any Drive hiccup.
+  waitUntil(
+    archiveRedemption(redemptionId, sub.setup_order_id).catch((e) =>
+      console.error("Setup-charge archive failed (non-fatal):", e),
+    ),
   );
 }
