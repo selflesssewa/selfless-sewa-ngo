@@ -4,20 +4,8 @@
     },
     "crons": [
         {
-            "path": "/api/cron/charge",
+            "path": "/api/cron/daily",
             "schedule": "0 4 * * *"
-        },
-        {
-            "path": "/api/cron/reconcile",
-            "schedule": "0 */6 * * *"
-        },
-        {
-            "path": "/api/cron/archive",
-            "schedule": "30 */6 * * *"
-        },
-        {
-            "path": "/api/cron/reconcile-receipts",
-            "schedule": "45 */6 * * *"
         }
     ]
 }

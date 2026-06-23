@@ -86,17 +86,20 @@ DATABASE_URL_UNPOOLED="<prod-direct-url>" npm run db:migrate
 
 ## 3. Cron jobs
 
-`vercel.json` already declares the scheduled jobs — Vercel picks these up
-automatically on deploy:
+The **Vercel Hobby plan only allows daily cron jobs** (and a small number of
+them), so all maintenance runs in **one daily cron** that does every sweep in
+sequence:
 
-| Path | Schedule | Purpose |
-|------|----------|---------|
-| `/api/cron/charge` | daily 04:00 | Charge due recurring mandates |
-| `/api/cron/reconcile` | every 6h | Finalize one-time payments (closed tabs) |
-| `/api/cron/archive` | every 6h | Retry one-time Drive archiving |
-| `/api/cron/reconcile-receipts` | every 6h | Retry recurring receipt archiving |
+| Path | Schedule | Does |
+|------|----------|------|
+| `/api/cron/daily` | daily 04:00 | charge due mandates → reconcile pending one-time → retry one-time archiving → retry recurring receipt archiving |
 
-They're protected by `CRON_SECRET`, which Vercel sends automatically.
+Protected by `CRON_SECRET` (Vercel sends it automatically). The granular
+endpoints (`/api/cron/charge`, `/reconcile`, `/archive`, `/reconcile-receipts`)
+still exist for **manual** triggering, but aren't scheduled.
+
+> On the **Pro** plan you could split these back into separate, more frequent
+> crons — but daily is plenty for an NGO's volume.
 
 ---
 
