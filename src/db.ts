@@ -409,12 +409,7 @@ export async function listSubscriptions(
 export async function setSubscriptionCancelled(
   merchantSubscriptionId: string,
 ): Promise<void> {
-  await getPool().query(
-    `UPDATE subscriptions
-        SET status = 'CANCELLED', updated_at = now()
-      WHERE merchant_subscription_id = $1`,
-    [merchantSubscriptionId],
-  );
+  await setSubscriptionStatus(merchantSubscriptionId, "CANCELLED");
 }
 
 // PENDING rows older than `minAgeMinutes` that the reconcile cron should check.
