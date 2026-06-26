@@ -30,6 +30,28 @@ const toWords = new ToWords({
   },
 });
 
+// Vercel servers run in UTC but donors are in India — always render receipt
+// dates/times in IST so an afternoon payment doesn't read as a morning one.
+const IST = "Asia/Kolkata";
+function istDateTime(d: Date): string {
+  return new Intl.DateTimeFormat("en-IN", {
+    timeZone: IST,
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(d);
+}
+function istMonthDay(d: Date): { month: string; day: string } {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: IST,
+    day: "numeric",
+    month: "numeric",
+  }).formatToParts(d);
+  return {
+    month: parts.find((p) => p.type === "month")?.value ?? "",
+    day: parts.find((p) => p.type === "day")?.value ?? "",
+  };
+}
+
 export type TReceiptData = {
   txnId: string;
   name: string;
@@ -38,6 +60,7 @@ export type TReceiptData = {
   address: string;
   paymentMode: string;
   amountInRupees: string;
+  dateTime?: string | Date; // actual payment time; defaults to now
 };
 
 // Fills the receipt.pdf template from a single donation's data. Stateless —
@@ -76,11 +99,10 @@ export async function generateReceiptPdf(data: TReceiptData): Promise<Uint8Array
   const fontSize = 16;
 
   const last4Chars = txnId.slice(-4);
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const date = now.getDate();
+  const when = data.dateTime ? new Date(data.dateTime) : new Date();
+  const { month, day } = istMonthDay(when);
 
-  const receiptNo = `${month}/${last4Chars}/${date}`;
+  const receiptNo = `${month}/${last4Chars}/${day}`;
 
   page.drawText(receiptNo, {
     x: 230,
@@ -90,7 +112,7 @@ export async function generateReceiptPdf(data: TReceiptData): Promise<Uint8Array
     color: rgb(0, 0, 0),
   });
 
-  const timestamp = new Date().toLocaleString();
+  const timestamp = istDateTime(when);
   page.drawText(timestamp, {
     x: 120,
     y: 455,
@@ -171,6 +193,7 @@ export type TAcknowledgmentData = {
   contact: string;
   paymentMode: string;
   amountInRupees: string;
+  dateTime?: string | Date; // actual payment time; defaults to now
 };
 
 // A simple one-page acknowledgment for non-receipt donations (no PAN/address,
@@ -208,8 +231,9 @@ export async function generateAcknowledgmentPdf(
     color: grey,
   });
 
+  const when = data.dateTime ? new Date(data.dateTime) : new Date();
   const rows: Array<[string, string]> = [
-    ["Date", new Date().toLocaleString("en-IN")],
+    ["Date", istDateTime(when)],
     ["Transaction ID", txnId],
     ["Name", name],
     ["Phone", contact],
