@@ -40,6 +40,13 @@ type TSubscription = {
 
 type TReceiptFilter = "all" | "with" | "without";
 type TStatusFilter = "all" | "COMPLETED" | "PENDING" | "FAILED";
+type TSubStatusFilter =
+  | "all"
+  | "ACTIVE"
+  | "PAUSED"
+  | "CANCELLED"
+  | "FAILED"
+  | "PENDING";
 type TTab = "onetime" | "recurring";
 
 const FREQUENCY_LABEL: Record<string, string> = {
@@ -71,6 +78,8 @@ const Page = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<TStatusFilter>("all");
   const [receiptFilter, setReceiptFilter] = useState<TReceiptFilter>("all");
+  const [subStatusFilter, setSubStatusFilter] =
+    useState<TSubStatusFilter>("all");
   const [month, setMonth] = useState(""); // YYYY-MM
   const [day, setDay] = useState(""); // YYYY-MM-DD
 
@@ -151,9 +160,28 @@ const Page = () => {
     [filtered],
   );
 
+  const filteredSubscriptions = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return subscriptions.filter((s) => {
+      if (subStatusFilter !== "all" && s.status !== subStatusFilter)
+        return false;
+      const ymd = localYMD(s.created_at);
+      if (day && ymd !== day) return false;
+      if (month && !ymd.startsWith(month)) return false;
+      if (q) {
+        const hay = `${s.donor_name ?? ""} ${s.donor_contact ?? ""} ${
+          s.donor_email ?? ""
+        } ${s.merchant_subscription_id}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [subscriptions, search, subStatusFilter, month, day]);
+
   const recurringCollected = useMemo(
-    () => subscriptions.reduce((sum, s) => sum + (s.total_collected ?? 0), 0),
-    [subscriptions],
+    () =>
+      filteredSubscriptions.reduce((sum, s) => sum + (s.total_collected ?? 0), 0),
+    [filteredSubscriptions],
   );
 
   // ---- Summary metrics (across ALL data, ignoring the one-time filters) ----
@@ -213,6 +241,7 @@ const Page = () => {
     setSearch("");
     setStatusFilter("all");
     setReceiptFilter("all");
+    setSubStatusFilter("all");
     setMonth("");
     setDay("");
   };
@@ -276,7 +305,7 @@ const Page = () => {
       "Next charge",
     ];
     const esc = (v: unknown) => `"${String(v ?? "").replaceAll('"', '""')}"`;
-    const rows = subscriptions.map((s) =>
+    const rows = filteredSubscriptions.map((s) =>
       [
         fmt(s.created_at),
         s.merchant_subscription_id,
@@ -406,12 +435,12 @@ const Page = () => {
                 </>
               ) : (
                 <>
-                  {subscriptions.length} recurring{" "}
-                  {subscriptions.length === 1 ? "donor" : "donors"} ·{" "}
+                  {filteredSubscriptions.length} of {subscriptions.length}{" "}
+                  recurring ·{" "}
                   <span className="font-medium text-white">
                     ₹{recurringCollected.toLocaleString("en-IN")}
                   </span>{" "}
-                  collected so far
+                  collected
                 </>
               )}
             </p>
@@ -434,7 +463,7 @@ const Page = () => {
             ) : (
               <button
                 onClick={exportRecurringCsv}
-                disabled={subscriptions.length === 0}
+                disabled={filteredSubscriptions.length === 0}
                 className="rounded-[0.6rem] bg-green-50 px-3 py-2 text-body-sm font-medium disabled:opacity-50"
               >
                 Export CSV
@@ -550,6 +579,88 @@ const Page = () => {
         </div>
 
         {tab === "recurring" ? (
+          <>
+          {/* Recurring filters */}
+          <fieldset className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <legend className="sr-only">Filters</legend>
+
+            <div className="flex flex-col gap-1 lg:col-span-2">
+              <label htmlFor="rsearch" className="text-body-sm text-white-70">
+                Search name / phone / email
+              </label>
+              <input
+                id="rsearch"
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="e.g. Asha or 98765"
+                className={inputCls}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="rstatus" className="text-body-sm text-white-70">
+                Status
+              </label>
+              <select
+                id="rstatus"
+                value={subStatusFilter}
+                onChange={(e) =>
+                  setSubStatusFilter(e.target.value as TSubStatusFilter)
+                }
+                className={inputCls}
+              >
+                <option value="all">All</option>
+                <option value="ACTIVE">Active</option>
+                <option value="PAUSED">Paused</option>
+                <option value="CANCELLED">Cancelled</option>
+                <option value="FAILED">Failed</option>
+                <option value="PENDING">Pending</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="rmonth" className="text-body-sm text-white-70">
+                Month
+              </label>
+              <input
+                id="rmonth"
+                type="month"
+                value={month}
+                onChange={(e) => {
+                  setMonth(e.target.value);
+                  setDay("");
+                }}
+                className={inputCls}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="rday" className="text-body-sm text-white-70">
+                Day
+              </label>
+              <input
+                id="rday"
+                type="date"
+                value={day}
+                onChange={(e) => {
+                  setDay(e.target.value);
+                  setMonth("");
+                }}
+                className={inputCls}
+              />
+            </div>
+          </fieldset>
+
+          {(search || subStatusFilter !== "all" || month || day) && (
+            <button
+              onClick={clearFilters}
+              className="mb-4 text-body-sm text-blue-300 underline"
+            >
+              Clear filters
+            </button>
+          )}
+
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-body-sm [&_td]:border-b [&_td]:border-white-30 [&_td]:px-2 [&_td]:py-2 [&_th]:border-b [&_th]:border-white-30 [&_th]:px-2 [&_th]:py-2 [&_th]:text-left">
               <caption className="sr-only">List of recurring donors</caption>
@@ -569,14 +680,16 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {subscriptions.length === 0 ? (
+                {filteredSubscriptions.length === 0 ? (
                   <tr>
                     <td colSpan={11} className="py-6 text-center text-white-70">
-                      No recurring donors yet.
+                      {subscriptions.length === 0
+                        ? "No recurring donors yet."
+                        : "No recurring donors match these filters."}
                     </td>
                   </tr>
                 ) : (
-                  subscriptions.map((s) => (
+                  filteredSubscriptions.map((s) => (
                     <tr key={s.id}>
                       <td className="whitespace-nowrap">{fmt(s.created_at)}</td>
                       <td>{s.donor_name ?? "—"}</td>
@@ -627,6 +740,7 @@ const Page = () => {
               </tbody>
             </table>
           </div>
+          </>
         ) : (
         <>
         {/* Filters */}
