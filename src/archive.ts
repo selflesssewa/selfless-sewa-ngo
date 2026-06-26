@@ -49,6 +49,7 @@ export async function archiveDonation(txnId: string): Promise<void> {
         address: d.donor_address!,
         paymentMode: d.payment_mode ?? "",
         amountInRupees: amount,
+        dateTime: d.created_at,
       });
       filename = `receipt_${date}_${safeName(d.donor_name)}_${d.txn_id}.pdf`;
     } else {
@@ -58,6 +59,7 @@ export async function archiveDonation(txnId: string): Promise<void> {
         contact: d.donor_contact ?? "-",
         paymentMode: d.payment_mode ?? "",
         amountInRupees: amount,
+        dateTime: d.created_at,
       });
       filename = `ack_${date}_${safeName(d.donor_name)}_${d.txn_id}.pdf`;
     }
@@ -113,6 +115,7 @@ export async function archiveRedemption(
       address: sub.donor_address || "-",
       paymentMode: "UPI Recurring Mandate",
       amountInRupees: amount,
+      dateTime: r.completed_at || r.attempted_at,
     });
 
     const filename = `recurring_receipt_${date}_${safeName(sub.donor_name)}_${txnId}.pdf`;
