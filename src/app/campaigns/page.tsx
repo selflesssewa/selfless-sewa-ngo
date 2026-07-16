@@ -8,6 +8,10 @@ import CallToActionCard from "../components/CallToActionCard";
 import Container from "../components/Container";
 import GlowCard from "../components/GlowCard";
 
+// ISR: re-fetch Contentful at most once per 60s so content edits appear
+// automatically without a redeploy.
+export const revalidate = 60;
+
 const Project = async () => {
   const { campaigns } = await getCampaignPageContent();
 

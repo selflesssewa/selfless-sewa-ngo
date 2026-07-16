@@ -11,6 +11,10 @@ import { projectIconClasses } from "../page";
 import GlowCard from "../components/GlowCard";
 import CallToActionCard from "../components/CallToActionCard";
 
+// ISR: re-fetch Contentful at most once per 60s so content edits appear
+// automatically without a redeploy.
+export const revalidate = 60;
+
 const Project = async () => {
   const { projects } = await getProjectPageContent();
 

@@ -11,6 +11,10 @@ import HeroSlider from "./components/HeroSlider";
 import Map from "./components/Map";
 import TestimonialSlider from "./components/TestimonialSlider";
 
+// ISR: re-fetch Contentful at most once per 60s so content edits appear
+// automatically without a redeploy.
+export const revalidate = 60;
+
 const beliefs = [
     {
       title: "Serving with our hearts",

@@ -3,6 +3,10 @@ import Link from "next/link";
 import { MaterialSymbol, type SymbolCodepoints } from "react-material-symbols";
 import Container from "../components/Container";
 
+// ISR: re-fetch Contentful at most once per 60s so content edits appear
+// automatically without a redeploy.
+export const revalidate = 60;
+
 const departments: Array<{
   icon: SymbolCodepoints;
   name: string;
