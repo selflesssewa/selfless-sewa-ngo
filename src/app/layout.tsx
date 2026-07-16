@@ -19,6 +19,10 @@ import Navbar from "./components/Navbar";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 
+// ISR: the footer (contact/socials) comes from Contentful — refresh it at most
+// once per 60s so edits appear without a redeploy.
+export const revalidate = 60;
+
 const bodyFont = Instrument_Sans({
   subsets: ["latin"],
   style: ["normal"],

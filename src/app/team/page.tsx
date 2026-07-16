@@ -6,6 +6,10 @@ import Container from "../components/Container";
 import { getTeamPageContent, teamBeliefs } from "@/dao";
 import GlowCard from "../components/GlowCard";
 
+// ISR: re-fetch Contentful at most once per 60s so content edits appear
+// automatically without a redeploy.
+export const revalidate = 60;
+
 const Team = async () => {
   const data = await getTeamPageContent();
 
