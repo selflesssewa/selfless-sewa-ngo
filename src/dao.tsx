@@ -184,7 +184,9 @@ export async function getCampaignPageContent(): Promise<TCampaignPageContent> {
         content: c.fields.content as Document,
       } as TCampaign;
     })
-    .sort((a, b) => (a.active && !b.active ? 1 : 0));
+    // Active campaigns first (top), inactive ones below. Stable, so entries
+    // with the same active state keep their Contentful order.
+    .sort((a, b) => (b.active ? 1 : 0) - (a.active ? 1 : 0));
 
   return {
     campaigns,
