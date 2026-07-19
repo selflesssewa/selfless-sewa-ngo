@@ -15,10 +15,13 @@ import { useRef } from "react";
 const geoUrl =
   "https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.topo.json";
 
-// Mirror ComposableMap's projection so our arc paths line up with the beacons.
+// Zoomed into North India (all our cities are up there) so they get breathing
+// room. Must mirror ComposableMap's projection below so arcs line up with dots.
+const MAP_ROTATE: [number, number, number] = [-77.4, -29.5, 0];
+const MAP_SCALE = 7000;
 const projection = geoMercator()
-  .rotate([-80, -22, 0])
-  .scale(1600)
+  .rotate(MAP_ROTATE)
+  .scale(MAP_SCALE)
   .translate([500, 500]);
 
 const project = (lon: number, lat: number): [number, number] => {
@@ -57,7 +60,7 @@ export default function Map({ points }: { points: Array<TLocation> }) {
         projection="geoMercator"
         height={1000}
         width={1000}
-        projectionConfig={{ rotate: [-80, -22, 0], scale: 1600 }}
+        projectionConfig={{ rotate: MAP_ROTATE, scale: MAP_SCALE }}
       >
         <defs>
           <filter id="dotGlow" x="-300%" y="-300%" width="700%" height="700%">
@@ -150,7 +153,7 @@ export default function Map({ points }: { points: Array<TLocation> }) {
               <circle r={4} className="fill-white">
                 <animate
                   attributeName="r"
-                  values="4;22"
+                  values="4;16"
                   dur="2.6s"
                   begin={`-${i * 0.4}s`}
                   repeatCount="indefinite"
