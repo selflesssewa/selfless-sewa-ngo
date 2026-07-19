@@ -36,12 +36,12 @@ const Project = async () => {
                   </span>
                 )}
               </div>
-              <div className="no-scrollbar -mx-5 flex snap-x snap-proximity scroll-px-2 gap-2 overflow-x-auto px-2 empty:hidden md:-mx-6 md:scroll-px-0 md:rounded-md md:px-0">
+              <div className="no-scrollbar flex snap-x snap-proximity gap-2 overflow-x-auto rounded-xl empty:hidden">
                 {c.imgUrls?.map((url) => (
                   <img
                     src={url}
                     key={url}
-                    className="h-[25vh] max-h-[420px] min-h-[320px] w-auto snap-start rounded-3xl md:h-[35vh] lg:h-[55vh]"
+                    className="h-[25vh] max-h-[420px] min-h-[320px] w-auto shrink-0 snap-start rounded-2xl md:h-[35vh] lg:h-[45vh]"
                     alt=""
                   />
                 ))}
