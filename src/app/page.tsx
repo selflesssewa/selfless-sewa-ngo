@@ -272,13 +272,12 @@ export default async function Home() {
         <Container className="my-16 lg:my-20">
           <div className="mb-2 grid auto-cols-auto grid-cols-1 items-start lg:mb-14 lg:grid-cols-7">
             <h2 className="font-display col-start-1 mb-4 text-center text-headline-md font-normal tracking-tight lg:col-span-4 lg:mb-12 lg:text-start lg:text-headline-lg lg:tracking-tight">
-              Winter Campaign
+              Bag Distribution
             </h2>
             <p className="mx-3 -mb-8 text-pretty rounded-2xl border border-white/15 bg-white/10 p-2 px-3 text-title-sm drop-shadow-lg backdrop-blur-xl lg:col-span-3 lg:col-start-1 lg:row-start-2 lg:m-[0px] lg:mt-[15%] lg:p-3 lg:px-4">
-              As the winter chill settles in, many families face hardships,
-              enduring the merciless winter. Thus, as our motto states, "service
-              above self"; we took it upon ourselves to light up their nights,
-              one by one.
+              Every child dreams of a school bag they can truly call their own.
+              For a child who has never owned one, it becomes a reason to smile,
+              feel confident, and look forward to going to school.
             </p>
             <div className="h-[60vh] lg:col-span-5 lg:col-start-3 lg:row-start-2">
               <img
@@ -298,12 +297,11 @@ export default async function Home() {
             </div>
             <div className="mx-3 -mt-8 flex flex-col gap-4 lg:col-span-3 lg:row-start-1 lg:m-[0px] lg:-ms-8 lg:mb-[15%]">
               <p className="text-pretty rounded-2xl border border-white/15 bg-white/10 p-2 px-3 text-title-sm drop-shadow-lg backdrop-blur-xl lg:p-3 lg:px-4">
-                We are on an ongoing mission of distributing 1000+ winter
-                essentials to the ones with lost homes all across the country,
-                mainly focusing on areas including Delhi, Sirsa, Chandigarh,
-                Dehradun and more. It surely isn't possible without people like
-                you, who, with every small contribution, help us make a huge
-                difference.
+                This is a permanent campaign — our goal is to distribute 5,000+
+                school bags, starting with children in the slum communities where
+                we work, then reaching orphanages and beyond. No child should
+                carry their books in a plastic bag. With every contribution, you
+                help a child begin a new journey with dignity.
               </p>
               <Link
                 href="/donate"

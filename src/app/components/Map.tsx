@@ -1,69 +1,254 @@
 "use client";
 
 import { TLocation } from "@/types";
-import Container from "./Container";
 import {
   ComposableMap,
   Geographies,
   Geography,
   Marker,
   Annotation,
+  ZoomableGroup,
 } from "react-simple-maps";
+import { geoMercator } from "d3-geo";
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
 
 const geoUrl =
   "https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.topo.json";
 
+// Whole-India view. Must mirror ComposableMap's projection below so the arc
+// paths line up with the beacons.
+const MAP_ROTATE: [number, number, number] = [-80, -22, 0];
+const MAP_SCALE = 1600;
+const HOME: [number, number] = [80, 22]; // natural centre at zoom 1
+const projection = geoMercator()
+  .rotate(MAP_ROTATE)
+  .scale(MAP_SCALE)
+  .translate([500, 500]);
+
+const project = (lon: number, lat: number): [number, number] => {
+  const p = projection([lon, lat]);
+  return p ? [p[0], p[1]] : [0, 0];
+};
+
+// Gentle curved (quadratic) path between two projected points.
+function arcPath(a: [number, number], b: [number, number]): string {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const dist = Math.hypot(dx, dy) || 1;
+  const curve = Math.min(dist * 0.35, 90);
+  const nx = -dy / dist;
+  const ny = dx / dist;
+  const cx = (a[0] + b[0]) / 2 + nx * curve;
+  const cy = (a[1] + b[1]) / 2 + ny * curve;
+  return `M ${a[0]} ${a[1]} Q ${cx} ${cy} ${b[0]} ${b[1]}`;
+}
+
+const btn =
+  "grid size-9 place-items-center rounded-full border border-white/25 bg-white/10 text-title-md font-medium leading-none text-white backdrop-blur transition hover:bg-white/25";
+
 export default function Map({ points }: { points: Array<TLocation> }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.25 });
+  const [view, setView] = useState<{
+    coordinates: [number, number];
+    zoom: number;
+  }>({ coordinates: HOME, zoom: 1 });
+
+  const zoomIn = () =>
+    setView((v) => ({ ...v, zoom: Math.min(v.zoom * 1.6, 8) }));
+  const zoomOut = () =>
+    setView((v) => ({ ...v, zoom: Math.max(v.zoom / 1.6, 1) }));
+  const reset = () => setView({ coordinates: HOME, zoom: 1 });
+
+  // Draw the "reach" arcs from our HQ (Delhi) out to every other city.
+  const hq = points.find((p) => p.label.toLowerCase() === "delhi") ?? points[0];
+  const hqXY = hq ? project(hq.lon, hq.lat) : ([0, 0] as [number, number]);
+  const spokes = points
+    .filter((p) => p !== hq)
+    .map((p, i) => ({ p, i, d: arcPath(hqXY, project(p.lon, p.lat)) }));
+
   return (
-    <ComposableMap
-      className="max-h-[80vh] w-full"
-      projection="geoMercator"
-      height={1000}
-      width={1000}
-      projectionConfig={{
-        rotate: [-80, -22, 0],
-        scale: 1600,
-      }}
-    >
-      <Geographies geography={geoUrl}>
-        {({ geographies }) =>
-          geographies.map((geo) => (
-            <Geography
-              tabIndex={-1}
-              className="pointer-events-none fill-blue-30 stroke-blue stroke-[0.035rem]"
-              key={geo.rsmKey}
-              geography={geo}
-            />
-          ))
-        }
-      </Geographies>
-      {points.map(({ label, lon, lat }) => (
-        <Marker coordinates={[lon, lat]} key={label}>
-          <circle
-            r={5}
-            className="fill-transparent stroke-white stroke-1 max-md:stroke-2"
-          />
-        </Marker>
-      ))}
-      {points.map((p) => (
-        <Annotation
-          key={p.label}
-          subject={[p.lon, p.lat]}
-          dx={p.offsetX}
-          dy={p.offsetY}
-          className="fill-white [&_path]:stroke-white [&_path]:stroke-1 max-md:[&_path]:stroke-2"
-          connectorProps={{ strokeLinecap: "round" }}
+    <div ref={ref} className="relative">
+      {/* zoom controls */}
+      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5">
+        <button type="button" onClick={zoomIn} aria-label="Zoom in" className={btn}>
+          +
+        </button>
+        <button
+          type="button"
+          onClick={zoomOut}
+          aria-label="Zoom out"
+          className={btn}
         >
-          <text
-            textAnchor={p.offsetX > 0 ? "start" : "end"}
-            alignmentBaseline="middle"
-            x={p.offsetX > 0 ? 8 : -8}
-            className="fill-white text-title-lg font-medium tracking-wider"
+          −
+        </button>
+        <button
+          type="button"
+          onClick={reset}
+          aria-label="Reset view"
+          className="mt-1 rounded-full border border-white/25 bg-white/10 px-2 py-1 text-body-sm text-white backdrop-blur transition hover:bg-white/25"
+        >
+          Reset
+        </button>
+      </div>
+
+      <ComposableMap
+        className="max-h-[80vh] w-full"
+        projection="geoMercator"
+        height={1000}
+        width={1000}
+        projectionConfig={{ rotate: MAP_ROTATE, scale: MAP_SCALE }}
+      >
+        <defs>
+          <filter id="dotGlow" x="-300%" y="-300%" width="700%" height="700%">
+            <feGaussianBlur stdDeviation="4" result="b" />
+            <feMerge>
+              <feMergeNode in="b" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="labelShadow" x="-20%" y="-40%" width="140%" height="180%">
+            <feDropShadow
+              dx="0"
+              dy="1"
+              stdDeviation="2"
+              floodColor="#0b1b3a"
+              floodOpacity="0.55"
+            />
+          </filter>
+        </defs>
+
+        {/* Drag to pan, buttons to zoom. Wheel zoom disabled so page scroll isn't hijacked. */}
+        <ZoomableGroup
+          center={view.coordinates}
+          zoom={view.zoom}
+          minZoom={1}
+          maxZoom={8}
+          onMoveEnd={(pos) => setView(pos)}
+          filterZoomEvent={(evt) =>
+            (evt as unknown as Event).type !== "wheel"
+          }
+        >
+          {/* Country fades in when the map scrolls into view */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.9 }}
           >
-            {p.label}
-          </text>
-        </Annotation>
-      ))}
-    </ComposableMap>
+            <Geographies geography={geoUrl}>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    tabIndex={-1}
+                    className="pointer-events-none fill-blue-30 stroke-blue stroke-[0.035rem]"
+                    key={geo.rsmKey}
+                    geography={geo}
+                  />
+                ))
+              }
+            </Geographies>
+          </motion.g>
+
+          {/* Reach arcs: draw from HQ to each city, with a light travelling along */}
+          {spokes.map(({ p, i, d }) => (
+            <g key={`arc-${p.label}`}>
+              <motion.path
+                d={d}
+                fill="none"
+                strokeLinecap="round"
+                strokeWidth={1.1}
+                className="stroke-white/60"
+                filter="url(#dotGlow)"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={inView ? { pathLength: 1, opacity: 1 } : {}}
+                transition={{
+                  duration: 1.1,
+                  delay: 0.7 + i * 0.12,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.g
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 1.7 + i * 0.12, duration: 0.4 }}
+              >
+                <circle r={2.6} className="fill-white" filter="url(#dotGlow)">
+                  <animateMotion
+                    path={d}
+                    dur="3s"
+                    begin={`${1.7 + i * 0.12}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+              </motion.g>
+            </g>
+          ))}
+
+          {/* City beacons: pop in one-by-one, then pulse forever */}
+          {points.map((p, i) => (
+            <Marker coordinates={[p.lon, p.lat]} key={p.label}>
+              <motion.g
+                initial={{ scale: 0, opacity: 0 }}
+                animate={inView ? { scale: 1, opacity: 1 } : {}}
+                transition={{
+                  delay: 0.2 + i * 0.1,
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 18,
+                }}
+              >
+                <circle r={4} className="fill-white">
+                  <animate
+                    attributeName="r"
+                    values="4;16"
+                    dur="2.6s"
+                    begin={`-${i * 0.4}s`}
+                    repeatCount="indefinite"
+                  />
+                  <animate
+                    attributeName="opacity"
+                    values="0.4;0"
+                    dur="2.6s"
+                    begin={`-${i * 0.4}s`}
+                    repeatCount="indefinite"
+                  />
+                </circle>
+                <circle r={6} filter="url(#dotGlow)" className="fill-white" />
+                <circle r={2.5} className="fill-blue" />
+              </motion.g>
+            </Marker>
+          ))}
+
+          {/* Labels fade in together */}
+          <motion.g
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.6, duration: 0.7 }}
+          >
+            {points.map((p) => (
+              <Annotation
+                key={p.label}
+                subject={[p.lon, p.lat]}
+                dx={p.offsetX}
+                dy={p.offsetY}
+                className="fill-white [&_path]:stroke-white [&_path]:stroke-1 max-md:[&_path]:stroke-2"
+                connectorProps={{ strokeLinecap: "round" }}
+              >
+                <text
+                  textAnchor={p.offsetX > 0 ? "start" : "end"}
+                  alignmentBaseline="middle"
+                  x={p.offsetX > 0 ? 8 : -8}
+                  filter="url(#labelShadow)"
+                  className="fill-white text-title-lg font-medium tracking-wider"
+                >
+                  {p.label}
+                </text>
+              </Annotation>
+            ))}
+          </motion.g>
+        </ZoomableGroup>
+      </ComposableMap>
+    </div>
   );
 }
