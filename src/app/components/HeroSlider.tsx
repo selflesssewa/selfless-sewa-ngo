@@ -33,7 +33,7 @@ const HeroSlider = ({
         {[...images, ...images].map((src, idx) => (
           <div
             key={idx}
-            className="relative aspect-[7/10] h-[60vh] max-md:h-[50vh] max-sm:h-[45vh]"
+            className="relative aspect-[7/10] h-[48vh] max-md:h-[40vh] max-sm:h-[36vh]"
           >
             <Image
               alt=""
