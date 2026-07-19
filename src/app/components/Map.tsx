@@ -25,6 +25,24 @@ export default function Map({ points }: { points: Array<TLocation> }) {
         scale: 1600,
       }}
     >
+      <defs>
+        <filter id="dotGlow" x="-300%" y="-300%" width="700%" height="700%">
+          <feGaussianBlur stdDeviation="4" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter id="labelShadow" x="-20%" y="-40%" width="140%" height="180%">
+          <feDropShadow
+            dx="0"
+            dy="1"
+            stdDeviation="2"
+            floodColor="#0b1b3a"
+            floodOpacity="0.55"
+          />
+        </filter>
+      </defs>
       <Geographies geography={geoUrl}>
         {({ geographies }) =>
           geographies.map((geo) => (
@@ -37,12 +55,28 @@ export default function Map({ points }: { points: Array<TLocation> }) {
           ))
         }
       </Geographies>
-      {points.map(({ label, lon, lat }) => (
+      {points.map(({ label, lon, lat }, i) => (
         <Marker coordinates={[lon, lat]} key={label}>
-          <circle
-            r={5}
-            className="fill-transparent stroke-white stroke-1 max-md:stroke-2"
-          />
+          {/* expanding pulse ring — staggered phase so they don't blink in sync */}
+          <circle r={4} className="fill-white">
+            <animate
+              attributeName="r"
+              values="4;22"
+              dur="2.6s"
+              begin={`-${i * 0.4}s`}
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="opacity"
+              values="0.4;0"
+              dur="2.6s"
+              begin={`-${i * 0.4}s`}
+              repeatCount="indefinite"
+            />
+          </circle>
+          {/* glowing beacon: white halo dot with a small themed core */}
+          <circle r={6} filter="url(#dotGlow)" className="fill-white" />
+          <circle r={2.5} className="fill-blue" />
         </Marker>
       ))}
       {points.map((p) => (
@@ -58,6 +92,7 @@ export default function Map({ points }: { points: Array<TLocation> }) {
             textAnchor={p.offsetX > 0 ? "start" : "end"}
             alignmentBaseline="middle"
             x={p.offsetX > 0 ? 8 : -8}
+            filter="url(#labelShadow)"
             className="fill-white text-title-lg font-medium tracking-wider"
           >
             {p.label}
