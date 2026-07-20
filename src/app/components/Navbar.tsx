@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { MaterialSymbol } from "react-material-symbols";
 import { twMerge } from "tailwind-merge";
 import Container from "./Container";
+import { track } from "@/analytics";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +72,7 @@ const Navbar = () => {
               <li className="flex">
                 <Link
                   href="/donate"
+                  onClick={() => track("donate_cta_click", { location: "nav" })}
                   className="ms-3 flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
                 >
                   <div className="flex items-center gap-1 rounded-[0.4rem] bg-green-50 px-2 py-1">

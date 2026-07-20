@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 // ISR: the footer (contact/socials) comes from Contentful — refresh it at most
 // once per 60s so edits appear without a redeploy.
@@ -90,6 +91,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const data = await getLayoutContent();
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
   return (
     <html lang="en">
@@ -112,6 +114,7 @@ export default async function RootLayout({
         {children}
         <Footer data={data} />
         <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
