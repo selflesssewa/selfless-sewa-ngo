@@ -8,6 +8,7 @@ import Container from "./components/Container";
 import { GeneralStatistics } from "./components/GeneralStatistics";
 import GlowCard from "./components/GlowCard";
 import HeroSlider from "./components/HeroSlider";
+import DonateLink from "./components/DonateLink";
 import Map from "./components/Map";
 import TestimonialSlider from "./components/TestimonialSlider";
 
@@ -137,8 +138,8 @@ export default async function Home() {
               Join our commitment to making a positive difference in the world.
             </h1>
           </div>
-          <Link
-            href="/donate"
+          <DonateLink
+            location="hero"
             className="flex flex-shrink-0 rounded-[0.8rem] bg-green-50 p-1 shadow-xl shadow-blue-30 backdrop-blur-lg transition-[filter,transform] duration-150 ease-in hover:scale-105 hover:saturate-150"
           >
             <div className="flex items-center gap-2 rounded-[0.4rem] bg-green/50 px-4 py-2 ps-3 max-sm:py-0 max-sm:ps-2">
@@ -154,7 +155,7 @@ export default async function Home() {
                 <span className="font-medium">help a soul in need</span>
               </div>
             </div>
-          </Link>
+          </DonateLink>
         </Container>
         <HeroSlider images={sliderImgUrls} />
       </section>
@@ -303,14 +304,14 @@ export default async function Home() {
                 carry their books in a plastic bag. With every contribution, you
                 help a child begin a new journey with dignity.
               </p>
-              <Link
-                href="/donate"
+              <DonateLink
+                location="home_campaign"
                 className="flex self-center rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 lg:self-end"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
                   <span className="text-title-sm">Donate Now</span>
                 </div>
-              </Link>
+              </DonateLink>
             </div>
           </div>
         </Container>
@@ -392,14 +393,14 @@ export default async function Home() {
             imgSrc="/images/IMG_3202.webp"
             imgAltText="group photo"
             footer={
-              <Link
-                href="/donate"
+              <DonateLink
+                location="home_cta"
                 className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
                   <span className="text-title-md">Donate</span>
                 </div>
-              </Link>
+              </DonateLink>
             }
           />
         </Container>

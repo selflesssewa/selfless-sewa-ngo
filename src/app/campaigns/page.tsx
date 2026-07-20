@@ -2,11 +2,11 @@ import { getCampaignPageContent } from "@/dao";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, MARKS } from "@contentful/rich-text-types";
 import Image from "next/image";
-import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 import CallToActionCard from "../components/CallToActionCard";
 import Container from "../components/Container";
 import GlowCard from "../components/GlowCard";
+import DonateLink from "../components/DonateLink";
 
 // ISR: re-fetch Contentful at most once per 60s so content edits appear
 // automatically without a redeploy.
@@ -86,12 +86,12 @@ const Project = async () => {
                 },
               })}
             </article>
-            <Link
-              href="/donate"
+            <DonateLink
+              location="campaign_page"
               className="mt-6 inline-block rounded-[8px] border border-blue-30 bg-blue-30 p-1 px-3 backdrop-blur-sm transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150 max-md:col-span-2 md:col-start-2"
             >
               Donate
-            </Link>
+            </DonateLink>
           </section>
         ))}
       </Container>
@@ -103,14 +103,14 @@ const Project = async () => {
             imgSrc="/images/IMG_5247.webp"
             imgAltText="group photo"
             footer={
-              <Link
-                href="/donate"
+              <DonateLink
+                location="campaigns_cta"
                 className="mt-8 flex self-start rounded-[0.8rem] bg-green-50 p-1 backdrop-blur-2xl transition-[filter,transform] duration-200 hover:scale-105 hover:saturate-150"
               >
                 <div className="flex items-center rounded-[0.4rem] bg-green/50 px-3 py-2">
                   <span className="text-title-md">Donate</span>
                 </div>
-              </Link>
+              </DonateLink>
             }
           />
         </Container>

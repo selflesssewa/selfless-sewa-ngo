@@ -1,6 +1,7 @@
 "use client";
 
 import { useDonationStore } from "@/stores/donationStore";
+import { track } from "@/analytics";
 import { useLayoutEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Container from "../components/Container";
@@ -56,6 +57,15 @@ const Page = () => {
     }
 
     setIsSubmitting(true);
+
+    // Analytics: donation initiated (funnel step before PhonePe redirect).
+    track("begin_checkout", {
+      currency: "INR",
+      value: Number(amount) || 0,
+      type: isRecurring ? "recurring" : "one_time",
+      frequency: isRecurring ? frequency : undefined,
+      wants_receipt: wantsReceipt,
+    });
 
     // Recurring donation: set up a PhonePe Autopay mandate.
     if (isRecurring) {

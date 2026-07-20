@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import { decodeJwt } from "jose";
+import { track } from "@/analytics";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Suspense,
@@ -79,9 +80,34 @@ function PageUI() {
 
         if (state === "COMPLETED" || state === "ACTIVE") {
           setPaymentStatus("SUCCESS");
+          // Analytics: the conversion. Value from the recurring status response
+          // or (one-time) the signed token.
+          let value = 0;
+          let tid = subscriptionId ?? "";
+          if (isRecurring) {
+            value = Number(data?.amount) || 0;
+          } else if (token) {
+            try {
+              const d = decodeJwt(token);
+              value = Number(d.a) || 0;
+              tid = String(d.id ?? "");
+            } catch {
+              /* ignore */
+            }
+          }
+          track("purchase", {
+            currency: "INR",
+            value,
+            transaction_id: tid,
+            type: isRecurring ? "recurring" : "one_time",
+          });
           break;
         } else if (state === "FAILED") {
           setPaymentStatus("FAILED");
+          track("donation_failed", {
+            type: isRecurring ? "recurring" : "one_time",
+            transaction_id: subscriptionId ?? "",
+          });
           break;
         }
         await delay;
