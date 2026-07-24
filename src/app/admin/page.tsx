@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Container from "../components/Container";
+import AnalyticsPanel from "../components/AnalyticsPanel";
 
 type TDonation = {
   txn_id: string;
@@ -47,7 +48,7 @@ type TSubStatusFilter =
   | "CANCELLED"
   | "FAILED"
   | "PENDING";
-type TTab = "onetime" | "recurring";
+type TTab = "onetime" | "recurring" | "analytics";
 
 const FREQUENCY_LABEL: Record<string, string> = {
   MONTHLY: "Monthly",
@@ -423,9 +424,13 @@ const Page = () => {
       <Container className="my-12">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-headline-sm">Donations</h1>
+            <h1 className="text-headline-sm">
+              {tab === "analytics" ? "Website analytics" : "Donations"}
+            </h1>
             <p className="mt-1 text-body-sm text-white-70">
-              {tab === "onetime" ? (
+              {tab === "analytics" ? (
+                "How people find and use the website, and how many go on to donate."
+              ) : tab === "onetime" ? (
                 <>
                   {filtered.length} of {donations.length} shown ·{" "}
                   <span className="font-medium text-white">
@@ -445,7 +450,7 @@ const Page = () => {
               )}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className={`flex gap-2 ${tab === "analytics" ? "hidden" : ""}`}>
             <button
               onClick={() => fetchDonations(key)}
               className="rounded-[0.6rem] border border-white-30 px-3 py-2 text-body-sm"
@@ -473,6 +478,7 @@ const Page = () => {
         </div>
 
         {/* Summary cards */}
+        {tab !== "analytics" && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
             {
@@ -505,9 +511,10 @@ const Page = () => {
             </div>
           ))}
         </div>
+        )}
 
         {/* Needs attention */}
-        {attentionCount > 0 && (
+        {tab !== "analytics" && attentionCount > 0 && (
           <details className="mb-6 rounded-[0.8rem] border border-yellow-500/40 bg-yellow-500/10 px-4 py-3">
             <summary className="cursor-pointer text-body-sm font-medium text-yellow-200">
               ⚠ {attentionCount} item{attentionCount === 1 ? "" : "s"} need
@@ -576,9 +583,19 @@ const Page = () => {
           >
             Recurring ({subscriptions.length})
           </button>
+          <button
+            onClick={() => setTab("analytics")}
+            className={`rounded-[0.6rem] px-4 py-2 text-body-sm font-medium transition-colors ${
+              tab === "analytics" ? "bg-green-50 text-white" : "text-white-70"
+            }`}
+          >
+            Analytics
+          </button>
         </div>
 
-        {tab === "recurring" ? (
+        {tab === "analytics" ? (
+          <AnalyticsPanel adminKey={key} />
+        ) : tab === "recurring" ? (
           <>
           {/* Recurring filters */}
           <fieldset className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
