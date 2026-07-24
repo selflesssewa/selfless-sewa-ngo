@@ -52,6 +52,8 @@ const config: Config = {
       black: "#04001C",
       white: "#FFF",
       "white-70": "rgba(255, 255, 255, 0.7)",
+      "white-30": "rgba(255, 255, 255, 0.3)",
+      "white-10": "rgba(255, 255, 255, 0.1)",
       blue: "#1D366F",
       "blue-30": "rgba(29, 54, 111, 0.3)",
       "blue-60": "rgba(29, 54, 111, 0.6)",

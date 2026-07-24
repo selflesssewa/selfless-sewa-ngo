@@ -22,6 +22,7 @@ export type TAnalytics = {
   configured: boolean;
   error?: string;
   days: number;
+  propertyId: string | null;
   overview: {
     users: number;
     newUsers: number;
@@ -44,7 +45,7 @@ export type TAnalytics = {
   donateByLocation: Array<{ location: string; clicks: number }>;
 };
 
-const EMPTY: Omit<TAnalytics, "configured" | "days" | "error"> = {
+const EMPTY: Omit<TAnalytics, "configured" | "days" | "error" | "propertyId"> = {
   overview: { users: 0, newUsers: 0, sessions: 0, pageviews: 0, avgSessionSec: 0 },
   last7Users: 0,
   sources: [],
@@ -66,7 +67,8 @@ export async function getAnalytics(days = 30): Promise<TAnalytics> {
   }
 
   const client = getClient();
-  if (!client) return { configured: false, days, ...EMPTY };
+  if (!client)
+    return { configured: false, days, propertyId: PROPERTY_ID ?? null, ...EMPTY };
 
   const property = `properties/${PROPERTY_ID}`;
   const dateRanges = [{ startDate: `${days}daysAgo`, endDate: "today" }];
@@ -170,6 +172,7 @@ export async function getAnalytics(days = 30): Promise<TAnalytics> {
     const data: TAnalytics = {
       configured: true,
       days,
+      propertyId: PROPERTY_ID ?? null,
       overview: {
         users,
         newUsers: cell(ov, 1),
@@ -213,6 +216,7 @@ export async function getAnalytics(days = 30): Promise<TAnalytics> {
     return {
       configured: true,
       days,
+      propertyId: PROPERTY_ID ?? null,
       error: e instanceof Error ? e.message : String(e),
       ...EMPTY,
     };
