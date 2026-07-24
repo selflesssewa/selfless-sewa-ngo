@@ -146,10 +146,6 @@ export default function AnalyticsPanel({ adminKey }: { adminKey: string }) {
     };
   }, [days, adminKey]);
 
-  const gaLink = data?.propertyId
-    ? `https://analytics.google.com/analytics/web/#/p${data.propertyId}/reports/intelligenthome`
-    : "https://analytics.google.com/";
-
   if (loading && !data) {
     return <p className="mt-6 animate-pulse text-white-70">Loading traffic…</p>;
   }
@@ -201,33 +197,22 @@ export default function AnalyticsPanel({ adminKey }: { adminKey: string }) {
 
   return (
     <div>
-      {/* Controls: date range + open-in-GA */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-body-sm text-white-70">Last</span>
-          <div className="flex gap-1 rounded-[0.7rem] bg-blue-30 p-1">
-            {[7, 30, 90].map((d) => (
-              <button
-                key={d}
-                onClick={() => setDays(d)}
-                className={`rounded-[0.5rem] px-3 py-1 text-body-sm font-medium transition-colors ${
-                  days === d ? "bg-green text-black" : "text-white-70"
-                }`}
-              >
-                {d} days
-              </button>
-            ))}
-          </div>
+      {/* Controls: date range */}
+      <div className="mt-4 flex items-center gap-2">
+        <span className="text-body-sm text-white-70">Last</span>
+        <div className="flex gap-1 rounded-[0.7rem] bg-blue-30 p-1">
+          {[7, 30, 90].map((d) => (
+            <button
+              key={d}
+              onClick={() => setDays(d)}
+              className={`rounded-[0.5rem] px-3 py-1 text-body-sm font-medium transition-colors ${
+                days === d ? "bg-green text-black" : "text-white-70"
+              }`}
+            >
+              {d} days
+            </button>
+          ))}
         </div>
-        <a
-          href={gaLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-[0.7rem] border border-white-30 px-3 py-2 text-body-sm font-medium transition-colors hover:bg-blue-30"
-        >
-          Open Google Analytics
-          <span aria-hidden>↗</span>
-        </a>
       </div>
 
       {data.error && (
@@ -405,18 +390,8 @@ export default function AnalyticsPanel({ adminKey }: { adminKey: string }) {
         </div>
       </Section>
 
-      <p className="mt-8 flex flex-wrap items-center gap-1 text-body-sm text-white-70">
-        Numbers refresh a few times an hour and cover the selected period. For the
-        full picture,{" "}
-        <a
-          href={gaLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-white underline"
-        >
-          open Google Analytics ↗
-        </a>
-        .
+      <p className="mt-8 text-body-sm text-white-70">
+        Numbers refresh a few times an hour and cover the selected period.
       </p>
     </div>
   );
