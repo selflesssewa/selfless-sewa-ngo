@@ -184,71 +184,97 @@ export async function callStatusApi(merchantOrderId: string) {
 }
 
 // ── Subscription (mandate) status ─────────────────────────────────────────
-// Endpoint: GET /checkout/v2/subscriptions/{merchantSubscriptionId}/status
-// Docs: https://developer.phonepe.com/payment-gateway/autopay/standard-checkout/subscription-status
+// Endpoint: GET /subscriptions/v2/{merchantSubscriptionId}/status
+// (verified against live docs, Jul 2026 — NOT the /checkout/v2 path).
 
 export async function getSubscriptionStatus(merchantSubscriptionId: string) {
   const { data } = await axios.get(
-    `${API_BASE}/checkout/v2/subscriptions/${merchantSubscriptionId}/status`,
+    `${API_BASE}/subscriptions/v2/${merchantSubscriptionId}/status`,
     { headers: await authHeaders() },
   );
   // state: ACTIVE | CANCELLED | REVOKED
   return data;
 }
 
-// ── Phase 2a: Notify (pre-debit notification) ──────────────────────────────
-// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
-// The docs page for this endpoint returned 404 during fetch; path below is
-// based on the v2 URL pattern. Confirm before going live.
+// ── Recurring debit: Notify (+ auto-execute) ───────────────────────────────
+// Endpoint: POST /subscriptions/v2/notify  (verified against live docs, Jul 2026:
+//   developer.phonepe.com/payment-gateway/autopay/api-integration/api-reference/redemption-notify)
+// With autoDebit:true PhonePe sends the NPCI pre-debit notification AND executes
+// the debit itself — no separate redeem() call needed. The final state
+// (COMPLETED/FAILED) arrives via the webhook, or the reconcile poll.
+// Response: { orderId, state: "NOTIFICATION_IN_PROGRESS", expireAt, ... }.
 
 export async function notifyRedemption(params: {
   merchantOrderId: string;
   merchantSubscriptionId: string;
   amountPaise: number;
-}): Promise<{ notificationId: string; raw: unknown }> {
+  expireAtMs: number;
+}): Promise<{ orderId?: string; state?: string; raw: unknown }> {
   const { data } = await axios.post(
-    `${API_BASE}/checkout/v2/subscriptions/notify`,
+    `${API_BASE}/subscriptions/v2/notify`,
     {
       merchantOrderId: params.merchantOrderId,
-      merchantSubscriptionId: params.merchantSubscriptionId,
       amount: params.amountPaise,
+      expireAt: params.expireAtMs,
+      paymentFlow: {
+        type: "SUBSCRIPTION_REDEMPTION",
+        merchantSubscriptionId: params.merchantSubscriptionId,
+        redemptionRetryStrategy: "STANDARD",
+        autoDebit: true,
+      },
     },
     { headers: await authHeaders() },
   );
   return {
-    notificationId: data?.notificationId ?? data?.data?.notificationId,
+    orderId: data?.orderId ?? data?.data?.orderId,
+    state: data?.state ?? data?.data?.state,
     raw: data,
   };
 }
 
-// ── Phase 2b: Execute redemption (debit) ──────────────────────────────────
-// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
-// Same caveat as notifyRedemption above.
+// ── Recurring debit: Execute (only needed if autoDebit was false) ──────────
+// Endpoint: POST /subscriptions/v2/redeem  (body is just { merchantOrderId };
+// there is NO notificationId in v2). Kept for completeness — the notify above
+// uses autoDebit:true, so this is not called in the normal flow.
+// Response: { state: "PENDING", transactionId }.
 
 export async function redeem(params: {
   merchantOrderId: string;
-  notificationId: string;
-}): Promise<unknown> {
+}): Promise<{ state?: string; transactionId?: string; raw: unknown }> {
   const { data } = await axios.post(
-    `${API_BASE}/checkout/v2/subscriptions/redeem`,
-    {
-      merchantOrderId: params.merchantOrderId,
-      notificationId: params.notificationId,
-    },
+    `${API_BASE}/subscriptions/v2/redeem`,
+    { merchantOrderId: params.merchantOrderId },
     { headers: await authHeaders() },
   );
-  return data;
+  return {
+    state: data?.state ?? data?.data?.state,
+    transactionId: data?.transactionId ?? data?.data?.transactionId,
+    raw: data,
+  };
+}
+
+// ── Recurring debit: Order status (reconcile backstop for the webhook) ─────
+// Endpoint: GET /subscriptions/v2/order/{merchantOrderId}/status?details=true
+// (subscriptions-specific — NOT the /checkout/v2/order path). Returns
+// { state: COMPLETED | FAILED | PENDING, errorCode?, ... }.
+
+export async function getRedemptionOrderStatus(merchantOrderId: string) {
+  const { data } = await axios.get(
+    `${API_BASE}/subscriptions/v2/order/${merchantOrderId}/status?details=true`,
+    { headers: await authHeaders() },
+  );
+  return data as { state?: string; errorCode?: string; [k: string]: unknown };
 }
 
 // ── Cancel subscription ────────────────────────────────────────────────────
-// TODO: Verify exact endpoint path from your PhonePe dashboard docs.
-// The cancel/revoke page returned 404 during fetch; path below follows v2 pattern.
+// Endpoint: POST /subscriptions/v2/{merchantSubscriptionId}/cancel
+// (verified against live docs, Jul 2026). Returns 204 No Content on success.
 
 export async function cancelSubscription(
   merchantSubscriptionId: string,
 ): Promise<unknown> {
   const { data } = await axios.post(
-    `${API_BASE}/checkout/v2/subscriptions/${merchantSubscriptionId}/cancel`,
+    `${API_BASE}/subscriptions/v2/${merchantSubscriptionId}/cancel`,
     {},
     { headers: await authHeaders() },
   );
