@@ -204,6 +204,23 @@ export async function getRedemptionByMerchantOrderId(
   return result.rows[0] || null;
 }
 
+// In-flight recurring charges (notified, awaiting the debit result) for the
+// reconcile poll to finalize when the webhook is missed. The small age gate
+// gives the webhook first crack.
+export async function getNotifiedRedemptions(
+  limit = 50,
+): Promise<TRedemption[]> {
+  const { rows } = await getPool().query<TRedemption>(
+    `SELECT * FROM redemptions
+       WHERE state = 'NOTIFIED'
+         AND attempted_at < now() - interval '5 minutes'
+       ORDER BY attempted_at ASC
+       LIMIT $1`,
+    [limit],
+  );
+  return rows;
+}
+
 export async function setRedemptionState(
   redemptionId: string,
   state: TRedemptionState,

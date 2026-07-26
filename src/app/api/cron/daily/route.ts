@@ -1,13 +1,16 @@
 import {
   finalizeDonation,
   getDueSubscriptions,
+  getNotifiedRedemptions,
   getStalePendingDonations,
   getUnarchivedDonations,
   getUnarchivedRedemptions,
+  setRedemptionState,
 } from "@/db";
 import { chargeSubscription } from "@/charge";
 import { archiveDonation, archiveRedemption } from "@/archive";
-import { callStatusApi } from "@/phonepe";
+import { callStatusApi, getRedemptionOrderStatus } from "@/phonepe";
+import { waitUntil } from "@vercel/functions";
 import { NextRequest } from "next/server";
 
 // Runs several Drive uploads + PhonePe calls in sequence — needs headroom.
@@ -40,6 +43,38 @@ export async function GET(request: NextRequest) {
     summary.charge = { due: due.length, charged };
   } catch (e) {
     summary.charge = { error: e instanceof Error ? e.message : String(e) };
+  }
+
+  // 1b. Reconcile in-flight recurring charges (webhook backstop): ask PhonePe
+  // for the real state of NOTIFIED redemptions and finalize + archive them.
+  try {
+    const inflight = await getNotifiedRedemptions(50);
+    let finalized = 0;
+    for (const r of inflight) {
+      try {
+        const s = await getRedemptionOrderStatus(r.merchant_order_id);
+        if (s?.state === "COMPLETED") {
+          await setRedemptionState(r.id, "SUCCESS");
+          waitUntil(
+            archiveRedemption(r.id, r.merchant_order_id).catch((e) =>
+              console.error("Archive after reconcile failed", e),
+            ),
+          );
+          finalized++;
+        } else if (s?.state === "FAILED") {
+          await setRedemptionState(r.id, "FAILED");
+          finalized++;
+        }
+        // PENDING / NOTIFICATION_IN_PROGRESS: leave NOTIFIED, check again next run.
+      } catch (e) {
+        console.error("Redemption reconcile error for", r.merchant_order_id, e);
+      }
+    }
+    summary.redemptionReconcile = { checked: inflight.length, finalized };
+  } catch (e) {
+    summary.redemptionReconcile = {
+      error: e instanceof Error ? e.message : String(e),
+    };
   }
 
   // 2. Reconcile stale PENDING one-time donations.
